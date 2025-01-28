@@ -3,36 +3,39 @@
 //
 //  Description: Dialog used to multi-edit the logical status
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   17.10.23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   11.01.24 Sean Flook                 Fix warnings.
-//    006   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
-//    008   11.03.24 Sean Flook           MUL13 Changed control alignment.
-//    009   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
-//    010   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    013   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
-//    014   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
-//    015   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
-//    016   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
-//    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    018   02.07.24 Sean Flook       IMANN-582 Added state.
-//    019   08.07.24 Sean Flook       IMANN-716 Corrected Scottish property records.
-//    020   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
-//    021   03.09.24 Sean Flook       IMANN-968 Corrected copy and paste error.
+//    001   17.10.23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   11.01.24 Sean Flook                  Fix warnings.
+//    006   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    007   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    008   11.03.24 Sean Flook            MUL13 Changed control alignment.
+//    009   11.03.24 Sean Flook            MUL11 Reset counts when closing dialog.
+//    010   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    011   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    012   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    013   19.06.24 Joshua McCormick  IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    014   19.06.24 Joshua McCormick  IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
+//    015   19.06.24 Joshua McCormick  IMANN-503 BLPU Level removed type prop
+//    016   19.06.24 Joshua McCormick  IMANN-503 BLPU Level max set to 99.9
+//    017   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    018   02.07.24 Sean Flook        IMANN-582 Added state.
+//    019   08.07.24 Sean Flook        IMANN-716 Corrected Scottish property records.
+//    020   08.07.24 Sean Flook        IMANN-715 Increase the failed count if failed to save property.
+//    021   03.09.24 Sean Flook        IMANN-968 Corrected copy and paste error.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    022   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -50,7 +53,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   List,
@@ -271,8 +274,8 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
     switch (variant) {
       case "classification":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSSelectControl
                 label="Classification"
                 isEditable
@@ -289,9 +292,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 onChange={handleClassificationChangeEvent}
                 helperText="Classification code for the BLPU."
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -302,15 +305,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "rpc":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSSelectControl
                 label="RPC"
                 isEditable
@@ -326,9 +329,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 onChange={handleRpcChangeEvent}
                 helperText="Representative Point Code."
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -339,15 +342,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "state":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSSelectControl
                 label="State"
                 isEditable
@@ -363,8 +366,8 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 onChange={handleStateChangeEvent}
                 helperText="A code identifying the current state of a BLPU."
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>
               <ADSDateControl
                 label="State date"
                 isEditable
@@ -374,9 +377,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 onChange={handleStateDateChangeEvent}
                 helperText="Date at which the BLPU achieved its current state in the real-world."
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -387,15 +390,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "level":
         return settingsContext.isScottish ? (
-          <Grid container justifyContent="flex-start" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" alignItems="center">
+            <Grid2 size={12}>
               <ADSNumberControl
                 label="Level"
                 maximum={99.9}
@@ -405,11 +408,11 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={handleLevelChangeEvent}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         ) : (
-          <Grid container justifyContent="flex-start" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" alignItems="center">
+            <Grid2 size={12}>
               <ADSTextControl
                 label="Level"
                 isEditable
@@ -420,9 +423,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 helperText="Memorandum of the vertical position of the BLPU."
                 onChange={handleLevelChangeEvent}
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -433,15 +436,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "excludeFromExport":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSSwitchControl
                 label="Exclude from export"
                 isEditable
@@ -453,9 +456,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 helperText="Set this if you do not want these properties to be included in any exports."
                 onChange={handleExcludeFromExportChangeEvent}
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -466,15 +469,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "siteVisitRequired":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSSwitchControl
                 label="Site visit required"
                 isEditable
@@ -486,9 +489,9 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 helperText="Set this if these properties require a site visit."
                 onChange={handleSiteVisitRequiredChangeEvent}
               />
-            </Grid>
+            </Grid2>
             {noteOpen && (
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <ADSTextControl
                   isEditable
                   disabled={updating}
@@ -499,15 +502,15 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   maxLines={10}
                   onChange={handleNoteChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         );
 
       case "note":
         return (
-          <Grid container justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="center" alignItems="center">
+            <Grid2 size={12}>
               <ADSTextControl
                 isEditable
                 disabled={updating}
@@ -518,8 +521,8 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                 maxLines={10}
                 onChange={handleNoteChangeEvent}
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         );
 
       default:

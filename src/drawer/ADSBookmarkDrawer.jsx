@@ -3,23 +3,26 @@
 //
 //  Description: Bookmark Drawer component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   06.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   06.02.24 Sean Flook                 Updated street view icon.
-//    006   11.03.24 Sean Flook           GLB12 Correctly set width.
-//    007   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    008   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   06.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   06.02.24 Sean Flook                  Updated street view icon.
+//    006   11.03.24 Sean Flook            GLB12 Correctly set width.
+//    007   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    008   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    009   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -30,7 +33,7 @@ import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 
-import { Drawer, Grid, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Drawer, Grid2, Typography, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
@@ -129,8 +132,8 @@ function ADSBookmarkDrawer(props) {
           justifyContent: "flex-start",
         }}
       >
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
+        <Grid2 container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid2>
             <Typography
               variant="h6"
               noWrap
@@ -140,23 +143,23 @@ function ADSBookmarkDrawer(props) {
             >
               Bookmarks and views
             </Typography>
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2>
             <ADSActionButton
               variant="close"
               tooltipTitle="Close bookmarks and views"
               tooltipPlacement="left"
               onClick={props.handleDrawerClose}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
       <Box
         sx={{
           overflowY: "auto",
         }}
       >
-        <Grid
+        <Grid2
           container
           direction="column"
           justifyContent="center"
@@ -167,12 +170,11 @@ function ADSBookmarkDrawer(props) {
         >
           {hasProperty && (
             <Fragment>
-              <Grid
-                item
-                xs={12}
+              <Grid2
                 sx={{
                   pt: theme.spacing(1),
                 }}
+                size={12}
               >
                 <Typography
                   align="left"
@@ -183,13 +185,12 @@ function ADSBookmarkDrawer(props) {
                 >
                   Property views
                 </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={12}
+              </Grid2>
+              <Grid2
                 sx={{
                   pt: theme.spacing(1),
                 }}
+                size={12}
               >
                 <List dense>
                   <ListItemButton onClick={() => handlePropertyViewClick(0)}>
@@ -217,15 +218,14 @@ function ADSBookmarkDrawer(props) {
                     <ListItemText primary="Under construction" />
                   </ListItemButton>
                 </List>
-              </Grid>
+              </Grid2>
             </Fragment>
           )}
-          <Grid
-            item
-            xs={12}
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <Typography
               align="left"
@@ -236,13 +236,12 @@ function ADSBookmarkDrawer(props) {
             >
               Street views
             </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={12}
+          </Grid2>
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <List dense>
               <ListItemButton onClick={() => handleStreetViewClick(0)}>
@@ -264,15 +263,14 @@ function ADSBookmarkDrawer(props) {
                 <ListItemText primary="PRoW" />
               </ListItemButton>
             </List>
-          </Grid>
+          </Grid2>
           {hasASD && (
             <Fragment>
-              <Grid
-                item
-                xs={12}
+              <Grid2
                 sx={{
                   pt: theme.spacing(1),
                 }}
+                size={12}
               >
                 <Typography
                   align="left"
@@ -283,13 +281,12 @@ function ADSBookmarkDrawer(props) {
                 >
                   ASD views
                 </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={12}
+              </Grid2>
+              <Grid2
                 sx={{
                   pt: theme.spacing(1),
                 }}
+                size={12}
               >
                 <List dense>
                   <ListItemButton onClick={() => handleASDViewClick(0)}>
@@ -311,24 +308,22 @@ function ADSBookmarkDrawer(props) {
                     <ListItemText primary="Expired operational dates" />
                   </ListItemButton>
                 </List>
-              </Grid>
+              </Grid2>
             </Fragment>
           )}
           {props.bookmarks && (
             <Fragment>
-              <Grid
-                item
-                xs={12}
+              <Grid2
                 sx={{
                   pt: theme.spacing(1),
                 }}
+                size={12}
               >
-                <Grid
-                  item
-                  xs={12}
+                <Grid2
                   sx={{
                     pt: theme.spacing(1),
                   }}
+                  size={12}
                 >
                   <Typography
                     align="left"
@@ -339,14 +334,13 @@ function ADSBookmarkDrawer(props) {
                   >
                     Bookmarks
                   </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
+                </Grid2>
+                <Grid2
                   sx={{
                     pt: theme.spacing(1),
                   }}
-                ></Grid>
+                  size={12}
+                ></Grid2>
                 {props.bookmarks &&
                   props.bookmarks.map((b, index) => (
                     <List disablePadding dense key={`key_${index}`}>
@@ -358,15 +352,14 @@ function ADSBookmarkDrawer(props) {
                       </ListItemButton>
                     </List>
                   ))}
-              </Grid>
+              </Grid2>
             </Fragment>
           )}
-          <Grid
-            item
-            xs={12}
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <Typography
               align="left"
@@ -377,13 +370,12 @@ function ADSBookmarkDrawer(props) {
             >
               Recently
             </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={12}
+          </Grid2>
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <List dense>
               <ListItemButton onClick={() => handleRecentClick(0)}>
@@ -417,13 +409,12 @@ function ADSBookmarkDrawer(props) {
                 <ListItemText primary="Approved" />
               </ListItemButton>
             </List>
-          </Grid>
-          <Grid
-            item
-            xs={12}
+          </Grid2>
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <Typography
               align="left"
@@ -434,13 +425,12 @@ function ADSBookmarkDrawer(props) {
             >
               Other views
             </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={12}
+          </Grid2>
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <List dense>
               <ListItemButton onClick={() => handleOtherViewClick(0)}>
@@ -476,8 +466,8 @@ function ADSBookmarkDrawer(props) {
                 <ListItemText primary="Excluded from export" />
               </ListItemButton>
             </List>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
     </Drawer>
   );

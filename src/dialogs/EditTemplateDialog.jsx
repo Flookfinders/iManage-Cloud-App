@@ -3,60 +3,63 @@
 //
 //  Description: Edit template dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   31.03.23 Sean Flook         WI40652 For template and wizard do not include Historic or Rejected logical status.
-//    003   06.04.23 Sean Flook         WI40675 Correctly call FilteredBLPUState.
-//    004   27.06.23 Sean Flook         WI40738 Renamed title when editing a title.
-//    005   23.08.23 Sean Flook       IMANN-159 Corrected field names.
-//    006   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    007   06.10.23 Sean Flook                 Added some error trapping and use colour variables.
-//    008   03.11.23 Sean Flook                 Added hyphen to one-way.
-//    009   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    010   24.11.23 Joel Benford               Show dropdowns for LPI official/postal in Scotland
-//    011   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
-//    012   05.12.23 Joel Benford               Add Scottish classification dialogue
-//    013   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    014   08.01.24 Joel Benford               Classification and sub locality
-//    015   10.01.24 Sean Flook                 Fix warnings.
-//    016   11.01.24 Sean Flook                 Fix warnings.
-//    017   16.01.23 Joel Benford               OS/GP level split
-//    018   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    019   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
-//    020   05.02.24 Sean Flook                 Further filter for maintaining organisation.
-//    021   01.03.24 Joel Benford     IMANN-330 Stop defaulting interested/maintaining auth on open.
-//    022   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    023   01.03.24 Joel Benford               Restrict Districts to suit organisation
-//    024   27.03.24 Sean Flook                 Further changes required to fix warnings and added ADSDialogTitle.
-//    025   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
-//    026   09.04.24 Sean Flook       IMANN-376 Removed for administrative area.
-//    027   17.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to Scheme field.
-//    028   23.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to ADSTextControl fields
-//    029   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
-//    030   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
-//    031   23.04.24 Joshua McCormick IMANN-94  Edit Dialog title from Edit Title to Rename Template
-//    032   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
-//    033   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
-//    034   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
-//    035   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
-//    036   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    037   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    038   08.08.24 Sean Flook       IMANN-911 Corrected typo.
+//    001            Sean Flook                  Initial Revision.
+//    002   31.03.23 Sean Flook          WI40652 For template and wizard do not include Historic or Rejected logical status.
+//    003   06.04.23 Sean Flook          WI40675 Correctly call FilteredBLPUState.
+//    004   27.06.23 Sean Flook          WI40738 Renamed title when editing a title.
+//    005   23.08.23 Sean Flook        IMANN-159 Corrected field names.
+//    006   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    007   06.10.23 Sean Flook                  Added some error trapping and use colour variables.
+//    008   03.11.23 Sean Flook                  Added hyphen to one-way.
+//    009   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    010   24.11.23 Joel Benford                Show dropdowns for LPI official/postal in Scotland
+//    011   30.11.23 Sean Flook                  Changes required to handle Scottish authorities.
+//    012   05.12.23 Joel Benford                Add Scottish classification dialogue
+//    013   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    014   08.01.24 Joel Benford                Classification and sub locality
+//    015   10.01.24 Sean Flook                  Fix warnings.
+//    016   11.01.24 Sean Flook                  Fix warnings.
+//    017   16.01.23 Joel Benford                OS/GP level split
+//    018   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    019   30.01.24 Sean Flook                  Added ESU tolerance for GeoPlace.
+//    020   05.02.24 Sean Flook                  Further filter for maintaining organisation.
+//    021   01.03.24 Joel Benford      IMANN-330 Stop defaulting interested/maintaining auth on open.
+//    022   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    023   01.03.24 Joel Benford                Restrict Districts to suit organisation
+//    024   27.03.24 Sean Flook                  Further changes required to fix warnings and added ADSDialogTitle.
+//    025   09.04.24 Sean Flook        IMANN-376 Allow lookups to be added on the fly.
+//    026   09.04.24 Sean Flook        IMANN-376 Removed for administrative area.
+//    027   17.04.24 Joshua McCormick  IMANN-277 Added displayCharactersLeft to Scheme field.
+//    028   23.04.24 Joshua McCormick  IMANN-277 Added displayCharactersLeft to ADSTextControl fields
+//    029   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    030   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
+//    031   23.04.24 Joshua McCormick  IMANN-94  Edit Dialog title from Edit Title to Rename Template
+//    032   19.06.24 Joshua McCormick  IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    033   19.06.24 Joshua McCormick  IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
+//    034   19.06.24 Joshua McCormick  IMANN-503 BLPU Level removed type prop
+//    035   19.06.24 Joshua McCormick  IMANN-503 BLPU Level max set to 99.9
+//    036   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    037   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    038   08.08.24 Sean Flook        IMANN-911 Corrected typo.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    039   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
-//    040   31.10.24 Sean Flook      IMANN-1012 Changes required for the plot to postal wizard.
+//    039   01.10.24 Sean Flook        IMANN-665 Changed Designation to Type for HWW.
+//    040   31.10.24 Sean Flook       IMANN-1012 Changes required for the plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    041   25.11.24 Sean Flook      IMANN-1085 Added divider between Provenance and Notes for wizardOther.
+//    041   25.11.24 Sean Flook       IMANN-1085 Added divider between Provenance and Notes for wizardOther.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -73,7 +76,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   FormControlLabel,
   Checkbox,
   Divider,
@@ -2213,15 +2216,15 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleHighwayDedicationCodeChangeEvent}
               helperText="The type of Highway Dedication that applies to this section of the Street."
             />
-            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-              <Grid item xs={3}>
+            <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+              <Grid2 size={3}>
                 <Typography variant="body2" align="left" id="indicator-label" color="textPrimary">
                   Indicator
                 </Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
-                  <Grid item>
+              </Grid2>
+              <Grid2 size={9}>
+                <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2234,8 +2237,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handleProwMouseLeave}
                       sx={getIndicatorStyle(hdPRoW, prowHover)}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2248,8 +2251,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handleNcrMouseLeave}
                       sx={getIndicatorStyle(hdNCR, ncrHover)}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2265,8 +2268,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handleQuietRouteMouseLeave}
                       sx={getIndicatorStyle(hdQuietRoute, quietRouteHover)}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2282,8 +2285,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handleObstructionMouseLeave}
                       sx={getIndicatorStyle(hdObstruction, obstructionHover)}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2299,8 +2302,8 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handlePlanningOrderMouseLeave}
                       sx={getIndicatorStyle(hdPlanningOrder, planningOrderHover)}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <FormControlLabel
                       control={
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -2318,10 +2321,10 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
                       onMouseLeave={handleVehiclesProhibitedMouseLeave}
                       sx={getIndicatorStyle(hdVehiclesProhibited, vehiclesProhibitedHover)}
                     />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+            </Grid2>
           </Stack>
         );
 
@@ -2781,57 +2784,57 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
               onChange={handleProwStatusChangeEvent}
               helperText="The status of the PRoW."
             />
-            <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-              <Grid item xs={3}>
+            <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+              <Grid2 size={3}>
                 <Typography variant="body2" align="left" id="access-label" color="textPrimary">
                   Access
                 </Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
-                  <Grid item>
+              </Grid2>
+              <Grid2 size={9}>
+                <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                  <Grid2>
                     <ADSProwAccessControl
                       variant="Pedestrian"
                       value={prowPedestrianAccess}
                       isEditable
                       onChange={handlePedestrianAccessChangeEvent}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <ADSProwAccessControl
                       variant="Equestrian"
                       value={prowEquestrianAccess}
                       isEditable
                       onChange={handleEquestrianAccessChangeEvent}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <ADSProwAccessControl
                       variant="NonMotorised"
                       value={prowNonMotorisedVehicleAccess}
                       isEditable
                       onChange={handleNonMotorisedAccessChangeEvent}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <ADSProwAccessControl
                       variant="Bicycle"
                       value={prowBicycleAccess}
                       isEditable
                       onChange={handleCycleAccessChangeEvent}
                     />
-                  </Grid>
-                  <Grid item>
+                  </Grid2>
+                  <Grid2>
                     <ADSProwAccessControl
                       variant="Motorised"
                       value={prowMotorisedVehicleAccess}
                       isEditable
                       onChange={handleMotorisedAccessChangeEvent}
                     />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+            </Grid2>
             <ADSSwitchControl
               label="Promoted route"
               isEditable

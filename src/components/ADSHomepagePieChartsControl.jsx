@@ -3,24 +3,27 @@
 //
 //  Description: Doughnut Charts array for Homepage
 //
-//  Copyright:    © 2023 Idox Software Limited
+//  Copyright:    © 2023 - 2025 Idox Software Limited
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
 //    001   02.06.23 Joel Benford        WI40689 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box to @mui/system and sorted out a warning.
-//    004   22.03.24 Sean Flook           GLB12 Fix the height of the charts.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box to @mui/system and sorted out a warning.
+//    004   22.03.24 Sean Flook            GLB12 Fix the height of the charts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
-import { Grid, Card, CardContent } from "@mui/material";
+import { Grid2, Card, CardContent } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSDoughnutChart from "./ADSDoughnutChart";
 
@@ -30,9 +33,9 @@ import { doughnutHeight } from "../utils/ADSStyles";
 function ADSHomepagePieChartsControl({ data }) {
   return (
     <Box>
-      <Grid container direction="row" spacing={4} sx={{ pt: "8px" }}>
+      <Grid2 container direction="row" spacing={4} sx={{ pt: "8px" }}>
         {data.map((chart, index) => (
-          <Grid item align="center" id={`grid-doughnut-${index}`} key={`grid-doughnut-${index}`}>
+          <Grid2 align="center" id={`grid-doughnut-${index}`} key={`grid-doughnut-${index}`}>
             <Card
               id={`card-doughnut-${index}`}
               key={`card-doughnut-${index}`}
@@ -50,9 +53,9 @@ function ADSHomepagePieChartsControl({ data }) {
                 />
               </CardContent>
             </Card>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

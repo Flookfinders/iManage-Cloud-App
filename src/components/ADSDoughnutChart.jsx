@@ -3,27 +3,30 @@
 //
 //  Description: Doughnut Chart component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   05.05.21 Sean Flook         WI39345 Initial Revision.
-//    002   10.05.21 Sean Flook         WI39345 Corrected icons.
-//    003   14.05.21 Sean Flook         WI39345 Display the total count in the center of chart.
-//    004   16.05.21 Sean Flook         WI39345 Use the tooltip to display the legend.
-//    005   25.05.21 Sean Flook         WI39345 Changes required to center the chart title.
-//    006   02.07.21 Sean Flook         WI39345 Set font for center text.
-//    007   26.05.23 Joel Benford       WI40689 Changes XDM -> iManage Cloud
-//    008   24.11.23 Sean Flook                 Moved Stack to @mui/system.
-//    009   12.12.23 Sean Flook                 Changes required for React 18. Set the colours according to the street state colour and BLPU logical status colour.
-//    010   04.01.24 Sean Flook                 Fix colours for street type and correctly set the hover colour in the tooltip.
-//    011   10.01.24 Sean Flook                 Removed street state as no longer required.
-//    012   05.02.24 Sean Flook                 Ignore case when looking at labels when getting the required colours.
+//    001   05.05.21 Sean Flook          WI39345 Initial Revision.
+//    002   10.05.21 Sean Flook          WI39345 Corrected icons.
+//    003   14.05.21 Sean Flook          WI39345 Display the total count in the center of chart.
+//    004   16.05.21 Sean Flook          WI39345 Use the tooltip to display the legend.
+//    005   25.05.21 Sean Flook          WI39345 Changes required to center the chart title.
+//    006   02.07.21 Sean Flook          WI39345 Set font for center text.
+//    007   26.05.23 Joel Benford        WI40689 Changes XDM -> iManage Cloud
+//    008   24.11.23 Sean Flook                  Moved Stack to @mui/system.
+//    009   12.12.23 Sean Flook                  Changes required for React 18. Set the colours according to the street state colour and BLPU logical status colour.
+//    010   04.01.24 Sean Flook                  Fix colours for street type and correctly set the hover colour in the tooltip.
+//    011   10.01.24 Sean Flook                  Removed street state as no longer required.
+//    012   05.02.24 Sean Flook                  Ignore case when looking at labels when getting the required colours.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -32,7 +35,7 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { Stack, Box } from "@mui/system";
 import { Chart, ArcElement, DoughnutController, Legend, Tooltip } from "chart.js";
 import { toFont, getHoverColor } from "chart.js/helpers";
@@ -362,17 +365,17 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
   }, []);
 
   return (
-    <Grid item sx={{ width: "13.3vw" }}>
-      <Grid container direction="row" justifyContent="center" alignItems="center">
-        <Grid item>
+    <Grid2 sx={{ width: "13.3vw" }}>
+      <Grid2 container direction="row" justifyContent="center" alignItems="center">
+        <Grid2>
           <Stack direction="column" justifyContent="center" alignItems="center">
             {getTypeIcon()}
             <Typography align="center" variant="subtitle1" display="block">
               {title}
             </Typography>
           </Stack>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
       <div>
         <canvas id={`${title.toLowerCase().replaceAll(" ", "-")}-chart`} ref={chartRef.current} />
         <Box
@@ -382,7 +385,7 @@ function ADSDoughnutChart({ chartData, title, label, value }) {
           <table></table>
         </Box>
       </div>
-    </Grid>
+    </Grid2>
   );
 }
 

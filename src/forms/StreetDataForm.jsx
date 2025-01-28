@@ -9,140 +9,144 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   25.04.23 Sean Flook         WI40706 Use the correct value to open the related tab.
-//    003   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    004   20.07.23 Sean Flook                 Added code to handle when a user adds a new associated record and then clicks on the Cancel button.
-//    005   10.08.23 Sean Flook                 Various fixes and improvements.
-//    006   23.08.23 Sean Flook       IMANN-159 When creating new records use the defaults from the street template.
-//    007   07.09.23 Sean Flook                 Changes required to handle maintaining ESUs.
-//    008   20.09.23 Sean Flook                 Changes required to handle the OneScotland specific record types.
-//    009   22.09.23 Sean Flook                 Various small bug fixes.
-//    010   06.10.23 Sean Flook                 Various changes required to ensure this works for GeoPlace and OneScotland.
-//    010   10.10.23 Sean Flook       IMANN-163 Changes required for opening the related tab after the property wizard.
-//    011   11.10.23 Sean Flook       IMANN-163 Use the centralised doOpenRecord method.
-//    012   11.10.23 Sean Flook       IMANN-163 Correctly handle historic properties.
-//    013   13.09.23 Sean Flook                 Renamed EsuComparison to MergeEsuComparison and a small bug fix.
-//    014   16.10.23 Sean Flook                 Correctly set the required parent information when adding a property, if required.
-//    015   03.11.23 Sean Flook                 When creating a new ESU also create a new highway dedication record, also added hyphen to one-way.
-//    016   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    017   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    018   30.11.23 Sean Flook       IMANN-196 Corrected field name in updateDescriptorData.
-//    019   14.12.23 Sean Flook                 Corrected note record type.
-//    020   19.12.23 Sean Flook                 Various bug fixes.
-//    021   21.12.23 Sean Flook                 Ensure the sandbox is correctly updated.
-//    022   03.01.24 Sean Flook                 Fixed warning.
-//    023   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    024   09.01.24 Sean Flook       IMANN-197 Calculate the current length of the street when creating a new PRoW record.
-//    025   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
-//    026   12.01.24 Sean Flook       IMANN-163 If viewing property create results do not reset everything.
-//    027   12.01.24 Sean Flook       IMANN-233 Use the new getStartEndCoordinates method.
-//    028   23.01.24 Sean Flook       IMANN-249 Do not display the ASD tab if street type 4 or 9.
-//    029   25.01.24 Sean Flook                 Changes required after UX review.
-//    030   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    031   26.01.24 Sean Flook       IMANN-232 Do not remove record when creating a new street.
-//    032   26.01.24 Sean Flook       IMANN-257 Bug fix handleNoteSelected.
-//    033   02.02.24 Sean Flook       IMANN-271 Reset the errors when opening a new street.
-//    034   05.02.24 Sean Flook       IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
-//    035   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    036   13.02.24 Sean Flook                 Changes required to handle the PRoW geometries.
-//    037   13.02.24 Sean Flook                 Corrected the type 66 map data and pass the correct parameters to StreetDelete.
-//    038   14.02.24 Sean Flook        ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
-//    039   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
-//    040   14.02.24 Sean Flook        ESU14_GP Modify handleEsuDeleted to also update the map.
-//    041   16.02.24 Sean Flook         ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
-//    042   16.02.24 Sean Flook        ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
-//    043   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    044   16.02.24 Sean Flook        ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
-//    045   28.02.24 Joshua McCormick IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
-//    046   05.03.24 Sean Flook       IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
-//    047   05.03.24 Sean Flook       IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
-//    048   06.03.24 Sean Flook       IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
-//    049   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the Save button is correctly enabled.
-//    050   07.03.24 Sean Flook       IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
-//    051   07.03.24 Joshua McCormick IMANN-280 Added tabContainerStyle to tab container
-//    052   07.03.24 Joel Benford     IMANN-331 Don't default organisation if not set in template
-//    053   07.03.24 Sean Flook       IMANN-348 Further changes required for ESUs.
-//    054   08.03.24 Sean Flook       IMANN-348 Updated calls to ResetContexts.
-//    055   18.03.24 Sean Flook      STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
-//    056   22.03.24 Sean Flook           GLB12 Ensure the tab data forms are displayed correctly.
-//    057   26.03.24 Sean Flook        ASD10_GP Only display the ASD layers when on the ASD tab.
-//    058   27.03.24 Sean Flook                 Ensure currentPointCaptureMode is not cleared when still required.
-//    059   27.03.24 Sean Flook                 Undone a previous change as it was causing an issue.
-//    060   04.04.24 Sean Flook                 Fix bug.
-//    061   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
-//    062   05.04.24 Sean Flook       IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
-//    063   12.04.24 Sean Flook       IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
-//    064   19.04.24 Sean Flook       IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
-//    065   22.04.24 Sean Flook       IMANN-374 Only try and open the related tab if not already displayed.
-//    066   22.04.24 Sean Flook       IMANN-380 After discarding ASD changes return to the ASD list.
-//    067   22.04.24 Sean Flook       IMANN-382 Ensure the whole street is highlighted unless on ESU or ASD tabs.
-//    068   29.04.24 Sean Flook       IMANN-413 When creating a new descriptor create it with the correct language.
-//    069   29.04.24 Sean Flook       IMANN-371 When the current USRN changes ensure the first tab is displayed.
-//    070   29.04.24 Sean Flook                 Set the sandbox source street data when opening a new street.
-//    071   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
-//    072   02.05.24 Joel Benford     IMANN-275 Fix adding new descriptor
-//    073   03.05.24 Joel Benford               Fix index on new descriptors
-//    074   08.05.24 Sean Flook       IMANN-447 Added exclude from export from template.
-//    075   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    076   15.05.24 Sean Flook                 Do not clear the point capture if assigning ESUs.
-//    077   16.05.24 Sean Flook       IMANN-259 Use the template if present to set the tolerance for new ESUs.
-//    078   17.05.24 Sean Flook       IMANN-458 Pass isActive to the GetTabIconStyle method.
-//    079   17.05.24 Sean Flook       IMANN-374 Correctly open the related tab for Scottish authorities.
-//    080   20.05.24 Sean Flook       IMANN-467 Only set second language details if one exists for Scottish authorities.
-//    081   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    082   23.05.24 Sean Flook       IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
-//    083   04.06.24 Sean Flook       IMANN-507 Error trapping.
-//    084   04.06.24 Sean Flook       IMANN-281 Always validate the data before trying to save.
-//    085   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
-//    086   17.06.24 Joel Benford     IMANN-546 Hide street successor tab, re-index later tabs (2nd attempt)
-//    087   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    088   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    089   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
-//    090   21.06.24 Sean Flook       IMANN-561 Allow changing tabs if errors are not on current tab.
-//    091   26.06.24 Joel Benford     IMANN-680 Change tab index when opened from wizard now successor hidden 
-//    092   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
-//    093   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
-//    094   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
-//    095   05.07.24 Sean Flook       IMANN-275 Corrected street descriptor array name.
-//    096   08.07.24 Sean Flook       IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
-//    097   18.07.24 Sean Flook       IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
-//    098   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    099   19.07.24 Joel Benford     IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
-//    100   24.07.24 Sean Flook       IMANN-841 When closing a Scottish street set the ASD state and end date as well.
-//    101   07.08.24 Sean Flook       IMANN-876 Recalculate the length of the PRoW when drawing a new one.
-//    102   07.08.24 Sean Flook       IMANN-876 Only return to 4 decimal places.
-//    103   07.08.24 Sean Flook       IMANN-909 Removed handling of successor records in the handleTabChange event.
-//    104   16.08.24 Sean Flook       IMANN-935 Only return whole number when calculating the length of a PRoW.
-//    105   20.08.24 Sean Flook       IMANN-818 Corrected typo.
-//    106   27.08.24 Sean Flook       IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
-//    107   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   25.04.23 Sean Flook          WI40706 Use the correct value to open the related tab.
+//    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    004   20.07.23 Sean Flook                  Added code to handle when a user adds a new associated record and then clicks on the Cancel button.
+//    005   10.08.23 Sean Flook                  Various fixes and improvements.
+//    006   23.08.23 Sean Flook        IMANN-159 When creating new records use the defaults from the street template.
+//    007   07.09.23 Sean Flook                  Changes required to handle maintaining ESUs.
+//    008   20.09.23 Sean Flook                  Changes required to handle the OneScotland specific record types.
+//    009   22.09.23 Sean Flook                  Various small bug fixes.
+//    010   06.10.23 Sean Flook                  Various changes required to ensure this works for GeoPlace and OneScotland.
+//    010   10.10.23 Sean Flook        IMANN-163 Changes required for opening the related tab after the property wizard.
+//    011   11.10.23 Sean Flook        IMANN-163 Use the centralised doOpenRecord method.
+//    012   11.10.23 Sean Flook        IMANN-163 Correctly handle historic properties.
+//    013   13.09.23 Sean Flook                  Renamed EsuComparison to MergeEsuComparison and a small bug fix.
+//    014   16.10.23 Sean Flook                  Correctly set the required parent information when adding a property, if required.
+//    015   03.11.23 Sean Flook                  When creating a new ESU also create a new highway dedication record, also added hyphen to one-way.
+//    016   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    017   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    018   30.11.23 Sean Flook        IMANN-196 Corrected field name in updateDescriptorData.
+//    019   14.12.23 Sean Flook                  Corrected note record type.
+//    020   19.12.23 Sean Flook                  Various bug fixes.
+//    021   21.12.23 Sean Flook                  Ensure the sandbox is correctly updated.
+//    022   03.01.24 Sean Flook                  Fixed warning.
+//    023   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    024   09.01.24 Sean Flook        IMANN-197 Calculate the current length of the street when creating a new PRoW record.
+//    025   11.01.24 Sean Flook        IMANN-163 Close the add property wizard dialog when clicking on view properties.
+//    026   12.01.24 Sean Flook        IMANN-163 If viewing property create results do not reset everything.
+//    027   12.01.24 Sean Flook        IMANN-233 Use the new getStartEndCoordinates method.
+//    028   23.01.24 Sean Flook        IMANN-249 Do not display the ASD tab if street type 4 or 9.
+//    029   25.01.24 Sean Flook                  Changes required after UX review.
+//    030   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    031   26.01.24 Sean Flook        IMANN-232 Do not remove record when creating a new street.
+//    032   26.01.24 Sean Flook        IMANN-257 Bug fix handleNoteSelected.
+//    033   02.02.24 Sean Flook        IMANN-271 Reset the errors when opening a new street.
+//    034   05.02.24 Sean Flook        IMANN-276 Do not worry about ASD records when setting coordinates if the record type is 4 or 9.
+//    035   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    036   13.02.24 Sean Flook                  Changes required to handle the PRoW geometries.
+//    037   13.02.24 Sean Flook                  Corrected the type 66 map data and pass the correct parameters to StreetDelete.
+//    038   14.02.24 Sean Flook         ASD10_GP When opening a PRoW record if it is marked as Inexact set the map accordingly.
+//    039   14.02.24 Sean Flook         ASD10_GP Changes required to filter the ASD map layers when editing a record.
+//    040   14.02.24 Sean Flook         ESU14_GP Modify handleEsuDeleted to also update the map.
+//    041   16.02.24 Sean Flook          ESU9_GP When discarding an ESU do not remove from list if it has been merged or divided.
+//    042   16.02.24 Sean Flook         ESU12_GP When returning from a highway dedication or one way exemption record always show the parent ESU record.
+//    043   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    044   16.02.24 Sean Flook         ESU17_GP Hide ASD layers when viewing the ESU list and add the unassigned ESUs to the relevant map layer.
+//    045   28.02.24 Joshua McCormick  IMANN-280 Made tabStyle full-width when horizontal scrolling is not needed, so borders are full-width
+//    046   05.03.24 Sean Flook        IMANN-338 If navigating back to an existing record ensure the form is setup as it was left.
+//    047   05.03.24 Sean Flook        IMANN-338 Added code to ensure the tabs are not kept open when not required any more.
+//    048   06.03.24 Sean Flook        IMANN-344 Ensure the sandbox is cleared when cancelling a new ASD record.
+//    049   07.03.24 Sean Flook        IMANN-348 Changes required to ensure the Save button is correctly enabled.
+//    050   07.03.24 Sean Flook        IMANN-339 Hide the ASD tab if the street type is 3 or 4 for Scottish authorities.
+//    051   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to tab container
+//    052   07.03.24 Joel Benford      IMANN-331 Don't default organisation if not set in template
+//    053   07.03.24 Sean Flook        IMANN-348 Further changes required for ESUs.
+//    054   08.03.24 Sean Flook        IMANN-348 Updated calls to ResetContexts.
+//    055   18.03.24 Sean Flook       STRFRM5_OS Only discard changes if a new record which has not previously been accepted.
+//    056   22.03.24 Sean Flook            GLB12 Ensure the tab data forms are displayed correctly.
+//    057   26.03.24 Sean Flook         ASD10_GP Only display the ASD layers when on the ASD tab.
+//    058   27.03.24 Sean Flook                  Ensure currentPointCaptureMode is not cleared when still required.
+//    059   27.03.24 Sean Flook                  Undone a previous change as it was causing an issue.
+//    060   04.04.24 Sean Flook                  Fix bug.
+//    061   05.04.24 Sean Flook                  Further changes to ensure the application is correctly updated after a delete.
+//    062   05.04.24 Sean Flook        IMANN-326 Delete all type 63, 64 & 66 records if the street state is 4.
+//    063   12.04.24 Sean Flook        IMANN-385 When creating an ESU when selecting the start and end coordinates of the street, also try and create the highway dedication record if have template values.
+//    064   19.04.24 Sean Flook        IMANN-130 Prevent unnecessary reloading of form data when trying to close the form.
+//    065   22.04.24 Sean Flook        IMANN-374 Only try and open the related tab if not already displayed.
+//    066   22.04.24 Sean Flook        IMANN-380 After discarding ASD changes return to the ASD list.
+//    067   22.04.24 Sean Flook        IMANN-382 Ensure the whole street is highlighted unless on ESU or ASD tabs.
+//    068   29.04.24 Sean Flook        IMANN-413 When creating a new descriptor create it with the correct language.
+//    069   29.04.24 Sean Flook        IMANN-371 When the current USRN changes ensure the first tab is displayed.
+//    070   29.04.24 Sean Flook                  Set the sandbox source street data when opening a new street.
+//    071   30.04.24 Sean Flook        IMANN-371 Separate out streetTab and propertyTab.
+//    072   02.05.24 Joel Benford      IMANN-275 Fix adding new descriptor
+//    073   03.05.24 Joel Benford                Fix index on new descriptors
+//    074   08.05.24 Sean Flook        IMANN-447 Added exclude from export from template.
+//    075   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    076   15.05.24 Sean Flook                  Do not clear the point capture if assigning ESUs.
+//    077   16.05.24 Sean Flook        IMANN-259 Use the template if present to set the tolerance for new ESUs.
+//    078   17.05.24 Sean Flook        IMANN-458 Pass isActive to the GetTabIconStyle method.
+//    079   17.05.24 Sean Flook        IMANN-374 Correctly open the related tab for Scottish authorities.
+//    080   20.05.24 Sean Flook        IMANN-467 Only set second language details if one exists for Scottish authorities.
+//    081   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    082   23.05.24 Sean Flook        IMANN-484 When adding a new ESU to a street call GetNewEsuStreetData to ensure the geometry on any ASD records are updated as well.
+//    083   04.06.24 Sean Flook        IMANN-507 Error trapping.
+//    084   04.06.24 Sean Flook        IMANN-281 Always validate the data before trying to save.
+//    085   11.06.24 Sean Flook        IMANN-490 Added code to update the USRN.
+//    086   17.06.24 Joel Benford      IMANN-546 Hide street successor tab, re-index later tabs (2nd attempt)
+//    087   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    088   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    089   21.06.24 Sean Flook        IMANN-636 Fixed warnings.
+//    090   21.06.24 Sean Flook        IMANN-561 Allow changing tabs if errors are not on current tab.
+//    091   26.06.24 Joel Benford      IMANN-680 Change tab index when opened from wizard now successor hidden 
+//    092   27.06.24 Joel Benford      IMANN-685 OWE sequence numbers -> seqNum
+//    093   04.07.24 Sean Flook        IMANN-705 Use displayName rather than auditName.
+//    094   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
+//    095   05.07.24 Sean Flook        IMANN-275 Corrected street descriptor array name.
+//    096   08.07.24 Sean Flook        IMANN-596 When selecting HD and OWE records ensure we have the current ESU data saved.
+//    097   18.07.24 Sean Flook        IMANN-449 Do not set the oneWayExemptionEndDate when merging or dividing ESUs.
+//    098   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    099   19.07.24 Joel Benford      IMANN-760 Stop trying to copy ENG/GAE lookups after editing a descriptor.
+//    100   24.07.24 Sean Flook        IMANN-841 When closing a Scottish street set the ASD state and end date as well.
+//    101   07.08.24 Sean Flook        IMANN-876 Recalculate the length of the PRoW when drawing a new one.
+//    102   07.08.24 Sean Flook        IMANN-876 Only return to 4 decimal places.
+//    103   07.08.24 Sean Flook        IMANN-909 Removed handling of successor records in the handleTabChange event.
+//    104   16.08.24 Sean Flook        IMANN-935 Only return whole number when calculating the length of a PRoW.
+//    105   20.08.24 Sean Flook        IMANN-818 Corrected typo.
+//    106   27.08.24 Sean Flook        IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
+//    107   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    108   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    109   03.10.24 Sean Flook      IMANN-1004 Ensure the descriptorFormData is null when changing street.
-//    110   10.10.24 Sean Flook      IMANN-1018 Do not display the ESU tab if only LLPG.
-//    111   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    112   22.10.24 Sean Flook      IMANN-1018 Changes required to handle creating LLPG Streets.
-//    113   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
-//    114   06.11.24 Sean Flook      IMANN-1047 When discarding changes where there could be geometry ensure the map search data is updated as well.
+//    108   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    109   03.10.24 Sean Flook       IMANN-1004 Ensure the descriptorFormData is null when changing street.
+//    110   10.10.24 Sean Flook       IMANN-1018 Do not display the ESU tab if only LLPG.
+//    111   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    112   22.10.24 Sean Flook       IMANN-1018 Changes required to handle creating LLPG Streets.
+//    113   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
+//    114   06.11.24 Sean Flook       IMANN-1047 When discarding changes where there could be geometry ensure the map search data is updated as well.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    115   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//    115   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //    116   15.01.25 Joshua McCormick IMANN-1128 streetDescriptors town/ref use adminAreaRef when null
 //    117   15.01.25 Joshua McCormick IMANN-1128 newSecondDescriptor uses firstLocality instead of null
-//    118   15.01.25 Joshua McCormick IMANN-1128 Ensure newSecondDescriptor doesnt return null for town/ref
+//    118   15.01.25 Joshua McCormick IMANN-1128 Ensure newSecondDescriptor does not return null for town/ref
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
-//    116   16.01.25 Sean Flook      IMANN-1136 Clear the createToolActivated flag if required.
+//    116   16.01.25 Sean Flook       IMANN-1136 Clear the createToolActivated flag if required.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    117   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
+// import { useNavigate } from "react-router";
 import { useHistory } from "react-router";
 import PropTypes from "prop-types";
 
@@ -291,6 +295,7 @@ function StreetDataForm({ data, loading }) {
   const settingsContext = useContext(SettingsContext);
   const informationContext = useContext(InformationContext);
 
+  // const navigate = useNavigate();
   const history = useHistory();
 
   const [displayEsuTab, setDisplayEsuTab] = useState(false);
@@ -3570,6 +3575,7 @@ function StreetDataForm({ data, loading }) {
 
         mapContext.onEditMapObject(null, null);
 
+        // navigate(GazetteerRoute);
         history.push(GazetteerRoute);
       }
     }
@@ -4628,6 +4634,7 @@ function StreetDataForm({ data, loading }) {
               mapContext.onSearchDataChange([], [], [], null, null);
               mapContext.onEditMapObject(null, null);
 
+              // navigate(GazetteerRoute);
               history.push(GazetteerRoute);
             } else {
               updateMapStreetData(
@@ -6815,7 +6822,8 @@ function StreetDataForm({ data, loading }) {
         );
       }
 
-      if (!isRange) history.goBack();
+      // if (!isRange) navigate.goBack();
+      if (!isRange) history.push.goBack();
 
       const parentData =
         isRange && wizardData.savedProperty

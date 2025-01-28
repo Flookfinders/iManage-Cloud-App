@@ -3,7 +3,7 @@
 //
 //  Description: Wizard Address Details 2 (Range create)
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //  Character Sets used */
 //  -------------------------------------------------------------------------------------------------
@@ -31,27 +31,30 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   25.04.23 Sean Flook         WI40703 Do not allow text with invalid characters to be pasted in and displayed.
-//    003   30.06.23 Sean Flook         WI40770 Ensure the end suffix is uppercase.
-//    004   06.10.23 Sean Flook                 Use colour variables.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    006   05.12.23 Sean Flook       IMANN-198 Only allow characters A-Z for suffixes.
-//    007   10.01.24 Sean Flook                 Fix warnings.
-//    008   16.04.24 Joshua McCormick IMAN-277  Changed TextField out for ADSTextControl
-//    009   16.04.24 Joshua McCormick IMAN-277  Revert 008 &   added props for setting displayCharactersLeft and maxLength
-//    010   17.04.24 Joshua McCormick IMAN-277  Removed maxLength and set to hardcoded 90
-//    011   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
-//    012   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
-//    013   10.07.24 Sean Flook       IMANN-649 Prevent carat from jumping to end of text.
-//    014   11.07.24 Sean Flook       IMANN-759 Set the display variable if we do not have the input reference.
-//    015   15.07.24 Sean Flook       IMANN-759 Always set the display variable.
+//    001            Sean Flook                  Initial Revision.
+//    002   25.04.23 Sean Flook          WI40703 Do not allow text with invalid characters to be pasted in and displayed.
+//    003   30.06.23 Sean Flook          WI40770 Ensure the end suffix is uppercase.
+//    004   06.10.23 Sean Flook                  Use colour variables.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    006   05.12.23 Sean Flook        IMANN-198 Only allow characters A-Z for suffixes.
+//    007   10.01.24 Sean Flook                  Fix warnings.
+//    008   16.04.24 Joshua McCormick   IMAN-277 Changed TextField out for ADSTextControl
+//    009   16.04.24 Joshua McCormick   IMAN-277 Revert 008 &   added props for setting displayCharactersLeft and maxLength
+//    010   17.04.24 Joshua McCormick   IMAN-277 Removed maxLength and set to hardcoded 90
+//    011   18.06.24 Sean Flook        IMANN-577 Use characterSetValidator.
+//    012   20.06.24 Sean Flook        IMANN-633 Enforce the maximum for the numbers.
+//    013   10.07.24 Sean Flook        IMANN-649 Prevent carat from jumping to end of text.
+//    014   11.07.24 Sean Flook        IMANN-759 Set the display variable if we do not have the input reference.
+//    015   15.07.24 Sean Flook        IMANN-759 Always set the display variable.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    016   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    016   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -59,7 +62,7 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
-import { Typography, Grid, Tooltip, TextField, Skeleton } from "@mui/material";
+import { Typography, Grid2, Tooltip, TextField, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { adsMidGreyA } from "../utils/ADSColours";
@@ -269,8 +272,8 @@ function ADSAddressableObjectControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Typography
             id={`${variant === "PAO" ? "pao" : "sao"}-num-suffix-label`}
             variant="body2"
@@ -279,19 +282,19 @@ function ADSAddressableObjectControl({
           >
             {`${variant === "PAO" ? "PAO" : "SAO"} no. / suffix${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
-          <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
-            <Grid item xs={6}>
+        </Grid2>
+        <Grid2 size={9}>
+          <Grid2 container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
+            <Grid2 size={6}>
               <Typography variant="body2">Start no./suffix</Typography>
-            </Grid>
-            <Grid item xs={1}>
+            </Grid2>
+            <Grid2 size={1}>
               <Typography variant="body2"> </Typography>
-            </Grid>
-            <Grid item xs={6}>
+            </Grid2>
+            <Grid2 size={6}>
               <Typography variant="body2">End no./suffix</Typography>
-            </Grid>
-            <Grid item xs={3}>
+            </Grid2>
+            <Grid2 size={3}>
               {loading ? (
                 <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
@@ -314,11 +317,13 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ min: 1, max: 9999 }}
                     placeholder="e.g. 1"
                     value={startNumberValue}
                     onChange={handleStartNumberChangeEvent}
                     aria-labelledby={`${variant === "PAO" ? "pao" : "sao"}-num-suffix-label`}
+                    slotProps={{
+                      htmlInput: { min: 1, max: 9999 },
+                    }}
                   />
                 </Tooltip>
               ) : (
@@ -333,15 +338,17 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ min: 1, max: 9999 }}
                   placeholder="e.g. 1"
                   value={startNumberValue}
                   onChange={handleStartNumberChangeEvent}
                   aria-labelledby={`${variant === "PAO" ? "pao" : "sao"}-num-suffix-label`}
+                  slotProps={{
+                    htmlInput: { min: 1, max: 9999 },
+                  }}
                 />
               )}
-            </Grid>
-            <Grid item xs={3}>
+            </Grid2>
+            <Grid2 size={3}>
               {loading ? (
                 <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
@@ -363,10 +370,12 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                     placeholder="e.g. A"
                     value={startSuffixValue}
                     onChange={handleStartSuffixChangeEvent}
+                    slotProps={{
+                      htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                    }}
                   />
                 </Tooltip>
               ) : (
@@ -380,19 +389,21 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                   placeholder="e.g. A"
                   value={startSuffixValue}
                   onChange={handleStartSuffixChangeEvent}
+                  slotProps={{
+                    htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                  }}
                 />
               )}
-            </Grid>
-            <Grid item xs={1}>
+            </Grid2>
+            <Grid2 size={1}>
               <Typography variant="body2" align="center">
                 -
               </Typography>
-            </Grid>
-            <Grid item xs={3}>
+            </Grid2>
+            <Grid2 size={3}>
               {loading ? (
                 <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
@@ -415,10 +426,12 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ min: 1, max: 9999 }}
                     placeholder="e.g. 1"
                     value={endNumberValue}
                     onChange={handleEndNumberChangeEvent}
+                    slotProps={{
+                      htmlInput: { min: 1, max: 9999 },
+                    }}
                   />
                 </Tooltip>
               ) : (
@@ -433,14 +446,16 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ min: 1, max: 9999 }}
                   placeholder="e.g. 1"
                   value={endNumberValue}
                   onChange={handleEndNumberChangeEvent}
+                  slotProps={{
+                    htmlInput: { min: 1, max: 9999 },
+                  }}
                 />
               )}
-            </Grid>
-            <Grid item xs={3}>
+            </Grid2>
+            <Grid2 size={3}>
               {loading ? (
                 <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
               ) : helperText && helperText.length > 0 ? (
@@ -462,10 +477,12 @@ function ADSAddressableObjectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                     placeholder="e.g. A"
                     value={endSuffixValue}
                     onChange={handleEndSuffixChangeEvent}
+                    slotProps={{
+                      htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                    }}
                   />
                 </Tooltip>
               ) : (
@@ -479,16 +496,18 @@ function ADSAddressableObjectControl({
                   variant="outlined"
                   margin="dense"
                   size="small"
-                  inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                   placeholder="e.g. A"
                   value={endSuffixValue}
                   onChange={handleEndSuffixChangeEvent}
+                  slotProps={{
+                    htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                  }}
                 />
               )}
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={3}>
+            </Grid2>
+          </Grid2>
+        </Grid2>
+        <Grid2 size={3}>
           <Typography
             id={`${variant === "PAO" ? "pao" : "sao"}-description-label`}
             variant="body2"
@@ -497,8 +516,8 @@ function ADSAddressableObjectControl({
           >
             {`${variant === "PAO" ? "PAO" : "SAO"} description${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
@@ -518,11 +537,13 @@ function ADSAddressableObjectControl({
                 variant="outlined"
                 margin="dense"
                 size="small"
-                inputProps={{ maxLength: 90, ref: textRef }}
                 placeholder="e.g. Unit 12"
                 value={displayText}
                 onChange={handleTextChangeEvent}
                 aria-labelledby={`${variant === "PAO" ? "pao" : "sao"}-description-label`}
+                slotProps={{
+                  htmlInput: { maxLength: 90, ref: textRef },
+                }}
               />
             </Tooltip>
           ) : (
@@ -536,16 +557,18 @@ function ADSAddressableObjectControl({
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ maxLength: 90, ref: textRef }}
               placeholder="e.g. Unit 12"
               value={displayText}
               onChange={handleTextChangeEvent}
               aria-labelledby={`${variant === "PAO" ? "pao" : "sao"}-description-label`}
+              slotProps={{
+                htmlInput: { maxLength: 90, ref: textRef },
+              }}
             />
           )}
-        </Grid>
+        </Grid2>
         {displayCharactersLeft && displayText && displayText.length > 0 ? (
-          <Grid item xs={12}>
+          <Grid2 size={12}>
             <Typography
               id={`${variant === "PAO" ? "pao" : "sao"}-characters-left`}
               variant="body2"
@@ -554,12 +577,12 @@ function ADSAddressableObjectControl({
             >
               {90 - displayText.length} characters left
             </Typography>
-          </Grid>
+          </Grid2>
         ) : (
           ""
         )}
         <ADSErrorDisplay errorText={displayError} id={`${variant === "PAO" ? "pao" : "sao"}-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

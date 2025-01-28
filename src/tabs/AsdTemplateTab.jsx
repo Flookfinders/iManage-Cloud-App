@@ -3,38 +3,41 @@
 //
 //  Description: ASD template tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   10.08.23 Sean Flook                 Modified to call the API to update the values.
-//    003   23.08.23 Sean Flook       IMANN-159 Use the new street template structure.
-//    004   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    005   06.10.23 Sean Flook                 Use colour variables.
-//    006   03.11.23 Sean Flook                 Make labels the same within application.
-//    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    008   05.12.23 Joel Benford               Various fixes to display and save
-//    009   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    010   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    011   10.01.24 Sean Flook                 Fix warnings.
-//    012   25.01.24 Sean Flook                 Changes required after UX review.
-//    013   13.02.24 Sean Flook                 Only set the data if it exists.
-//    014   01.03.24 Joel Benford               Restrict Districts to suit organisation
-//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   10.08.23 Sean Flook                  Modified to call the API to update the values.
+//    003   23.08.23 Sean Flook        IMANN-159 Use the new street template structure.
+//    004   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    005   06.10.23 Sean Flook                  Use colour variables.
+//    006   03.11.23 Sean Flook                  Make labels the same within application.
+//    007   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    008   05.12.23 Joel Benford                Various fixes to display and save
+//    009   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    010   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    011   10.01.24 Sean Flook                  Fix warnings.
+//    012   25.01.24 Sean Flook                  Changes required after UX review.
+//    013   13.02.24 Sean Flook                  Only set the data if it exists.
+//    014   01.03.24 Joel Benford                Restrict Districts to suit organisation
+//    015   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    017   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    018   01.10.24 Sean Flook       IMANN-665 Changed Designation to Type for HWW.
+//    018   01.10.24 Sean Flook        IMANN-665 Changed Designation to Type for HWW.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    019   14.11.24 Sean Flook      IMANN-1012 Use new getCheckIcon method.
+//    019   14.11.24 Sean Flook       IMANN-1012 Use new getCheckIcon method.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -44,7 +47,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { Typography, Tooltip, Grid, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid2, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -890,9 +893,9 @@ function AsdTemplateTab() {
         <Typography variant="body2" sx={{ pl: theme.spacing(3) }}>
           Set default lookup values for ASD records
         </Typography>
-        <Grid container sx={dataFormStyle("AsdTemplateTabGrid")} spacing={3}>
+        <Grid2 container sx={dataFormStyle("AsdTemplateTabGrid")} spacing={3}>
           {settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -911,44 +914,46 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Maintenance responsibility defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editMaintenanceResponsibility) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editMaintenanceResponsibility) },
+                  }}
                 />
                 <CardActionArea onClick={doEditMaintenanceResponsibility}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Street status</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getStreetStatus(maintenanceResponsibilityStreetStatus)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Custodian</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(maintenanceResponsibilityCustodian)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Authority</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(maintenanceResponsibilityAuthority)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -967,44 +972,46 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Reinstatement category defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editReinstatementCategory) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editReinstatementCategory) },
+                  }}
                 />
                 <CardActionArea onClick={doEditReinstatementCategory}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Category</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getReinstatementType(reinstatementCategoryReinstatementCategory)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Custodian</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(reinstatementCategoryCustodian)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Authority</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(reinstatementCategoryAuthority)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1023,44 +1030,46 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Special designation defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editOsSpecialDesignation) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editOsSpecialDesignation) },
+                  }}
                 />
                 <CardActionArea onClick={doEditOsSpecialDesignation}>
                   <CardContent sx={settingsCardContentStyle("os-asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Special designation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getSpecialDesignationType(osSpecialDesignationSpecialDesignation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Custodian</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(osSpecialDesignationCustodian)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Authority</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(osSpecialDesignationAuthority)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1079,60 +1088,62 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Interested organisation defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editInterest) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editInterest) },
+                  }}
                 />
                 <CardActionArea onClick={doEditInterest}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Street status</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getStreetStatus(interestStreetStatus)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Interested organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(interestOrganisation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Interest type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getInterestType(interestType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">District</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDistrict(interestOrganisation, interestDistrict)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Maintaining organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(interestMaintainingOrganisation)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1151,68 +1162,70 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Construction defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editConstruction) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editConstruction) },
+                  }}
                 />
                 <CardActionArea onClick={doEditConstruction}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Construction type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getConstructionType(constructionType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Reinstatement type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getReinstatementType(constructionReinstatementType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Aggregate abrasion value</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getAggregateAbrasionValue(constructionAggregateAbrasionValue, constructionReinstatementType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Polished stone value</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getPolishedStoneValue(constructionPolishedStoneValue, constructionReinstatementType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(constructionOrganisation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">District</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDistrict(constructionOrganisation, constructionDistrict)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1231,52 +1244,54 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Special designation defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editSpecialDesignation) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editSpecialDesignation) },
+                  }}
                 />
                 <CardActionArea onClick={doEditSpecialDesignation}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getSpecialDesignationType(specialDesigType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(specialDesigOrganisation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">District</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDistrict(specialDesigOrganisation, specialDesigDistrict)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Periodicity</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getSpecialDesignationPeriodicity(specialDesigPeriodicity)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1299,44 +1314,46 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Height, width & weight restriction defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editHww) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editHww) },
+                  }}
                 />
                 <CardActionArea onClick={doEditHww}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getHwwDesignation(hwwDesignation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(hwwOrganisation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">District</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDistrict(hwwOrganisation, hwwDistrict)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1355,32 +1372,34 @@ function AsdTemplateTab() {
                     )
                   }
                   title="Public right of way defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editPRoW) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editPRoW) },
+                  }}
                 />
                 <CardActionArea onClick={doEditPRoW}>
                   <CardContent sx={settingsCardContentStyle("asd")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Dedication</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getProwDedication(prowDedication)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Status</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getProwStatus(prowStatus)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Access</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Stack direction="row" spacing={1}>
                           <DirectionsWalkIcon fontSize="small" sx={getTemplateIconStyle(prowPedestrianAccess)} />
                           <EquestrianIcon fontSize="small" sx={getTemplateIconStyle(prowEquestrianAccess)} />
@@ -1391,42 +1410,38 @@ function AsdTemplateTab() {
                           <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(prowBicycleAccess)} />
                           <DirectionsCarIcon fontSize="small" sx={getTemplateIconStyle(prowMotorisedVehicleAccess)} />
                         </Stack>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Promoted route</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {getCheckIcon(prowPromotedRoute)}
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={9}>{getCheckIcon(prowPromotedRoute)}</Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Accessible route</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
-                        {getCheckIcon(prowAccessibleRoute)}
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={9}>{getCheckIcon(prowAccessibleRoute)}</Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Organisation</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOrganisation(prowOrganisation)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">District</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getDistrict(prowOrganisation, prowDistrict)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
       </Stack>
       <EditTemplateDialog
         isOpen={showEditDialog}

@@ -3,57 +3,60 @@
 //
 //  Description: Related street tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   17.03.23 Sean Flook         WI40585 Hide Add property and range menu items.
-//    003   18.04.23 Sean Flook         WI40685 Modified call to ADSSelectionControl.
-//    004   30.06.23 Sean Flook                 Ensure the current street is initially in view.
-//    005   24.07.23 Sean Flook                 Removed Edit street menu item.
-//    006   20.07.23 Sean Flook                 Added ability to display the street in Google street view.
-//    007   06.10.23 Sean Flook                 Use colour variables.
-//    008   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
-//    010   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
-//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    012   10.01.24 Sean Flook                 Fix warnings.
-//    013   25.01.24 Sean Flook                 Changes required after UX review.
-//    014   07.02.24 Joel Benford               Spacing and colours
-//    015   12.02.24 Joel Benford               Tooltip on classification icon
-//    016   12.02.24 Joel Benford       RTAB4   Removed left border on hover, interest avatar -> rounded
-//    017   14.02.24 Joel Benford       RTAB2   Styling for additional languages and records
-//    018   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    019   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
-//    020   22.02.24 Joel Benford     IMANN-287 Checked items blue
-//    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    022   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
-//    023   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    024   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    025   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
-//    026   25.04.24 Sean Flook       IMANN-166 After putting the current street in focus do not keep doing it.
-//    027   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
-//    028   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display th data as well as other display improvements.
-//    029   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
-//    030   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    031   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    032   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getStreetFromId.
-//    033   26.06.24 Joshua McCormick IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
-//    034   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
-//    035   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
-//    036   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
+//    001   30.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
+//    003   18.04.23 Sean Flook          WI40685 Modified call to ADSSelectionControl.
+//    004   30.06.23 Sean Flook                  Ensure the current street is initially in view.
+//    005   24.07.23 Sean Flook                  Removed Edit street menu item.
+//    006   20.07.23 Sean Flook                  Added ability to display the street in Google street view.
+//    007   06.10.23 Sean Flook                  Use colour variables.
+//    008   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    009   03.11.23 Sean Flook                  Updated TreeView and TreeItem.
+//    010   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed a warning.
+//    011   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    012   10.01.24 Sean Flook                  Fix warnings.
+//    013   25.01.24 Sean Flook                  Changes required after UX review.
+//    014   07.02.24 Joel Benford                Spacing and colours
+//    015   12.02.24 Joel Benford                Tooltip on classification icon
+//    016   12.02.24 Joel Benford          RTAB4 Removed left border on hover, interest avatar -> rounded
+//    017   14.02.24 Joel Benford          RTAB2 Styling for additional languages and records
+//    018   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    019   20.02.24 Sean Flook         ESU16_GP Undone above change as not required.
+//    020   22.02.24 Joel Benford      IMANN-287 Checked items blue
+//    021   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    022   13.03.24 Sean Flook             MUL9 Added new parameters to handle the checking of records.
+//    023   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    024   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    025   22.04.24 Sean Flook        IMANN-374 Correctly call DataFormStyle.
+//    026   25.04.24 Sean Flook        IMANN-166 After putting the current street in focus do not keep doing it.
+//    027   26.04.24 Sean Flook        IMANN-166 Reset flag if the data changes.
+//    028   13.05.24 Sean Flook        IMANN-439 Changed to use grids to display th data as well as other display improvements.
+//    029   17.05.24 Sean Flook        IMANN-458 Correctly highlight the avatar when items are hovered.
+//    030   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    031   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    032   26.06.24 Sean Flook        IMANN-488 Correctly filter the data in getStreetFromId.
+//    033   26.06.24 Joshua McCormick  IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
+//    034   03.07.24 Joshua McCormick  IMANN-699 Renamed Add Property on Street to Add property
+//    035   17.07.24 Joshua McCormick  IMANN-548 zoomToStreet fix
+//    036   17.07.24 Joshua McCormick  IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    037   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    038   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
-//    039   10.10.24 Sean Flook      IMANN-1018 Corrected setting of userCanEdit.
-//    040   01.11.24 Sean Flook      IMANN-1010 Do not need to add 10 to the street record type value.
+//    037   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    038   02.10.24 Sean Flook        IMANN-550 Changed menu item order.
+//    039   10.10.24 Sean Flook       IMANN-1018 Corrected setting of userCanEdit.
+//    040   01.11.24 Sean Flook       IMANN-1010 Do not need to add 10 to the street record type value.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    041   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -89,7 +92,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import {
   ExpandMore,
@@ -751,15 +754,16 @@ function RelatedStreetTab({
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (
-          <TreeView
+          <SimpleTreeView
             aria-label="street related tree"
             id="street-related-tree"
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
             sx={{ flexGrow: 1, overflowY: "auto" }}
-            expanded={expanded}
-            onNodeSelect={handleNodeSelected}
-            onNodeToggle={handleNodeToggle}
+            expandedItems={expanded}
+            slots={{ expandIcon: ChevronRight, collapseIcon: ExpandMore }}
+            onSelectedItemsChange={handleNodeSelected}
+            onExpandedItemsChange={handleNodeToggle}
           >
             {data &&
               data.street &&
@@ -776,7 +780,7 @@ function RelatedStreetTab({
                   return (
                     <TreeItem
                       key={`street-${rec.usrn}-${index}`}
-                      nodeId={rec.usrn.toString()}
+                      itemId={rec.usrn.toString()}
                       sx={treeItemStyle(rec.usrn)}
                       label={
                         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
@@ -942,7 +946,7 @@ function RelatedStreetTab({
                     >
                       <TreeItem
                         key={"esu-root"}
-                        nodeId={`esu-root-${rec.usrn}`}
+                        itemId={`esu-root-${rec.usrn}`}
                         sx={treeItemStyle(rec.usrn)}
                         label={
                           <Typography
@@ -970,7 +974,7 @@ function RelatedStreetTab({
                           return (
                             <TreeItem
                               key={`esu-${recEsu.esuId}-${index}`}
-                              nodeId={recEsu.esuId.toString()}
+                              itemId={recEsu.esuId.toString()}
                               sx={treeItemStyle(rec.usrn)}
                               label={
                                 <Stack direction="row" spacing={1} justifyContent="flex-start" alignItems="flex-start">
@@ -985,7 +989,7 @@ function RelatedStreetTab({
                       {hasASD && (
                         <TreeItem
                           key={"asd-root"}
-                          nodeId={`asd-root-${rec.usrn}`}
+                          itemId={`asd-root-${rec.usrn}`}
                           sx={treeItemStyle(rec.usrn)}
                           label={
                             <Typography variant="subtitle2" sx={{ display: "inline-flex" }}>
@@ -1010,7 +1014,7 @@ function RelatedStreetTab({
                               return (
                                 <TreeItem
                                   key={`asd-${recAsd61.asdType}-${recAsd61.pkId}-${index}`}
-                                  nodeId={`asd${recAsd61.asdType}|${rec.usrn}|${recAsd61.pkId}`}
+                                  itemId={`asd${recAsd61.asdType}|${rec.usrn}|${recAsd61.pkId}`}
                                   sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
@@ -1048,7 +1052,7 @@ function RelatedStreetTab({
                               return (
                                 <TreeItem
                                   key={`asd-${recAsd62.asdType}-${recAsd62.pkId}-${index}`}
-                                  nodeId={`asd${recAsd62.asdType}|${rec.usrn}|${recAsd62.pkId}`}
+                                  itemId={`asd${recAsd62.asdType}|${rec.usrn}|${recAsd62.pkId}`}
                                   sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
@@ -1093,7 +1097,7 @@ function RelatedStreetTab({
                               return (
                                 <TreeItem
                                   key={`asd-${recAsd63.asdType}-${recAsd63.pkId}-${index}`}
-                                  nodeId={`asd${recAsd63.asdType}|${rec.usrn}|${recAsd63.pkId}`}
+                                  itemId={`asd${recAsd63.asdType}|${rec.usrn}|${recAsd63.pkId}`}
                                   sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
@@ -1173,7 +1177,7 @@ function RelatedStreetTab({
                               return (
                                 <TreeItem
                                   key={`asd-${recAsd64.asdType}-${recAsd64.pkId}-${index}`}
-                                  nodeId={`asd${recAsd64.asdType}|${rec.usrn}|${recAsd64.pkId}`}
+                                  itemId={`asd${recAsd64.asdType}|${rec.usrn}|${recAsd64.pkId}`}
                                   sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
@@ -1218,7 +1222,7 @@ function RelatedStreetTab({
                               return (
                                 <TreeItem
                                   key={`asd-${recAsd66.asdType}-${recAsd66.pkId}-${index}`}
-                                  nodeId={`asd${recAsd66.asdType}|${rec.usrn}|${recAsd66.pkId}`}
+                                  itemId={`asd${recAsd66.asdType}|${rec.usrn}|${recAsd66.pkId}`}
                                   sx={treeItemStyle(rec.usrn)}
                                   label={
                                     <Stack
@@ -1260,7 +1264,7 @@ function RelatedStreetTab({
                     </TreeItem>
                   );
                 })}
-          </TreeView>
+          </SimpleTreeView>
         )}
         <Box sx={{ height: "24px" }} />
       </Box>

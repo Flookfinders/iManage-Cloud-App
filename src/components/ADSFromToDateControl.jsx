@@ -3,27 +3,30 @@
 //
 //  Description: From To date Control component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   07.07.21 Sean Flook                 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
-//    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
-//    005   03.01.24 Sean Flook                 Fixed warning.
-//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    007   16.01.24 Sean Flook       IMANN-237 Added a clear button.
-//    008   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
+//    001   07.07.21 Sean Flook                  Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    003   08.12.23 Sean Flook                  Migrated DatePicker to v6.
+//    004   18.12.23 Sean Flook                  Ensure tooltip is displayed
+//    005   03.01.24 Sean Flook                  Fixed warning.
+//    006   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    007   16.01.24 Sean Flook        IMANN-237 Added a clear button.
+//    008   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    009   10.10.24 Sean Flook      IMANN-1011 Changed display format to only show 3 characters for month.
-//    010   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    009   10.10.24 Sean Flook       IMANN-1011 Changed display format to only show 3 characters for month.
+//    010   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -32,7 +35,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
+import { Grid2, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dateFormat from "dateformat";
@@ -164,13 +167,13 @@ function ADSFromToDateControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasFromError.current || hasToError.current)}>
-      <Grid
+      <Grid2
         container
         justifyContent="flex-start"
         alignItems="center"
         sx={FormRowStyle(hasFromError.current || hasToError.current)}
       >
-        <Grid item xs={3}>
+        <Grid2 size={3}>
           <Typography
             variant="body2"
             align="left"
@@ -179,17 +182,17 @@ function ADSFromToDateControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
-            <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+            <Grid2 container justifyContent="flex-start" alignItems="center" spacing={1}>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{fromLabel}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {fromHelperText && fromHelperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? fromHelperText + " This is a required field." : fromHelperText}
@@ -256,13 +259,13 @@ function ADSFromToDateControl({
                       aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-date-error`}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+                </Grid2>
+              </Grid2>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{toLabel}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {toHelperText && toHelperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? toHelperText + " This is a required field." : toHelperText}
@@ -329,16 +332,16 @@ function ADSFromToDateControl({
                       aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-date-error`}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
+                </Grid2>
+              </Grid2>
+            </Grid2>
           ) : (
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+            <Grid2 container justifyContent="flex-start" alignItems="center">
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{fromLabel}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {selectedFromDate && selectedFromDate.toString() !== "0001-01-01T00:00:00" ? (
                     <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-from-date`}
@@ -368,13 +371,13 @@ function ADSFromToDateControl({
                       value={""}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+                </Grid2>
+              </Grid2>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{toLabel}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {selectedToDate && selectedToDate.toString() !== "0001-01-01T00:00:00" ? (
                     <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-to-date`}
@@ -404,16 +407,16 @@ function ADSFromToDateControl({
                       value={""}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
+                </Grid2>
+              </Grid2>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay
           errorText={displayError}
           id={`${label.toLowerCase().replaceAll(" ", "-")}-from-to-date-error`}
         />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

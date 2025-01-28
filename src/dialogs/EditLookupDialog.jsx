@@ -3,29 +3,32 @@
 //
 //  Description: Dialog used to edit an existing lookup
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   29.06.23 Sean Flook         WI40744 Added Make Historic switch.
-//    003   29.06.23 Sean Flook                 Added enabled flag for cross reference records.
-//    004   06.10.23 Sean Flook                 Use colour variables.
-//    005   27.10.23 Sean Flook                 Added missing colour variable.
-//    006   24.11.23 Sean Flook                 Moved Stack to @mui/system.
-//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    008   10.01.24 Sean Flook                 Fix warnings.
-//    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
-//    010   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
-//    011   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    013   19.04.24 Sean Flook       IMANN-355 Use a dropdown list for selecting the authority.
-//    014   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
+//    001            Sean Flook                  Initial Revision.
+//    002   29.06.23 Sean Flook          WI40744 Added Make Historic switch.
+//    003   29.06.23 Sean Flook                  Added enabled flag for cross reference records.
+//    004   06.10.23 Sean Flook                  Use colour variables.
+//    005   27.10.23 Sean Flook                  Added missing colour variable.
+//    006   24.11.23 Sean Flook                  Moved Stack to @mui/system.
+//    007   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    008   10.01.24 Sean Flook                  Fix warnings.
+//    009   25.01.24 Sean Flook        IMANN-253 Include historic when checking for changes.
+//    010   29.02.24 Joel Benford      IMANN-242 Add DbAuthority.
+//    011   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    012   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    013   19.04.24 Sean Flook        IMANN-355 Use a dropdown list for selecting the authority.
+//    014   26.04.24 Sean Flook        IMANN-413 Removed Gaelic option.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -41,7 +44,7 @@ import {
   DialogActions,
   DialogContent,
   Typography,
-  Grid,
+  Grid2,
   TextField,
   Button,
   FormControlLabel,
@@ -1331,46 +1334,48 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
       <ADSDialogTitle title={`Edit ${lookupType}`} closeTooltip="Cancel" onClose={handleCancelClick} />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
         {variant === "crossReference" ? (
-          <Grid container alignItems="center" rowSpacing={2}>
-            <Grid item xs={4}>
+          <Grid2 container alignItems="center" rowSpacing={2}>
+            <Grid2 size={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Description
               </Typography>
-            </Grid>
-            <Grid item xs={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <TextField
                 variant="outlined"
                 error={crossRefDescriptionError}
                 helperText={
-                  <Typography variant="caption" color={adsRed} align="left">
+                  <Typography variant="caption" sx={{ color: adsRed }} align="left">
                     {crossRefDescriptionError}
                   </Typography>
                 }
                 value={crossRefDescription}
                 fullWidth
                 size="small"
-                inputProps={{ maxLength: "200" }}
                 sx={{
                   color: theme.palette.background.contrastText,
                   pl: theme.spacing(1),
                   pr: theme.spacing(1),
                 }}
                 onChange={onCrossRefDescriptionChange}
+                slotProps={{
+                  htmlInput: { maxLength: "200" },
+                }}
               />
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Source
               </Typography>
-            </Grid>
+            </Grid2>
             {geoPlaceCrossRef ? (
-              <Grid item xs={8}>
+              <Grid2 size={8}>
                 <Typography variant="body1" sx={{ ml: theme.spacing(1) }} gutterBottom>
                   {crossRefSource}
                 </Typography>
-              </Grid>
+              </Grid2>
             ) : (
-              <Grid item xs={8}>
+              <Grid2 size={8}>
                 <Stack direction="row" alignItems="center">
                   <Typography variant="body1" sx={{ ml: theme.spacing(1) }} gutterBottom>
                     {crossRefSourceAuthority}
@@ -1379,13 +1384,12 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                     variant="outlined"
                     error={crossRefSourceCodeError}
                     helperText={
-                      <Typography variant="caption" color={adsRed} align="left">
+                      <Typography variant="caption" sx={{ color: adsRed }} align="left">
                         {crossRefSourceCodeError}
                       </Typography>
                     }
                     value={crossRefSourceCode}
                     size="small"
-                    inputProps={{ maxLength: "2" }}
                     sx={{
                       color: theme.palette.background.contrastText,
                       pl: theme.spacing(1),
@@ -1394,16 +1398,19 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                       width: "70px",
                     }}
                     onChange={onCrossRefSourceCodeChange}
+                    slotProps={{
+                      htmlInput: { maxLength: "2" },
+                    }}
                   />
                 </Stack>
-              </Grid>
+              </Grid2>
             )}
-            <Grid item xs={4}>
+            <Grid2 size={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Enabled
               </Typography>
-            </Grid>
-            <Grid item xs={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <FormControlLabel
                 value="end"
                 control={
@@ -1420,13 +1427,13 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 labelPlacement="end"
                 sx={{ ml: "1px", mb: theme.spacing(1) }}
               />
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               <Typography variant="body1" align="right" gutterBottom>
                 Include in export
               </Typography>
-            </Grid>
-            <Grid item xs={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <FormControlLabel
                 value="end"
                 control={
@@ -1443,16 +1450,16 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 labelPlacement="end"
                 sx={{ ml: "1px", mb: theme.spacing(1) }}
               />
-            </Grid>
+            </Grid2>
             {!geoPlaceCrossRef && (
-              <Grid item xs={4}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Make historic
                 </Typography>
-              </Grid>
+              </Grid2>
             )}
             {!geoPlaceCrossRef && (
-              <Grid item xs={8}>
+              <Grid2 size={8}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -1469,18 +1476,18 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   sx={{ ml: "1px", mb: theme.spacing(1) }}
                   // sx={{ ml: "1px", mt: theme.spacing(1.5) }}
                 />
-              </Grid>
+              </Grid2>
             )}
-          </Grid>
+          </Grid2>
         ) : variant === "dbAuthority" ? (
           <Stack direction="column">
-            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
-              <Grid item xs={4}>
+            <Grid2 container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Authority
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <Autocomplete
                   id={"ads-select-authority"}
                   sx={{
@@ -1498,7 +1505,7 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   renderOption={(props, option) => {
                     return (
                       <li {...props}>
-                        <Typography variant="body2" color={adsDarkGrey} align="left">
+                        <Typography variant="body2" sx={{ color: adsDarkGrey }} align="left">
                           {lookupToTitleCase(option, false)}
                         </Typography>
                       </li>
@@ -1520,62 +1527,66 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                     />
                   )}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Min USRN
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   type="number"
                   error={dbAuthorityMinUsrnError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {dbAuthorityMinUsrnError}
                     </Typography>
                   }
                   value={dbAuthorityMinUsrn}
                   fullWidth
                   size="small"
-                  inputProps={{ min: 0, max: 99999999 }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onDbAuthorityMinUsrnChange}
+                  slotProps={{
+                    htmlInput: { min: 0, max: 99999999 },
+                  }}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Max USRN
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   type="number"
                   error={dbAuthorityMaxUsrnError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {dbAuthorityMaxUsrnError}
                     </Typography>
                   }
                   value={dbAuthorityMaxUsrn}
                   fullWidth
                   size="small"
-                  inputProps={{ min: 0, max: 99999999 }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onDbAuthorityMaxUsrnChange}
+                  slotProps={{
+                    htmlInput: { min: 0, max: 99999999 },
+                  }}
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Stack>
         ) : variant === "ward" ? (
           <Stack direction="column">
@@ -1587,65 +1598,69 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 sx={{ color: adsMagenta }}
               >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
             </Stack>
-            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
-              <Grid item xs={4}>
+            <Grid2 container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Ward
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   error={wardNameError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {wardNameError}
                     </Typography>
                   }
                   value={wardName}
                   fullWidth
                   size="small"
-                  inputProps={{ maxLength: "200" }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onWardNameChange}
+                  slotProps={{
+                    htmlInput: { maxLength: "200" },
+                  }}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Code
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   error={wardCodeError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {wardCodeError}
                     </Typography>
                   }
                   value={wardCode}
                   fullWidth
                   size="small"
-                  inputProps={{ maxLength: "10" }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onWardCodeChange}
+                  slotProps={{
+                    htmlInput: { maxLength: "10" },
+                  }}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Make historic
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -1661,8 +1676,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   labelPlacement="end"
                   sx={{ ml: "1px", mb: theme.spacing(1) }}
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Stack>
         ) : variant === "parish" ? (
           <Stack direction="column">
@@ -1674,65 +1689,69 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 sx={{ color: adsMagenta }}
               >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
             </Stack>
-            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
-              <Grid item xs={4}>
+            <Grid2 container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Parish
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   error={parishNameError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {parishNameError}
                     </Typography>
                   }
                   value={parishName}
                   fullWidth
                   size="small"
-                  inputProps={{ maxLength: "200" }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onParishNameChange}
+                  slotProps={{
+                    htmlInput: { maxLength: "200" },
+                  }}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Code
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   error={parishCodeError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {parishCodeError}
                     </Typography>
                   }
                   value={parishCode}
                   fullWidth
                   size="small"
-                  inputProps={{ maxLength: "10" }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onParishCodeChange}
+                  slotProps={{
+                    htmlInput: { maxLength: "10" },
+                  }}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Make historic
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -1748,8 +1767,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   labelPlacement="end"
                   sx={{ ml: "1px", mb: theme.spacing(1) }}
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Stack>
         ) : (
           <Stack direction="column">
@@ -1763,8 +1782,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                 >{`Editing the ${lookupType} will create a new version and make the existing version historic. Any records attached to the previous version will be updated to the new entry.`}</Typography>
               </Stack>
             )}
-            <Grid container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
-              <Grid item xs={4}>
+            <Grid2 container alignItems="center" sx={{ mt: theme.spacing(1) }} rowSpacing={2}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   {`${
                     variant === "postcode"
@@ -1774,64 +1793,68 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                       : "English"
                   }`}
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <TextField
                   variant="outlined"
                   error={engError}
                   helperText={
-                    <Typography variant="caption" color={adsRed} align="left">
+                    <Typography variant="caption" sx={{ color: adsRed }} align="left">
                       {engError}
                     </Typography>
                   }
                   value={engValue}
                   fullWidth
                   size="small"
-                  inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                   sx={{
                     color: theme.palette.background.contrastText,
                     pl: theme.spacing(1),
                     pr: theme.spacing(1),
                   }}
                   onChange={onEngChange}
+                  slotProps={{
+                    htmlInput: { maxLength: `${getMaxFieldLength()}` },
+                  }}
                 />
-              </Grid>
+              </Grid2>
               {variant !== "postcode" && settingsContext.isWelsh && (
                 <Fragment>
-                  <Grid item xs={4}>
+                  <Grid2 size={4}>
                     <Typography variant="body2" align="right" gutterBottom>
                       Welsh
                     </Typography>
-                  </Grid>
-                  <Grid item xs={8}>
+                  </Grid2>
+                  <Grid2 size={8}>
                     <TextField
                       variant="outlined"
                       error={cymError}
                       helperText={
-                        <Typography variant="caption" color={adsRed} align="left">
+                        <Typography variant="caption" sx={{ color: adsRed }} align="left">
                           {cymError}
                         </Typography>
                       }
                       value={cymValue}
                       fullWidth
                       size="small"
-                      inputProps={{ maxLength: `${getMaxFieldLength()}` }}
                       sx={{
                         color: theme.palette.background.contrastText,
                         pl: theme.spacing(1),
                         pr: theme.spacing(1),
                       }}
                       onChange={onCymChange}
+                      slotProps={{
+                        htmlInput: { maxLength: `${getMaxFieldLength()}` },
+                      }}
                     />
-                  </Grid>
+                  </Grid2>
                 </Fragment>
               )}
-              <Grid item xs={4}>
+              <Grid2 size={4}>
                 <Typography variant="body1" align="right" gutterBottom>
                   Make historic
                 </Typography>
-              </Grid>
-              <Grid item xs={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <FormControlLabel
                   value="end"
                   control={
@@ -1847,8 +1870,8 @@ function EditLookupDialog({ variant, isUsed, isOpen, lookupId, errorEng, errorAl
                   labelPlacement="end"
                   sx={{ ml: "1px", mb: theme.spacing(1) }}
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Stack>
         )}
       </DialogContent>

@@ -3,34 +3,37 @@
 //
 //  Description: Property Template tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   17.03.23 Sean Flook         WI40578 Added ability to filter templates by templateUseType.
-//    003   22.03.23 Sean Flook         WI40598 Close EditPropertyTemplateTab if deleting the template.
-//    004   22.03.23 Sean Flook         WI40599 Set tempData in handleUpdateData to ensure the data will be visible.
-//    005   06.04.23 Sean Flook         WI40599 Set templateFormData after a successful save.
-//    006   27.06.23 Sean Flook         WI40757 Added in deletion confirmation dialog.
-//    007   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    008   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
-//    009   24.11.23 Sean Flook                 Moved Stack to @mui/system.
-//    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    011   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    012   08.01.24 Joel Benford               Classification and sub locality
-//    013   16.01.23 Joel Benford               OS/GP level split
-//    014   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    015   20.02.24 Sean Flook                 Default blpuLevel to 0 if null when saving.
-//    016   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
-//    017   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    018   26.06.24 Joel Benford               Null never export and site visit -> false on save, string lpiLevel if Scottish
-//    019   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   30.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   17.03.23 Sean Flook          WI40578 Added ability to filter templates by templateUseType.
+//    003   22.03.23 Sean Flook          WI40598 Close EditPropertyTemplateTab if deleting the template.
+//    004   22.03.23 Sean Flook          WI40599 Set tempData in handleUpdateData to ensure the data will be visible.
+//    005   06.04.23 Sean Flook          WI40599 Set templateFormData after a successful save.
+//    006   27.06.23 Sean Flook          WI40757 Added in deletion confirmation dialog.
+//    007   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    008   03.11.23 Sean Flook                  Updated TreeView and TreeItem.
+//    009   24.11.23 Sean Flook                  Moved Stack to @mui/system.
+//    010   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    011   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    012   08.01.24 Joel Benford                Classification and sub locality
+//    013   16.01.23 Joel Benford                OS/GP level split
+//    014   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    015   20.02.24 Sean Flook                  Default blpuLevel to 0 if null when saving.
+//    016   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    017   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    018   26.06.24 Joel Benford                Null never export and site visit -> false on save, string lpiLevel if Scottish
+//    019   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -39,9 +42,9 @@ import React, { useContext, useState, useRef, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import PropertyTemplatesDataForm from "../forms/PropertyTemplatesDataForm";
 import EditPropertyTemplateTab from "./EditPropertyTemplateTab";
 import AddTemplateDialog from "../dialogs/AddTemplateDialog";
@@ -381,23 +384,22 @@ function PropertyTemplatesTab() {
           onDeleteClick={(pkId) => handleDeleteTemplate(pkId)}
         />
       ) : (
-        <Grid container justifyContent="flex-start" spacing={0}>
-          <Grid item xs={12}>
-            <Grid container spacing={0} justifyContent="flex-start">
-              <Grid item xs={12} sm={2}>
+        <Grid2 container justifyContent="flex-start" spacing={0}>
+          <Grid2 size={12}>
+            <Grid2 container spacing={0} justifyContent="flex-start">
+              <Grid2 size={2}>
                 <Stack direction="column" spacing={2}>
                   <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3.5) }}>Property templates</Typography>
-                  <TreeView
+                  <SimpleTreeView
                     aria-label="property templates navigator"
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                    defaultSelected={"ALL"}
-                    selected={selectedNode}
+                    defaultSelectedItems={"ALL"}
+                    selectedItems={selectedNode}
+                    slots={{ expandIcon: ChevronRightIcon, collapseIcon: ExpandMoreIcon }}
                     sx={{ overflowY: "auto" }}
-                    onNodeSelect={handleNodeSelect}
+                    onSelectedItemsChange={handleNodeSelect}
                   >
                     <TreeItem
-                      nodeId="ALL"
+                      itemId="ALL"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           All templates
@@ -406,7 +408,7 @@ function PropertyTemplatesTab() {
                       sx={TreeItemStyle(selectedNode === "ALL")}
                     >
                       <TreeItem
-                        nodeId="ALL-SINGLE-PROPERTY"
+                        itemId="ALL-SINGLE-PROPERTY"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single property
@@ -415,7 +417,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "ALL-SINGLE-PROPERTY")}
                       />
                       <TreeItem
-                        nodeId="ALL-RANGE-PROPERTIES"
+                        itemId="ALL-RANGE-PROPERTIES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of properties
@@ -424,7 +426,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "ALL-RANGE-PROPERTIES")}
                       />
                       <TreeItem
-                        nodeId="ALL-SINGLE-CHILD"
+                        itemId="ALL-SINGLE-CHILD"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single child
@@ -433,7 +435,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "ALL-SINGLE-CHILD")}
                       />
                       <TreeItem
-                        nodeId="ALL-RANGE-CHILDREN"
+                        itemId="ALL-RANGE-CHILDREN"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of children
@@ -443,7 +445,7 @@ function PropertyTemplatesTab() {
                       />
                     </TreeItem>
                     <TreeItem
-                      nodeId="LIBRARY"
+                      itemId="LIBRARY"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Library templates
@@ -452,7 +454,7 @@ function PropertyTemplatesTab() {
                       sx={TreeItemStyle(selectedNode === "LIBRARY")}
                     >
                       <TreeItem
-                        nodeId="LIBRARY-SINGLE-PROPERTY"
+                        itemId="LIBRARY-SINGLE-PROPERTY"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single property
@@ -461,7 +463,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "LIBRARY-SINGLE-PROPERTY")}
                       />
                       <TreeItem
-                        nodeId="LIBRARY-RANGE-PROPERTIES"
+                        itemId="LIBRARY-RANGE-PROPERTIES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of properties
@@ -470,7 +472,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "LIBRARY-RANGE-PROPERTIES")}
                       />
                       <TreeItem
-                        nodeId="LIBRARY-SINGLE-CHILD"
+                        itemId="LIBRARY-SINGLE-CHILD"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single child
@@ -479,7 +481,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "LIBRARY-SINGLE-CHILD")}
                       />
                       <TreeItem
-                        nodeId="LIBRARY-RANGE-CHILDREN"
+                        itemId="LIBRARY-RANGE-CHILDREN"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of children
@@ -489,7 +491,7 @@ function PropertyTemplatesTab() {
                       />
                     </TreeItem>
                     <TreeItem
-                      nodeId="USER"
+                      itemId="USER"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           User templates
@@ -498,7 +500,7 @@ function PropertyTemplatesTab() {
                       sx={TreeItemStyle(selectedNode === "USER")}
                     >
                       <TreeItem
-                        nodeId="USER-SINGLE-PROPERTY"
+                        itemId="USER-SINGLE-PROPERTY"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single property
@@ -507,7 +509,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "USER-SINGLE-PROPERTY")}
                       />
                       <TreeItem
-                        nodeId="USER-RANGE-PROPERTIES"
+                        itemId="USER-RANGE-PROPERTIES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of properties
@@ -516,7 +518,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "USER-RANGE-PROPERTIES")}
                       />
                       <TreeItem
-                        nodeId="USER-SINGLE-CHILD"
+                        itemId="USER-SINGLE-CHILD"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Single child
@@ -525,7 +527,7 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "USER-SINGLE-CHILD")}
                       />
                       <TreeItem
-                        nodeId="USER-RANGE-CHILDREN"
+                        itemId="USER-RANGE-CHILDREN"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Range of children
@@ -534,10 +536,10 @@ function PropertyTemplatesTab() {
                         sx={TreeItemStyle(selectedNode === "USER-RANGE-CHILDREN")}
                       />
                     </TreeItem>
-                  </TreeView>
+                  </SimpleTreeView>
                 </Stack>
-              </Grid>
-              <Grid item xs={12} sm={10}>
+              </Grid2>
+              <Grid2 size={10}>
                 <PropertyTemplatesDataForm
                   nodeId={selectedNode}
                   data={data}
@@ -546,10 +548,10 @@ function PropertyTemplatesTab() {
                   onDuplicateTemplate={(pkId) => handleDuplicateTemplate(pkId)}
                   onDeleteTemplate={(pkId) => handleDeleteTemplate(pkId)}
                 />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Grid2>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       )}
       <AddTemplateDialog
         isOpen={showAddDialog}

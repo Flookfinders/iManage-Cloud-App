@@ -3,26 +3,29 @@
 //
 //  Description: Help Drawer component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   26.04.23 Sean Flook         WI40697 Updated contact information.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   11.03.24 Sean Flook           GLB12 Correctly set width.
-//    007   02.04.24 Sean Flook                 Keep title in view when overflowing.
-//    008   21.05.24 Sean Flook                 Updated support email address.
-//    009   26.06.24 Peter Bryden               Added in help reference.
-//    010   04.07.24 Sean Flook                 Updated URL for the help for new location.
-//    011   29.08.24 Sean Flook       IMANN-965 Updated wording.
+//    001            Sean Flook                  Initial Revision.
+//    002   26.04.23 Sean Flook          WI40697 Updated contact information.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   11.03.24 Sean Flook            GLB12 Correctly set width.
+//    007   02.04.24 Sean Flook                  Keep title in view when overflowing.
+//    008   21.05.24 Sean Flook                  Updated support email address.
+//    009   26.06.24 Peter Bryden                Added in help reference.
+//    010   04.07.24 Sean Flook                  Updated URL for the help for new location.
+//    011   29.08.24 Sean Flook        IMANN-965 Updated wording.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -36,7 +39,7 @@ import LookupContext from "../context/lookupContext";
 
 import { copyTextToClipboard } from "../utils/HelperUtils";
 
-import { Drawer, Typography, Link, Grid, IconButton } from "@mui/material";
+import { Drawer, Typography, Link, Grid2, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 
@@ -176,24 +179,24 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
           justifyContent: "flex-start",
         }}
       >
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
+        <Grid2 container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid2>
             <Typography variant="h6" noWrap sx={drawerTitleStyle}>
               Help and support
             </Typography>
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2>
             <ADSActionButton
               variant="close"
               tooltipTitle="Close help"
               tooltipPlacement="left"
               onClick={handleDrawerClose}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
       <Box sx={{ overflowY: "auto", backgroundColor: adsOffWhite }}>
-        <Grid
+        <Grid2
           container
           direction="column"
           justifyContent="center"
@@ -202,13 +205,13 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
             pl: "24px",
           }}
         >
-          <Grid item xs={12} sx={{ pt: "24px" }}>
+          <Grid2 sx={{ pt: "24px" }} size={12}>
             <Typography align="left" variant="subtitle1" sx={drawerSubTitleStyle}>
               Get help
             </Typography>
-          </Grid>
+          </Grid2>
 
-          <Grid
+          <Grid2
             container
             direction="row"
             justifyContent="flex-start"
@@ -217,15 +220,15 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               pt: theme.spacing(1),
             }}
           >
-            <Grid item xs={1}>
+            <Grid2 size={1}>
               <HelpIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Help Documentation
                 <br />
@@ -239,10 +242,10 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Browse our Help
                 </Link>
               </Typography>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
-          <Grid
+          <Grid2
             container
             direction="row"
             justifyContent="flex-start"
@@ -251,15 +254,15 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               pt: theme.spacing(1),
             }}
           >
-            <Grid item xs={1}>
+            <Grid2 size={1}>
               <ForumIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Customer portal
                 <br />
@@ -273,9 +276,9 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Log a support call and search knowledge base.
                 </Link>
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid
+            </Grid2>
+          </Grid2>
+          <Grid2
             container
             direction="row"
             justifyContent="flex-start"
@@ -284,15 +287,15 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               pt: theme.spacing(1),
             }}
           >
-            <Grid item xs={1}>
+            <Grid2 size={1}>
               <SupportAgentIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Contact support <br />
                 <Link
@@ -303,14 +306,14 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Email the Service Desk
                 </Link>
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sx={{ pt: "40px" }}>
+            </Grid2>
+          </Grid2>
+          <Grid2 sx={{ pt: "40px" }} size={12}>
             <Typography align="left" variant="subtitle1" sx={drawerSubTitleStyle}>
               General enquiries
             </Typography>
-          </Grid>
-          <Grid
+          </Grid2>
+          <Grid2
             container
             direction="row"
             justifyContent="flex-start"
@@ -319,16 +322,15 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               pt: theme.spacing(1),
             }}
           >
-            <Grid item xs={1}>
+            <Grid2 size={1}>
               <EmailIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid>
-            <Grid
-              item
+            </Grid2>
+            <Grid2
               sx={{
                 display: "inline-flex",
               }}
@@ -340,29 +342,28 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 ads.solutions@idoxgroup.com
               </Link>
-            </Grid>
-          </Grid>
-          <Grid container direction="row" justifyContent="flex-start" alignItems="center">
-            <Grid item xs={1}>
+            </Grid2>
+          </Grid2>
+          <Grid2 container direction="row" justifyContent="flex-start" alignItems="center">
+            <Grid2 size={1}>
               <CallIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Typography align={"left"} variant="body2" sx={drawerTextStyle}>
                 +44 (0) 3330 111 567
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid
-            item
-            xs={12}
+            </Grid2>
+          </Grid2>
+          <Grid2
             sx={{
               pt: theme.spacing(1),
             }}
+            size={12}
           >
             <Typography align={"left"} variant="body2" sx={drawerTextStyle}>
               Idox Software Ltd
@@ -382,14 +383,14 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
             <Typography align={"left"} variant="body2" sx={drawerTextStyle}>
               GU21 5SB
             </Typography>
-          </Grid>
-          <Grid item xs={12} sx={{ pt: "40px" }}>
+          </Grid2>
+          <Grid2 sx={{ pt: "40px" }} size={12}>
             <Typography align="left" variant="subtitle1" sx={drawerSubTitleStyle}>
               Metadata information
             </Typography>
-          </Grid>
-          <Grid container direction="row" justifyContent="flex-start" alignItems="center">
-            <Grid item xs={12}>
+          </Grid2>
+          <Grid2 container direction="row" justifyContent="flex-start" alignItems="center">
+            <Grid2 size={12}>
               <Typography
                 align={"left"}
                 variant="body2"
@@ -401,8 +402,8 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 {`GUI version: ${guiVersion}`}
               </Typography>
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>
               <Typography
                 align={"left"}
                 variant="subtitle2"
@@ -414,20 +415,12 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 API versions
               </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`iManage: ${apiVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Core: ${coreVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Lookups: ${lookupVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Settings: ${settingsVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`iManage: ${apiVersion}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Core: ${coreVersion}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Lookups: ${lookupVersion}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Settings: ${settingsVersion}`)}</Grid2>
+            <Grid2 size={12}>
               <Typography
                 align={"left"}
                 variant="subtitle2"
@@ -439,17 +432,11 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 Database versions
               </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`iManage: ${iManageDbVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`iExchange: ${iExchangeDbVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`iValidate: ${iValidateDbVersion}`)}
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`iManage: ${iManageDbVersion}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`iExchange: ${iExchangeDbVersion}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`iValidate: ${iValidateDbVersion}`)}</Grid2>
+            <Grid2 size={12}>
               <Typography
                 align={"left"}
                 variant="subtitle2"
@@ -461,26 +448,17 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 Search index
               </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Db server: ${indexDBServer}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Db name: ${indexDBName}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Built on: ${indexBuiltOn}`)}
-            </Grid>
-            <Grid item xs={12}>
-              {getMetadataInformation(`Elastic version: ${indexElasticVersion}`)}
-            </Grid>
-            <Grid item xs={1}>
+            </Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Db server: ${indexDBServer}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Db name: ${indexDBName}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Built on: ${indexBuiltOn}`)}</Grid2>
+            <Grid2 size={12}>{getMetadataInformation(`Elastic version: ${indexElasticVersion}`)}</Grid2>
+            <Grid2 size={1}>
               <IconButton onClick={(event) => copyMetadataInfo(event)} size="small" sx={{ color: adsMidGreyA }}>
                 <CopyIcon sx={ActionIconStyle()} />
               </IconButton>
-            </Grid>
-            <Grid
-              item
+            </Grid2>
+            <Grid2
               sx={{
                 display: "inline-flex",
               }}
@@ -494,9 +472,9 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 Copy metadata information
               </Link>
-            </Grid>
-          </Grid>
-        </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       </Box>
     </Drawer>
   );

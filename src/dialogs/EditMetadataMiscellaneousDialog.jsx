@@ -3,26 +3,29 @@
 //
 //  Description: Edit metadata miscellaneous dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   10.01.24 Sean Flook                 Fix warnings.
-//    006   11.01.24 Sean Flook                 Fix warnings.
-//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    008   31.01.24 Joel Benford               Changes to as save and support OS
-//    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    011   09.05.24 Joel Benford     IMANN-443 Allow Gaelic for Scottish property metadata 
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   10.01.24 Sean Flook                  Fix warnings.
+//    006   11.01.24 Sean Flook                  Fix warnings.
+//    007   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    008   31.01.24 Joel Benford                Changes to as save and support OS
+//    009   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    010   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    011   09.05.24 Joel Benford      IMANN-443 Allow Gaelic for Scottish property metadata 
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -32,7 +35,7 @@ import PropTypes from "prop-types";
 
 import SettingsContext from "../context/settingsContext";
 
-import { Dialog, DialogActions, DialogContent, Grid, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid2, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDateControl from "../components/ADSDateControl";
@@ -327,8 +330,8 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
       >
         <ADSDialogTitle title={getTitle()} closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
+            <Grid2 size={12}>
               <Stack direction="column" spacing={2}>
                 <Box>
                   <ADSTextControl
@@ -395,8 +398,8 @@ function EditMetadataMiscellaneousDialog({ isOpen, data, variant, onDone, onClos
                   )}
                 </Box>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
           <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>

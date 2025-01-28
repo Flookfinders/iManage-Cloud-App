@@ -3,28 +3,31 @@
 //
 //  Description: Property Page
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   07.09.23 Sean Flook                 Cleaned the code.
-//    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    004   04.04.24 Sean Flook                 Added better handling of API return status.
-//    005   05.04.24 Sean Flook                 Correctly handle errors when getting a property.
-//    006   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
-//    007   11.04.24 Sean Flook       IMANN-351 Prevent infinite loops when creating a new record.
-//    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
-//    009   18.04.24 Sean Flook       IMANN-351 Corrected typo.
-//    010   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    011   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    012   05.09.24 Sean Flook       IMANN-575 Added additional debug message.
-//    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   20.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   07.09.23 Sean Flook                  Cleaned the code.
+//    003   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    004   04.04.24 Sean Flook                  Added better handling of API return status.
+//    005   05.04.24 Sean Flook                  Correctly handle errors when getting a property.
+//    006   05.04.24 Sean Flook        IMANN-351 Changes to handle browser navigation.
+//    007   11.04.24 Sean Flook        IMANN-351 Prevent infinite loops when creating a new record.
+//    008   18.04.24 Sean Flook        IMANN-351 Changes required to reload the contexts after a refresh.
+//    009   18.04.24 Sean Flook        IMANN-351 Corrected typo.
+//    010   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    011   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    012   05.09.24 Sean Flook        IMANN-575 Added additional debug message.
+//    013   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    014   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -48,7 +51,7 @@ import { GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
 import { GetNewProperty } from "../utils/PropertyUtils";
 import { PropertyRoute } from "../PageRouting";
 
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import PropertyDataForm from "../forms/PropertyDataForm";
 import ADSEsriMap from "../components/ADSEsriMap";
 import { EditConfirmationServiceProvider } from "./EditConfirmationPage";
@@ -305,13 +308,13 @@ function PropertyPage() {
   return (
     <EditConfirmationServiceProvider>
       <div>
-        <Grid container justifyContent="flex-start" spacing={0}>
-          <Grid item xs={12}>
-            <Grid container spacing={0} justifyContent="flex-start">
-              <Grid item xs={12} sm={4}>
+        <Grid2 container justifyContent="flex-start" spacing={0}>
+          <Grid2 size={12}>
+            <Grid2 container spacing={0} justifyContent="flex-start">
+              <Grid2 size={4}>
                 <PropertyDataForm data={data} loading={loading} />
-              </Grid>
-              <Grid item xs={12} sm={8}>
+              </Grid2>
+              <Grid2 size={8}>
                 <ADSEsriMap
                   startExtent={
                     mapContext.currentExtent
@@ -325,10 +328,10 @@ function PropertyPage() {
                       : null
                   }
                 />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Grid2>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       </div>
     </EditConfirmationServiceProvider>
   );

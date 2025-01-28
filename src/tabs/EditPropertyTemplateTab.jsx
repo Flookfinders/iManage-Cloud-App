@@ -3,30 +3,33 @@
 //
 //  Description: Edit Property Template tab
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    005   24.11.23 Joel Benford               Include Scottish text for LPI official/postal fields
-//    006   05.12.23 Joel Benford               Classification fixes (still need to add scheme)
-//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    008   08.01.24 Joel Benford               Classification and sub locality
-//    009   10.01.24 Sean Flook                 Fix warnings.
-//    010   16.01.23 Joel Benford               OS/GP level split
-//    011   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    012   25.01.24 Sean Flook                 Changes required after UX review.
-//    013   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
-//    014   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
-//    015   29.05.24 Joshua McComrick IMANN-94  Rename Edit template title to Rename template
+//    001            Sean Flook                  Initial Revision.
+//    002   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    005   24.11.23 Joel Benford                Include Scottish text for LPI official/postal fields
+//    006   05.12.23 Joel Benford                Classification fixes (still need to add scheme)
+//    007   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    008   08.01.24 Joel Benford                Classification and sub locality
+//    009   10.01.24 Sean Flook                  Fix warnings.
+//    010   16.01.23 Joel Benford                OS/GP level split
+//    011   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    012   25.01.24 Sean Flook                  Changes required after UX review.
+//    013   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    014   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
+//    015   29.05.24 Joshua McCormick   IMANN-94 Rename Edit template title to Rename template
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -41,7 +44,7 @@ import {
   Button,
   Divider,
   Tooltip,
-  Grid,
+  Grid2,
   Card,
   CardHeader,
   CardActionArea,
@@ -710,7 +713,7 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
             </Typography>
           )}
         </Stack>
-        <Grid
+        <Grid2
           container
           sx={{
             pl: theme.spacing(2.75),
@@ -718,7 +721,7 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
           }}
           spacing={3}
         >
-          <Grid item xs={6}>
+          <Grid2 size={6}>
             {/* BLPU */}
             <Card
               variant="outlined"
@@ -738,85 +741,87 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
                   )
                 }
                 title="BLPU settings"
-                titleTypographyProps={{
-                  sx: getTitleStyle(editBlpu),
-                }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: {
+                    sx: getTitleStyle(editBlpu),
+                  },
+                }}
               />
               <CardActionArea onClick={doEditBlpu}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Status</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">RPC</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">State</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getBlpuState(blpuState, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Classification</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
                     {settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Level</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {blpuLevel}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Exclude from export</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {`${excludeFromExport ? "Yes" : "No"}`}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Site visit required</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {`${siteVisit ? "Yes" : "No"}`}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
+          </Grid2>
           {/* LPI */}
-          <Grid item xs={6}>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -835,82 +840,84 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
                   )
                 }
                 title="LPI settings"
-                titleTypographyProps={{
-                  sx: getTitleStyle(editLpi),
-                }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: {
+                    sx: getTitleStyle(editLpi),
+                  },
+                }}
               />
               <CardActionArea onClick={doEditLpi}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Status</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getLpiStatus(lpiStatus, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Sub locality</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {StringToTitleCase(
                               getLpiSubLocality(lpiSubLocality, lookupContext.currentLookups.subLocalities)
                             )}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Post town</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {StringToTitleCase(getLpiPostTown(lpiPostTown, lookupContext.currentLookups.postTowns))}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Level</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {lpiLevel}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Official address</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getLpiOfficialAddress(lpiOfficialAddress, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">{`${
                         settingsContext.isScottish ? "Postally addressable" : "Postal address"
                       }`}</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getLpiPostalAddress(lpiPostalAddress, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
+          </Grid2>
           {/* Classification */}
           {settingsContext.isScottish && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -929,38 +936,40 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
                     )
                   }
                   title="Classification settings"
-                  titleTypographyProps={{
-                    sx: getTitleStyle(editClassification),
-                  }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: {
+                      sx: getTitleStyle(editClassification),
+                    },
+                  }}
                 />
                 <CardActionArea onClick={doEditClassification}>
                   <CardContent sx={settingsCardContentStyle("property")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Classification</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getBlpuClassification(blpuClassification, settingsContext.isScottish)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Scheme</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {classificationScheme}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {/* Other */}
-          <Grid item xs={6}>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -979,44 +988,46 @@ function EditPropertyTemplateTab({ data, error, onHomeClick, onUpdateData, onDup
                   )
                 }
                 title="Other settings"
-                titleTypographyProps={{
-                  sx: getTitleStyle(editOther),
-                }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: {
+                    sx: getTitleStyle(editOther),
+                  },
+                }}
               />
               <CardActionArea onClick={doEditOther}>
                 <CardContent sx={settingsCardContentStyle("property")}>
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Cross ref source</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getOtherCrossRefSource(otherCrossRefSource, lookupContext.currentLookups.appCrossRefs)}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Provenance</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getOtherProvenance(otherProvenance, settingsContext.isScottish)}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Note</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {otherNote}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Stack>
       <EditTemplateDialog
         isOpen={showEditDialog}

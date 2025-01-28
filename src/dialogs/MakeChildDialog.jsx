@@ -3,28 +3,31 @@
 //
 //  Description: Dialog used to make a property a child of another property
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   27.02.24 Sean Flook           MUL16 Initial Revision.
-//    002   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    003   22.03.24 Sean Flook           MUL16 Correctly set the address data.
-//    004   25.03.24 Sean Flook           MUL16 Added cascade address changes option.
-//    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    006   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    007   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    001   27.02.24 Sean Flook            MUL16 Initial Revision.
+//    002   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    003   22.03.24 Sean Flook            MUL16 Correctly set the address data.
+//    004   25.03.24 Sean Flook            MUL16 Added cascade address changes option.
+//    005   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    006   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    007   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    008   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    009   30.09.24 Sean Flook       IMANN-605 Display the selected parent address on the first page once selected.
-//    010   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    011   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
+//    009   30.09.24 Sean Flook        IMANN-605 Display the selected parent address on the first page once selected.
+//    010   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    011   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -58,7 +61,7 @@ import {
   RadioGroup,
   Radio,
   Box,
-  Grid,
+  Grid2,
   List,
   ListItem,
 } from "@mui/material";
@@ -638,16 +641,16 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
 
       case 1:
         return (
-          <Grid container justifyContent="flex-start" alignItems="center" columnSpacing={0.5} rowSpacing={1}>
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" alignItems="center" columnSpacing={0.5} rowSpacing={1}>
+            <Grid2 size={12}>
               <Typography variant="body2">You have chosen the following parent property:</Typography>
-            </Grid>
-            <Grid item xs={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 {addressToTitleCase(parentAddress, parentPostcode)}
               </Typography>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               <Button
                 onClick={handleEditParentClick}
                 disabled={updating}
@@ -657,13 +660,13 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
               >
                 Edit
               </Button>
-            </Grid>
-            <Grid item xs={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <Typography variant="body2">{`Update the address details of the ${
                 selectedUPRNs && selectedUPRNs.length > 1 ? "children" : "child"
               } to match the parent's address details?`}</Typography>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               <FormControlLabel
                 value="end"
                 control={
@@ -678,15 +681,15 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                 label={updateAddress ? "Yes" : "No"}
                 labelPlacement="end"
               />
-            </Grid>
+            </Grid2>
             {updateAddress && (
               <>
-                <Grid item xs={8}>
+                <Grid2 size={8}>
                   <Typography variant="body2">{`Update all addresses of the ${
                     selectedUPRNs && selectedUPRNs.length > 1 ? "children" : "child"
                   } if there are multiple addresses?`}</Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Grid2>
+                <Grid2 size={4}>
                   <FormControlLabel
                     value="end"
                     control={
@@ -701,13 +704,13 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                     label={updateAllAddresses ? "Yes" : "No"}
                     labelPlacement="end"
                   />
-                </Grid>
-                <Grid item xs={8}>
+                </Grid2>
+                <Grid2 size={8}>
                   <Typography variant="body2">
                     Cascade updates to address details to any children if present?
                   </Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Grid2>
+                <Grid2 size={4}>
                   <FormControlLabel
                     value="end"
                     control={
@@ -722,13 +725,13 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                     label={cascadeUpdates ? "Yes" : "No"}
                     labelPlacement="end"
                   />
-                </Grid>
+                </Grid2>
               </>
             )}
-            <Grid item xs={8}>
+            <Grid2 size={8}>
               <Typography variant="body2">If a property already has a parent UPRN?</Typography>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               <RadioGroup
                 aria-labelledby="make-child-of-radio-buttons-group"
                 name="make-child-of-action-radio-buttons-group"
@@ -747,8 +750,8 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                   label={<Typography variant="body2">Replace with new</Typography>}
                 />
               </RadioGroup>
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>
               {!noteOpen && (
                 <Button
                   onClick={handleAddNoteClick}
@@ -776,8 +779,8 @@ function MakeChildDialog({ isOpen, variant, selectedUPRNs, onClose }) {
                   />
                 </Box>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         );
 
       case 2:

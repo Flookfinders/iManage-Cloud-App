@@ -3,17 +3,20 @@
 //
 //  Description: Gazetteer Page
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   20.07.21 Sean Flook                 Initial Revision.
-//    002   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
+//    001   20.07.21 Sean Flook                  Initial Revision.
+//    002   18.04.24 Sean Flook        IMANN-351 Changes required to reload the contexts after a refresh.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -30,7 +33,7 @@ import StreetContext from "../context/streetContext";
 import PropertyContext from "../context/propertyContext";
 import InformationContext from "../context/informationContext";
 
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import SearchDataForm from "../forms/SearchDataForm";
 import ADSEsriMap from "../components/ADSEsriMap";
 
@@ -83,13 +86,13 @@ function GazetteerPage() {
 
   return (
     <div>
-      <Grid container justifyContent="flex-start" spacing={0}>
-        <Grid item xs={12}>
-          <Grid container spacing={0} justifyContent="flex-start">
-            <Grid item xs={12} sm={4}>
+      <Grid2 container justifyContent="flex-start" spacing={0}>
+        <Grid2 size={12}>
+          <Grid2 container spacing={0} justifyContent="flex-start">
+            <Grid2 size={4}>
               <SearchDataForm />
-            </Grid>
-            <Grid item xs={12} sm={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <ADSEsriMap
                 startExtent={
                   mapContext.currentExtent
@@ -103,10 +106,10 @@ function GazetteerPage() {
                     : null
                 }
               />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
+      </Grid2>
     </div>
   );
 }

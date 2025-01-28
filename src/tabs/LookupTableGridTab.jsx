@@ -3,27 +3,30 @@
 //
 //  Description: Lookup table grid tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and removed a warning.
-//    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   10.01.24 Sean Flook                 Fix warnings.
-//    007   01.02.24 Sean Flook                 Initial changes required for operational districts.
-//    008   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
-//    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    010   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
-//    011   17.05.24 Sean Flook       IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
-//    012   28.05.24 Joel Benford     IMANN-481 Hide delete button fro wards and parishes
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and removed a warning.
+//    004   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   10.01.24 Sean Flook                  Fix warnings.
+//    007   01.02.24 Sean Flook                  Initial changes required for operational districts.
+//    008   29.02.24 Joel Benford      IMANN-242 Add DbAuthority.
+//    009   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    010   26.04.24 Sean Flook        IMANN-413 Removed Gaelic option.
+//    011   17.05.24 Sean Flook        IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
+//    012   28.05.24 Joel Benford      IMANN-481 Hide delete button fro wards and parishes
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -815,6 +818,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "postcode",
             headerName: "Postcode",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetPostcode,
           },
@@ -822,6 +826,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetHistoric,
           },
@@ -829,6 +834,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -849,6 +855,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "postTownEng",
                 headerName: "English",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetPostTownEng,
               },
@@ -856,6 +863,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "postTownCym",
                 headerName: "Welsh",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetPostTownCym,
               },
@@ -863,6 +871,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -895,6 +904,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -909,6 +919,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -928,6 +939,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "subLocalityEng",
             headerName: "Sub-locality",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetSubLocalityEng,
           },
@@ -935,6 +947,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetHistoric,
           },
@@ -949,6 +962,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -968,6 +982,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "xrefDescription",
             headerName: "Description",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 40,
             renderCell: GetCrossRefDescription,
           },
@@ -975,6 +990,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "xrefSourceRef73",
             headerName: "Source",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 10,
             renderCell: GetCrossRefSource,
           },
@@ -982,6 +998,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 15,
             renderCell: GetHistoric,
           },
@@ -989,6 +1006,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "export",
             headerName: "Export",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 10,
             renderCell: GetCrossRefExport,
           },
@@ -996,6 +1014,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1016,6 +1035,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "localityEng",
                 headerName: "English",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetLocalityEng,
               },
@@ -1023,6 +1043,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "localityCym",
                 headerName: "Welsh",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetLocalityCym,
               },
@@ -1030,6 +1051,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1044,6 +1066,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1061,6 +1084,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "localityEng",
                 headerName: "Locality",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetLocalityEng,
               },
@@ -1068,6 +1092,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1082,6 +1107,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1102,6 +1128,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "townEng",
                 headerName: "English",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetTownEng,
               },
@@ -1109,6 +1136,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "townCym",
                 headerName: "Welsh",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetTownCym,
               },
@@ -1116,6 +1144,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1130,6 +1159,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1147,6 +1177,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "townEng",
                 headerName: "Town",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetTownEng,
               },
@@ -1154,6 +1185,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1168,6 +1200,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1187,6 +1220,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "islandEng",
             headerName: "Island",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetIslandEng,
           },
@@ -1194,6 +1228,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetHistoric,
           },
@@ -1208,6 +1243,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1228,6 +1264,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "administrativeAreaEng",
                 headerName: "English",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetAdministrativeAreaEng,
               },
@@ -1235,6 +1272,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "administrativeAreaCym",
                 headerName: "Welsh",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetAdministrativeAreaCym,
               },
@@ -1242,6 +1280,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1256,6 +1295,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1273,6 +1313,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "administrativeAreaEng",
                 headerName: "Administrative area",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetAdministrativeAreaEng,
               },
@@ -1280,6 +1321,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "historic",
                 headerName: "Status",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 flex: 30,
                 renderCell: GetHistoric,
               },
@@ -1294,6 +1336,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 field: "actions",
                 type: "actions",
                 headerClassName: "idox-data-grid-header",
+                display: "flex",
                 sortable: false,
                 filterable: false,
                 renderCell: displayActionButtons,
@@ -1313,6 +1356,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "ward",
             headerName: "Ward",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetWard,
           },
@@ -1320,6 +1364,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "wardCode",
             headerName: "Code",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetWardCode,
           },
@@ -1327,6 +1372,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetHistoric,
           },
@@ -1334,6 +1380,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1353,6 +1400,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "parish",
             headerName: "Parish",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 30,
             renderCell: GetParish,
           },
@@ -1360,6 +1408,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "parishCode",
             headerName: "Code",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetParishCode,
           },
@@ -1367,6 +1416,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetHistoric,
           },
@@ -1374,6 +1424,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1393,6 +1444,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "dbAuthorityRef",
             headerName: "DETR Code",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetDbAuthorityNumeric,
           },
@@ -1400,6 +1452,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "dbAuthorityName",
             headerName: "Authority",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 40,
             renderCell: GetDbAuthorityName,
           },
@@ -1407,6 +1460,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "dbAuthorityMinUsrn",
             headerName: "Min USRN",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetDbAuthorityNumeric,
           },
@@ -1414,6 +1468,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "dbAuthorityMaxUsrn",
             headerName: "Max USRN",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetDbAuthorityNumeric,
           },
@@ -1421,6 +1476,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1436,6 +1492,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "districtName",
             headerName: "Name",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetOperationalDistrictName,
           },
@@ -1443,6 +1500,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "organisationId",
             headerName: "Organisation",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetOperationalDistrictOrganisation,
           },
@@ -1450,6 +1508,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "districtFunction",
             headerName: "Function",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 20,
             renderCell: GetOperationalDistrictFunction,
           },
@@ -1457,6 +1516,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "historic",
             headerName: "Status",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             flex: 15,
             renderCell: GetHistoric,
           },
@@ -1464,6 +1524,7 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
             field: "actions",
             type: "actions",
             headerClassName: "idox-data-grid-header",
+            display: "flex",
             sortable: false,
             filterable: false,
             renderCell: displayActionButtons,
@@ -1818,20 +1879,22 @@ function LookupTableGridTab({ variant, data, onAddLookup, onEditLookup, onUpdate
                 width: "100%",
               }}
               onChange={onSearchChange}
-              InputProps={{
-                disableUnderline: true,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
-                      <ClearIcon sx={ClearSearchIconStyle(searchString)} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  disableUnderline: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
+                        <ClearIcon sx={ClearSearchIconStyle(searchString)} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </Box>

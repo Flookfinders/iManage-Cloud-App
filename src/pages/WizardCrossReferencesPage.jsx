@@ -3,25 +3,28 @@
 //
 //  Description: Edit Cross Reference Dialog
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial version.
-//    002   04.04.23 Sean Flook         WI40669 Implemented.
-//    003   13.04.23 Sean Flook         WI40681 Added validation of cross references.
-//    004   13.04.23 Sean Flook         WI40681 Handle when we do not have any existing errors.
-//    005   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    007   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    008   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    009   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
-//    052   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    001            Sean Flook                  Initial version.
+//    002   04.04.23 Sean Flook          WI40669 Implemented.
+//    003   13.04.23 Sean Flook          WI40681 Added validation of cross references.
+//    004   13.04.23 Sean Flook          WI40681 Handle when we do not have any existing errors.
+//    005   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    006   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    007   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    008   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    009   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
+//    010   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -139,6 +142,7 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
       field: "sourceId",
       headerClassName: "idox-wizard-cross-ref-data-grid-header",
       headerName: "Source",
+      display: "flex",
       flex: 30,
       renderCell: GetCrossRefAvatar,
     },
@@ -159,6 +163,7 @@ function WizardCrossReferencesPage({ data, errors, templateVariant, onDataChange
       field: "",
       headerClassName: "idox-wizard-cross-ref-data-grid-header",
       sortable: false,
+      display: "flex",
       headerName: "",
       renderCell: displayActionButtons,
     },

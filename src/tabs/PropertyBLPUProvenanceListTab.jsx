@@ -3,36 +3,39 @@
 //
 //  Description: Display the list of BLPU provenances for the property.
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
-//    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    008   25.01.24 Sean Flook                 Changes required after UX review.
-//    009   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    010   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
-//    011   23.02.24 Joel Benford     IMANN-287 Correct hover blue
-//    012   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    014   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
-//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
-//    017   05.06.24 Sean Flook       IMANN-523 Use the provenance colour for the avatar.
-//    018   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    001            Sean Flook                  Initial Revision.
+//    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed some warnings.
+//    006   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    007   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    008   25.01.24 Sean Flook                  Changes required after UX review.
+//    009   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    010   20.02.24 Sean Flook         ESU16_GP Undone above change as not required.
+//    011   23.02.24 Joel Benford      IMANN-287 Correct hover blue
+//    012   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    013   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    014   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
+//    015   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   29.04.24 Joshua McCormick  IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    017   05.06.24 Sean Flook        IMANN-523 Use the provenance colour for the avatar.
+//    018   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    019   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
+//    019   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -228,6 +231,7 @@ function PropertyBLPUProvenanceListTab({
       field: "provenanceCode",
       headerClassName: "idox-provenance-data-grid-header",
       headerName: "Type",
+      display: "flex",
       flex: 30,
       renderCell: getProvenanceAvatar,
     },
@@ -241,7 +245,7 @@ function PropertyBLPUProvenanceListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
-      valueGetter: (params) => new Date(params.value),
+      valueGetter: (value, row, column, apiRef) => new Date(value),
       renderCell: formatTableStartDate,
     },
     {
@@ -252,13 +256,14 @@ function PropertyBLPUProvenanceListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
-      valueGetter: (params) => new Date(params.value),
+      valueGetter: (value, row, column, apiRef) => new Date(value),
       renderCell: formatTableEndDate,
     },
     { field: "lastUpdateDate" },
     {
       field: "",
       headerClassName: "idox-provenance-data-grid-header",
+      display: "flex",
       flex: 2,
       sortable: false,
       renderCell: displayActionButtons,

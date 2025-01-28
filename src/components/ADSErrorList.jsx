@@ -3,27 +3,30 @@
 //
 //  Description: Control used to display a list of the errors.
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    003   06.10.23 Sean Flook                 Added OneScotland record types. Use colour variables.
-//    004   03.11.23 Sean Flook                 Added hyphen to one-way.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    006   14.12.23 Sean Flook                 Corrected note record type.
-//    007   05.01.24 Sean Flook                 use CSS shortcuts.
-//    008   08.03.24 Sean Flook       IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
-//    009   12.06.24 Sean Flook       IMANN-515 Use a List to display the errors and display each error as a separate item.
-//    010   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    011   27.06.24 Joel Benford     IMANN-685 OWE sequence numbers -> seqNum
-//    012   22.07.24 Sean Flook       IMANN-766 Replace holding character ¬ with a comma.
+//    001            Sean Flook                  Initial Revision.
+//    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    003   06.10.23 Sean Flook                  Added OneScotland record types. Use colour variables.
+//    004   03.11.23 Sean Flook                  Added hyphen to one-way.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    006   14.12.23 Sean Flook                  Corrected note record type.
+//    007   05.01.24 Sean Flook                  use CSS shortcuts.
+//    008   08.03.24 Sean Flook        IMANN-348 Updated method to see if a street or property has changed and added in the missing Scottish records.
+//    009   12.06.24 Sean Flook        IMANN-515 Use a List to display the errors and display each error as a separate item.
+//    010   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    011   27.06.24 Joel Benford      IMANN-685 OWE sequence numbers -> seqNum
+//    012   22.07.24 Sean Flook        IMANN-766 Replace holding character ¬ with a comma.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -61,7 +64,7 @@ import ObjectComparison, {
 import { GetNewStreetData } from "../utils/StreetUtils";
 import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
 import { useEditConfirmation } from "../pages/EditConfirmationPage";
-import { Grid, Typography, IconButton, Link, Snackbar, Alert, List, ListItem, ListItemText } from "@mui/material";
+import { Grid2, Typography, IconButton, Link, Snackbar, Alert, List, ListItem, ListItemText } from "@mui/material";
 import { Box } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { adsRed, adsDarkGrey, adsLightGreyB, adsOffWhite, adsLightGreyA50 } from "../utils/ADSColours";
@@ -1556,7 +1559,7 @@ function ADSErrorList({ onClose }) {
           borderRadius: "3px",
         }}
       >
-        <Grid
+        <Grid2
           container
           direction="column"
           justifyContent="space-around"
@@ -1564,8 +1567,8 @@ function ADSErrorList({ onClose }) {
           id="issue-list-grid"
           sx={{ pt: "2px", pl: "12px", pr: "12px", pb: "24px" }}
         >
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
-            <Grid item>
+          <Grid2 container direction="row" justifyContent="space-between" alignItems="center">
+            <Grid2>
               <Typography
                 variant="subtitle1"
                 display="inline-flex"
@@ -1579,14 +1582,14 @@ function ADSErrorList({ onClose }) {
               >
                 Issue(s)
               </Typography>
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <IconButton onClick={handleCloseClick} size="small">
                 <CloseIcon sx={ActionIconStyle()} />
               </IconButton>
-            </Grid>
-          </Grid>
-          <Grid item>
+            </Grid2>
+          </Grid2>
+          <Grid2>
             <List component="div" disablePadding>
               {streetContext.currentStreetHasErrors &&
                 streetContext.currentErrors.street.length > 0 &&
@@ -1762,8 +1765,8 @@ function ADSErrorList({ onClose }) {
                   });
                 })}
             </List>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
       <div>
         <Snackbar

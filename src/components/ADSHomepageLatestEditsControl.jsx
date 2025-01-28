@@ -46,8 +46,11 @@
 //    029   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
-//    003   09.01.25 Sean Flook        IMANN-781 Call onMapChange when opening a property.
+//    030   09.01.25 Sean Flook        IMANN-781 Call onMapChange when opening a property.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    031   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -198,12 +201,13 @@ function ADSHomepageLatestEditsControl({ data }) {
       headerClassName: "idox-homepage-latest-edits-data-grid-header",
       headerName: "Description",
       flex: 70,
-      valueGetter: (d) => (d.row.usrn ? streetToTitleCase(d.row.displayText) : casedAddress(d.row.displayText)),
+      valueGetter: (value, row, column, apiRef) => (row.usrn ? streetToTitleCase(value) : casedAddress(value)),
     },
     {
       field: "latestEdit",
       headerClassName: "idox-homepage-latest-edits-data-grid-header",
       headerName: "Last edited",
+      display: "flex",
       flex: 15,
       renderCell: renderLastEditCell,
       align: "right",
@@ -668,8 +672,8 @@ function ADSHomepageLatestEditsControl({ data }) {
                   usrn: false,
                 },
               },
+              density: "compact",
             }}
-            density="compact"
             editMode="row"
             autoPageSize
             hideFooterSelectedRowCount

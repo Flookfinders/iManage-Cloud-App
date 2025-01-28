@@ -9,17 +9,20 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    003   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
-//    006   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    007   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    008   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
+//    001   02.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    003   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    006   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    007   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    008   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    009   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -27,8 +30,9 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, Fragment } from "react";
+// import { useNavigate } from "react-router";
 import { useHistory } from "react-router";
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import StreetContext from "../context/streetContext";
 import PropertyContext from "../context/propertyContext";
 import SandboxContext from "../context/sandboxContext";
@@ -65,6 +69,7 @@ const ADSNavHeader = () => {
   const userContext = useContext(UserContext);
   const settingsContext = useContext(SettingsContext);
 
+  // const navigate = useNavigate();
   const history = useHistory();
 
   const [saveOpen, setSaveOpen] = useState(false);
@@ -115,6 +120,7 @@ const ADSNavHeader = () => {
                 }
               }
               ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+              // navigate(HomeRoute);
               history.push(HomeRoute);
             })
             .catch(() => {});
@@ -125,12 +131,14 @@ const ADSNavHeader = () => {
                 HandleSaveStreet(sandboxContext.currentSandbox.currentStreet);
               }
               ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+              // navigate(HomeRoute);
               history.push(HomeRoute);
             })
             .catch(() => {});
         }
       } else {
         ResetContexts("street", mapContext, streetContext, propertyContext, sandboxContext);
+        // navigate(HomeRoute);
         history.push(HomeRoute);
       }
     } else if (sandboxContext.currentSandbox.sourceProperty) {
@@ -173,6 +181,7 @@ const ADSNavHeader = () => {
                 }
               }
               ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+              // navigate(HomeRoute);
               history.push(HomeRoute);
             })
             .catch(() => {});
@@ -183,16 +192,19 @@ const ADSNavHeader = () => {
                 HandleSaveProperty(sandboxContext.currentSandbox.currentProperty, result === "saveCascade");
               }
               ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+              // navigate(HomeRoute);
               history.push(HomeRoute);
             })
             .catch(() => {});
         }
       } else {
         ResetContexts("property", mapContext, streetContext, propertyContext, sandboxContext);
+        // navigate(HomeRoute);
         history.push(HomeRoute);
       }
     } else {
       ResetContexts("all", mapContext, streetContext, propertyContext, sandboxContext);
+      // navigate(HomeRoute);
       history.push(HomeRoute);
     }
   };
@@ -275,7 +287,7 @@ const ADSNavHeader = () => {
 
   return (
     <Fragment>
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <img
           sx={{ ml: theme.spacing(2) }}
           src="/images/aligned_assets_logo.svg"
@@ -284,7 +296,7 @@ const ADSNavHeader = () => {
           height="32"
           onClick={handleClickEvent}
         />
-      </Grid>
+      </Grid2>
       <div>
         <Snackbar
           open={saveOpen}

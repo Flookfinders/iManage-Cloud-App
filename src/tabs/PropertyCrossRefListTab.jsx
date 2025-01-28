@@ -3,36 +3,39 @@
 //
 //  Description: Property cross reference list tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
-//    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    007   25.01.24 Sean Flook                 Changes required after UX review.
-//    008   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    009   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
-//    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
-//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    014   26.03.24 Joshua McCormick IMANN-336 Added xrefKey field name to displayActionButtons to give same display properties, added flex25 to historic
-//    015   27.03.24 Sean Flook       IMANN-336 Undone above changes as already done under STRFRM3_OS.
-//    016   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
-//    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed a warning.
+//    005   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    006   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    007   25.01.24 Sean Flook                  Changes required after UX review.
+//    008   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    009   20.02.24 Sean Flook         ESU16_GP Undone above change as not required.
+//    010   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    011   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    012   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
+//    013   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   26.03.24 Joshua McCormick  IMANN-336 Added xrefKey field name to displayActionButtons to give same display properties, added flex25 to historic
+//    015   27.03.24 Sean Flook        IMANN-336 Undone above changes as already done under STRFRM3_OS.
+//    016   29.04.24 Joshua McCormick  IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    017   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    018   20.06.24 Sean Flook      IMANN-1003 Removed the add icon when we have no records.
-//    019   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
+//    018   20.06.24 Sean Flook       IMANN-1003 Removed the add icon when we have no records.
+//    019   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -202,6 +205,7 @@ function PropertyCrossRefListTab({
       field: "sourceId",
       headerClassName: "idox-cross-ref-data-grid-header",
       headerName: "Source",
+      display: "flex",
       flex: 30,
       renderCell: GetCrossRefAvatar,
     },
@@ -217,17 +221,18 @@ function PropertyCrossRefListTab({
       field: "historic",
       headerClassName: "idox-cross-ref-data-grid-header",
       headerName: "Historic",
+      display: "flex",
       flex: 10,
       sortable: false,
       align: "center",
       renderCell: GetHistoricAvatar,
-      //valueGetter: (params) => params && params.row.endDate,
     },
     { field: "lastUpdateDate" },
     { field: "neverExport" },
     {
       field: "",
       headerClassName: "idox-cross-ref-data-grid-header",
+      display: "flex",
       sortable: false,
       renderCell: displayActionButtons,
     },

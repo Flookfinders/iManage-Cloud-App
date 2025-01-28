@@ -3,19 +3,22 @@
 //
 //  Description: Plot to Postal Details Page
 //
-//  Copyright:   © 2024 Idox Software Limited.
+//  Copyright:   © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.1.0 changes
-//    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
+//    001   15.10.24 Sean Flook       IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    002   14.11.24 Sean Flook      IMANN-1012 Call the correct method to display the check icon.
+//    002   14.11.24 Sean Flook       IMANN-1012 Call the correct method to display the check icon.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -27,7 +30,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
 import {
-  Grid,
+  Grid2,
   Card,
   CardHeader,
   CardActionArea,
@@ -565,72 +568,72 @@ function PlotToPostalDetailsPage({ data, errors, onDataChanged, onErrorChanged }
                 )
               }
               title="BLPU"
-              titleTypographyProps={{ sx: getTitleStyle(editBlpu, haveBlpuErrors) }}
               sx={{ height: "66px" }}
+              slotProps={{
+                title: { sx: getTitleStyle(editBlpu, haveBlpuErrors) },
+              }}
             />
             <CardActionArea onClick={doEditBlpu}>
               <CardContent>
-                <Grid container rowSpacing={1}>
-                  <Grid item xs={4}>
+                <Grid2 container rowSpacing={1}>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Logical status*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {blpuStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(blpuStatusError)}>
                       {getBlpuStatus(blpuStatus, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">RPC*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
-                    {blpuRpcError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={1}>{blpuRpcError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}</Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(blpuRpcError)}>
                       {getBlpuRpc(blpuRpc, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">State*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {blpuStateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(blpuStateError)}>
                       {getBlpuState(blpuState, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">State date*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {blpuStateDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(blpuStateDateError)}>
                       {DateString(blpuStateDate)}
                     </Typography>
-                  </Grid>
+                  </Grid2>
                   {settingsContext.isScottish && (
                     <Fragment>
-                      <Grid item xs={4}>
+                      <Grid2 size={4}>
                         <Typography variant="body2">Level*</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
+                      </Grid2>
+                      <Grid2 size={1}>
                         {blpuLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={7}>
+                      </Grid2>
+                      <Grid2 size={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(blpuLevelError)}>
                           {lpiLevel}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     </Fragment>
                   )}
-                </Grid>
+                </Grid2>
               </CardContent>
             </CardActionArea>
           </Card>
@@ -652,138 +655,140 @@ function PlotToPostalDetailsPage({ data, errors, onDataChanged, onErrorChanged }
                 )
               }
               title="LPI"
-              titleTypographyProps={{ sx: getTitleStyle(editLpi, haveLpiErrors) }}
               sx={{ height: "66px" }}
+              slotProps={{
+                title: { sx: getTitleStyle(editLpi, haveLpiErrors) },
+              }}
             />
             <CardActionArea onClick={doEditLpi}>
               <CardContent>
-                <Grid container rowSpacing={1}>
-                  <Grid item xs={12}>
+                <Grid2 container rowSpacing={1}>
+                  <Grid2 size={12}>
                     <Divider textAlign="center">
                       <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
                         Existing
                       </Typography>
                     </Divider>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Logical status*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {existingLpiStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(existingLpiStatusError)}>
                       {getLpiStatus(existingLpiStatus, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
+                  </Grid2>
+                  <Grid2 size={12}>
                     <Divider textAlign="center">
                       <Typography variant="body1" sx={{ color: `${adsBlueA}`, fontWeight: 700 }}>
                         New
                       </Typography>
                     </Divider>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Logical status*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {newLpiStatusError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(newLpiStatusError)}>
                       {getLpiStatus(newLpiStatus, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
+                  </Grid2>
                   {settingsContext.isScottish && (
                     <Fragment>
-                      <Grid item xs={4}>
+                      <Grid2 size={4}>
                         <Typography variant="body2">Sub-locality</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
+                      </Grid2>
+                      <Grid2 size={1}>
                         {subLocalityRefError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={7}>
+                      </Grid2>
+                      <Grid2 size={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(subLocalityRefError)}>
                           {getLpiSubLocality(subLocalityRef, lookupContext.currentLookups.subLocalities)}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     </Fragment>
                   )}
-                  <Grid item xs={4}>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Post town</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {postTownRefError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(postTownRefError)}>
                       {StringToTitleCase(getLpiPostTown(postTownRef, lookupContext.currentLookups.postTowns))}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Postcode</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {postcodeRefError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(postcodeRefError)}>
                       {getLpiPostcode(postcodeRef, lookupContext.currentLookups.postcodes)}
                     </Typography>
-                  </Grid>
+                  </Grid2>
                   {!settingsContext.isScottish && (
                     <Fragment>
-                      <Grid item xs={4}>
+                      <Grid2 size={4}>
                         <Typography variant="body2">Level</Typography>
-                      </Grid>
-                      <Grid item xs={1}>
+                      </Grid2>
+                      <Grid2 size={1}>
                         {lpiLevelError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                      </Grid>
-                      <Grid item xs={7}>
+                      </Grid2>
+                      <Grid2 size={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(lpiLevelError)}>
                           {lpiLevel}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     </Fragment>
                   )}
-                  <Grid item xs={4}>
+                  <Grid2 size={4}>
                     <Typography variant="body2">{`Official address${
                       settingsContext.isScottish ? "*" : ""
                     }`}</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {officialAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(officialAddressError)}>
                       {getLpiOfficialAddress(officialAddress, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">{`${
                       settingsContext.isScottish ? "Postally addressable*" : "Postal address*"
                     }`}</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {postalAddressError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(postalAddressError)}>
                       {getLpiPostalAddress(postalAddress)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Start date*</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     {lpiStartDateError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(lpiStartDateError)}>
                       {DateString(lpiStartDate)}
                     </Typography>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </CardContent>
             </CardActionArea>
           </Card>
@@ -809,37 +814,37 @@ function PlotToPostalDetailsPage({ data, errors, onDataChanged, onErrorChanged }
                 )
               }
               title={`${settingsContext.isScottish ? "Other" : "Note"}`}
-              titleTypographyProps={{ sx: getTitleStyle(editOther, haveOtherErrors) }}
               sx={{ height: "66px" }}
+              slotProps={{
+                title: { sx: getTitleStyle(editOther, haveOtherErrors) },
+              }}
             />
             <CardActionArea onClick={doEditOther}>
               <CardContent>
-                <Grid container rowSpacing={1}>
+                <Grid2 container rowSpacing={1}>
                   {settingsContext.isScottish && (
                     <>
-                      <Grid item xs={4}>
+                      <Grid2 size={4}>
                         <Typography variant="body2">Create Gaelic records</Typography>
-                      </Grid>
-                      <Grid item xs={1} />
-                      <Grid item xs={7}>
+                      </Grid2>
+                      <Grid2 size={1} />
+                      <Grid2 size={7}>
                         <Typography variant="body2" sx={getWizardValueStyle(false)}>
                           {getCheckIcon(createGaelic)}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     </>
                   )}
-                  <Grid item xs={4}>
+                  <Grid2 size={4}>
                     <Typography variant="body2">Note</Typography>
-                  </Grid>
-                  <Grid item xs={1}>
-                    {noteError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}
-                  </Grid>
-                  <Grid item xs={7}>
+                  </Grid2>
+                  <Grid2 size={1}>{noteError && <PriorityHighIcon sx={{ color: adsRed, height: "16px" }} />}</Grid2>
+                  <Grid2 size={7}>
                     <Typography variant="body2" sx={getWizardValueStyle(noteError)}>
                       {note}
                     </Typography>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </CardContent>
             </CardActionArea>
           </Card>

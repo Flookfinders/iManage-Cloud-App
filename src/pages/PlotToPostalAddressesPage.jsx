@@ -3,21 +3,24 @@
 //
 //  Description: Plot to Postal Addresses Page
 //
-//  Copyright:   © 2024 Idox Software Limited.
+//  Copyright:   © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.1.0 changes
-//    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
+//    001   15.10.24 Sean Flook       IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
-//    003   14.11.24 Sean Flook      IMANN-1012 Only create the gaelic record if required.
-//    004   03.12.24 Sean Flook      IMANN-1056 Workout the grid page size from the available height when loading the page for the first time.
+//    002   13.11.24 Sean Flook       IMANN-1012 Use the correct validation.
+//    003   14.11.24 Sean Flook       IMANN-1012 Only create the gaelic record if required.
+//    004   03.12.24 Sean Flook       IMANN-1056 Workout the grid page size from the available height when loading the page for the first time.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -29,7 +32,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { AppBar, Box, Button, Divider, Grid, Stack, Tab, Tabs, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AppBar, Box, Button, Divider, Grid2, Stack, Tab, Tabs, Toolbar, Tooltip, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import ADSSelectControl from "../components/ADSSelectControl";
 import ADSAddressableObjectControl from "../components/ADSAddressableObjectControl";
@@ -279,6 +282,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
       field: "originalAddress",
       headerName: "Existing LPI",
       headerClassName: "idox-data-grid-header",
+      display: "flex",
       flex: 10,
       sortable: false,
       filterable: false,
@@ -288,6 +292,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
       field: "rightArrow",
       headerName: "",
       headerClassName: "idox-data-grid-header",
+      display: "flex",
       flex: 1,
       sortable: false,
       filterable: false,
@@ -354,6 +359,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
       field: "newAddress",
       headerName: "New LPI",
       headerClassName: "idox-data-grid-header",
+      display: "flex",
       flex: 30,
       sortable: false,
       filterable: false,
@@ -363,6 +369,7 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
       field: "currentIndicator",
       headerName: "",
       headerClassName: "idox-data-grid-header",
+      display: "flex",
       flex: 1,
       sortable: false,
       filterable: false,
@@ -2006,8 +2013,8 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
       <Box id="plot-to-postal-addresses-page" sx={{ ml: "auto", mr: "auto", width: "100%" }}>
         <Stack direction="column" spacing={2} sx={{ mt: theme.spacing(1), width: "100%" }}>
           <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(0) }}>New addresses</Typography>
-          <Grid container sx={{ pl: theme.spacing(4), pr: theme.spacing(7) }} spacing={0}>
-            <Grid item xs={8}>
+          <Grid2 container sx={{ pl: theme.spacing(4), pr: theme.spacing(7) }} spacing={0}>
+            <Grid2 size={8}>
               <Box sx={dataFormStyle("PlotToPostalAddressDataGrid")} className={classes.root}>
                 {addresses && addresses.length > 0 && (
                   <DataGrid
@@ -2036,8 +2043,8 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
                   />
                 )}
               </Box>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid2>
+            <Grid2 size={4}>
               {selectedRow >= 0 && (
                 <Box sx={dataFormStyle("PlotLPI")}>
                   <AppBar
@@ -2173,8 +2180,8 @@ function PlotToPostalAddressesPage({ addresses, createGaelic, errors, onDataChan
                   </AppBar>
                 </Box>
               )}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Stack>
       </Box>
       <div>

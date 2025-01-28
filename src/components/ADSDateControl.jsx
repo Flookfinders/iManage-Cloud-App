@@ -3,36 +3,39 @@
 //
 //  Description: Date component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   13.04.21 Sean Flook         WI39345 Initial Revision.
-//    002   05.05.21 Sean Flook         WI39345 Tweaks to the UI after design review meeting.
-//    003   14.05.21 Sean Flook         WI39345 Updated className.
-//    004   18.05.21 Sean Flook         WI39345 Use the value directly.
-//    005   20.05.21 Sean Flook         WI39345 Undo above changes and added new useEffect for the value changing.
-//    006   20.05.21 Sean Flook         WI39345 Display a tooltip if required.
-//    007   25.05.21 Sean Flook         WI39345 Changes to get the Tooltip to display correctly and include required field text if required to tooltip.
-//    008   08.06.21 Sean Flook         WI39345 Changed read-only version to a label and altered colour of outline.
-//    009   15.06.21 Sean Flook         WI39345 Display the toolbar as temporary fix, until v5 components are fully released.
-//    010   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    011   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    012   08.12.23 Sean Flook                 Migrated DatePicker to v6.
-//    013   18.12.23 Sean Flook                 Ensure tooltip is displayed
-//    014   20.12.23 Sean Flook       IMANN-201 Added hideYear property to hide the year in the control.
-//    015   03.01.24 Sean Flook                 Fixed warning.
-//    016   05.01.24 Sean Flook                 use CSS shortcuts.
-//    017   16.01.24 Sean Flook       IMANN-237 Added a clear button.
-//    018   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
+//    001   13.04.21 Sean Flook          WI39345 Initial Revision.
+//    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
+//    003   14.05.21 Sean Flook          WI39345 Updated className.
+//    004   18.05.21 Sean Flook          WI39345 Use the value directly.
+//    005   20.05.21 Sean Flook          WI39345 Undo above changes and added new useEffect for the value changing.
+//    006   20.05.21 Sean Flook          WI39345 Display a tooltip if required.
+//    007   25.05.21 Sean Flook          WI39345 Changes to get the Tooltip to display correctly and include required field text if required to tooltip.
+//    008   08.06.21 Sean Flook          WI39345 Changed read-only version to a label and altered colour of outline.
+//    009   15.06.21 Sean Flook          WI39345 Display the toolbar as temporary fix, until v5 components are fully released.
+//    010   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    011   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    012   08.12.23 Sean Flook                  Migrated DatePicker to v6.
+//    013   18.12.23 Sean Flook                  Ensure tooltip is displayed
+//    014   20.12.23 Sean Flook        IMANN-201 Added hideYear property to hide the year in the control.
+//    015   03.01.24 Sean Flook                  Fixed warning.
+//    016   05.01.24 Sean Flook                  use CSS shortcuts.
+//    017   16.01.24 Sean Flook        IMANN-237 Added a clear button.
+//    018   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    019   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    019   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -46,7 +49,7 @@ import { parseISO } from "date-fns";
 import dateFormat from "dateformat";
 import { isValidDate } from "../utils/HelperUtils";
 
-import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
+import { Grid2, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ADSErrorDisplay from "./ADSErrorDisplay";
@@ -142,8 +145,8 @@ function ADSDateControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Typography
             variant="body2"
             align="left"
@@ -152,8 +155,8 @@ function ADSDateControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
@@ -256,9 +259,9 @@ function ADSDateControl({
               value={""}
             />
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

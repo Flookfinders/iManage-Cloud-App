@@ -3,7 +3,7 @@
 //
 //  Description: Multiple Select component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -11,16 +11,19 @@
 //
 //  Version Date     Modifier            Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   12.07.21 Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
+//    001   12.07.21 Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
-//    007   12.11.24 Sean Flook                 Various changes to improve the control.
+//    007   12.11.24 Sean Flook                  Various changes to improve the control.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -31,7 +34,7 @@ import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import {
-  Grid,
+  Grid2,
   Select,
   Chip,
   Input,
@@ -362,14 +365,16 @@ function ADSMultipleSelectControl({
               variant="outlined"
               margin="dense"
               size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <img src={currentRow[0][lookupIcon]} alt="" width="20" height="20" />
-                  </InputAdornment>
-                ),
-              }}
               value={lookupToTitleCase(currentRow[0][lookupLabel], false)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <img src={currentRow[0][lookupIcon]} alt="" width="20" height="20" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           );
         } else {
@@ -446,8 +451,8 @@ function ADSMultipleSelectControl({
   return (
     <ThemeProvider theme={adsTheme}>
       <Box sx={FormBoxRowStyle(hasError.current)}>
-        <Grid container alignItems="center" sx={FormRowStyle(hasError.current)}>
-          <Grid item xs={3}>
+        <Grid2 container alignItems="center" sx={FormRowStyle(hasError.current)}>
+          <Grid2 size={3}>
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
               <Typography
                 variant="body2"
@@ -459,8 +464,8 @@ function ADSMultipleSelectControl({
               </Typography>
               <Badge color="error" variant="dot" invisible={!indicateChange} />
             </Stack>
-          </Grid>
-          <Grid item xs={9}>
+          </Grid2>
+          <Grid2 size={9}>
             <FormControl
               sx={FormSelectInputStyle(hasError.current)}
               variant="outlined"
@@ -658,9 +663,9 @@ function ADSMultipleSelectControl({
                 getLookupInfo(value)
               )}
             </FormControl>
-          </Grid>
+          </Grid2>
           <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-language-error`} />
-        </Grid>
+        </Grid2>
       </Box>
     </ThemeProvider>
   );

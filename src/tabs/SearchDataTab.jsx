@@ -3,84 +3,88 @@
 //
 //  Description: List records returned from a search
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   21.03.23 Sean Flook         WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
-//    003   22.03.23 Sean Flook         WI40600 Correctly call handleOpenRecord from the grid view.
-//    004   28.03.23 Sean Flook         WI40632 Set the source for onWizardDone.
-//    005   05.04.23 Sean Flook         WI40596 If opening an historic property display the warning dialog.
-//    006   18.04.23 Sean Flook         WI40685 Modified call to ADSSelectionControl.
-//    007   27.06.23 Sean Flook         WI40759 Include a natural sort on the address field when displaying records.
-//    008   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    009   24.07.23 Sean Flook                 Removed Edit property and Edit street menu items.
-//    010   20.07.23 Sean Flook                 Added ability to display the street and property in Google street view.
-//    011   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    012   06.10.23 Sean Flook                 Added call to DisplayStreetInStreetView. Added some error trapping and use colour variables.
-//    012   10.10.23 Sean Flook       IMANN-163 Changes required for opening the related tab after the property wizard.
-//    013   11.10.23 Sean Flook       IMANN-163 Use the centralised doOpenRecord method.
-//    014   11.10.23 Sean Flook       IMANN-163 Correctly handle historic properties.
-//    015   27.10.23 Sean Flook       IMANN-175 Added getUprnsFromLpiKeys.
-//    016   30.11.23 Sean Flook       IMANN-175 Added closing street, reset property selection flag when opening a record.
-//    017   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    018   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs, and improve some functions.
-//    019   20.11.23 Sean Flook                 Undone above change.
-//    020   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
-//    021   29.11.23 Sean Flook       IMANN-163 Do not clear the street or property contexts if viewing ranges.
-//    022   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    023   11.01.24 Sean Flook       IMANN-163 Close the add property wizard dialog when clicking on view properties.
-//    024   12.01.24 Sean Flook                 Fixed duplicate key warning.
-//    025   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    026   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    027   08.02.24 Joel Benford     RTAB3     Supply state to classification icon tooltip
-//    028   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    029   13.02.24 Sean Flook                 Corrected the type 66 map data and added missing parameter to call to StreetDelete.
-//    030   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    031   19.02.24 Sean Flook        ESU16_GP Do not clear the controls if we have items checked.
-//    032   20.02.24 Sean Flook            MUL1 Added removal of items from the list.
-//    033   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
-//    034   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
-//    035   15.03.24 Sean Flook            GLB7 Use onClick rather than onChange.
-//    036   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    037   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
-//    038   04.04.24 Sean Flook                 Changes required to handle deleting ESUs from streets and child properties from parent properties.
-//    039   05.04.24 Sean Flook                 Further changes to ensure the application is correctly updated after a delete.
-//    040   19.04.24 Sean Flook       IMANN-132 When adding a child or children ensure we have the parent English LPI.
-//    041   26.04.24 Sean Flook                 Added some error handling.
-//    042   29.04.24 Sean Flook                 Replaced openPropertyRecord with call to doOpenRecord.
-//    043   29.05.24 Joshua McCormick IMANN-470 Nowrap street title & added tooltip with title
-//    044   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    045   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    046   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
-//    047   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
-//    048   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
-//    049   17.07.24 Joshua McCormick IMANN-548 Removed debug code, removed FormatStreetData, removed GetStreetMapData
-//    050   17.07.24 Joshua McCormick IMANN-548 Removed getStreetSearchData import
-//    051   18.07.24 Joshua McCormick IMANN-548 zoomToStreet add street if not in newMapSearchProperties
-//    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    053   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
+//    001            Sean Flook                  Initial Revision.
+//    002   21.03.23 Sean Flook          WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
+//    003   22.03.23 Sean Flook          WI40600 Correctly call handleOpenRecord from the grid view.
+//    004   28.03.23 Sean Flook          WI40632 Set the source for onWizardDone.
+//    005   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
+//    006   18.04.23 Sean Flook          WI40685 Modified call to ADSSelectionControl.
+//    007   27.06.23 Sean Flook          WI40759 Include a natural sort on the address field when displaying records.
+//    008   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    009   24.07.23 Sean Flook                  Removed Edit property and Edit street menu items.
+//    010   20.07.23 Sean Flook                  Added ability to display the street and property in Google street view.
+//    011   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    012   06.10.23 Sean Flook                  Added call to DisplayStreetInStreetView. Added some error trapping and use colour variables.
+//    012   10.10.23 Sean Flook        IMANN-163 Changes required for opening the related tab after the property wizard.
+//    013   11.10.23 Sean Flook        IMANN-163 Use the centralised doOpenRecord method.
+//    014   11.10.23 Sean Flook        IMANN-163 Correctly handle historic properties.
+//    015   27.10.23 Sean Flook        IMANN-175 Added getUprnsFromLpiKeys.
+//    016   30.11.23 Sean Flook        IMANN-175 Added closing street, reset property selection flag when opening a record.
+//    017   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    018   20.11.23 Sean Flook                  Tweak the classification code for street BLPUs, and improve some functions.
+//    019   20.11.23 Sean Flook                  Undone above change.
+//    020   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed some warnings.
+//    021   29.11.23 Sean Flook        IMANN-163 Do not clear the street or property contexts if viewing ranges.
+//    022   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    023   11.01.24 Sean Flook        IMANN-163 Close the add property wizard dialog when clicking on view properties.
+//    024   12.01.24 Sean Flook                  Fixed duplicate key warning.
+//    025   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    026   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    027   08.02.24 Joel Benford      RTAB3     Supply state to classification icon tooltip
+//    028   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    029   13.02.24 Sean Flook                  Corrected the type 66 map data and added missing parameter to call to StreetDelete.
+//    030   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    031   19.02.24 Sean Flook         ESU16_GP Do not clear the controls if we have items checked.
+//    032   20.02.24 Sean Flook             MUL1 Added removal of items from the list.
+//    033   27.02.24 Sean Flook            MUL16 Changes required to handle parent child relationships.
+//    034   12.03.24 Sean Flook             MUL8 Display an alert if properties are successfully moved.
+//    035   15.03.24 Sean Flook             GLB7 Use onClick rather than onChange.
+//    036   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    037   25.03.24 Sean Flook            MUL16 Removed option to remove from parent.
+//    038   04.04.24 Sean Flook                  Changes required to handle deleting ESUs from streets and child properties from parent properties.
+//    039   05.04.24 Sean Flook                  Further changes to ensure the application is correctly updated after a delete.
+//    040   19.04.24 Sean Flook        IMANN-132 When adding a child or children ensure we have the parent English LPI.
+//    041   26.04.24 Sean Flook                  Added some error handling.
+//    042   29.04.24 Sean Flook                  Replaced openPropertyRecord with call to doOpenRecord.
+//    043   29.05.24 Joshua McCormick  IMANN-470 Nowrap street title & added tooltip with title
+//    044   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    045   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    046   11.07.24 Sean Flook        IMANN-747 Only display menu items if the user has the rights to use them.
+//    047   11.07.24 Sean Flook        IMANN-748 Only display menu items if user has the correct rights.
+//    048   17.07.24 Joshua McCormick  IMANN-548 zoomToStreet fix
+//    049   17.07.24 Joshua McCormick  IMANN-548 Removed debug code, removed FormatStreetData, removed GetStreetMapData
+//    050   17.07.24 Joshua McCormick  IMANN-548 Removed getStreetSearchData import
+//    051   18.07.24 Joshua McCormick  IMANN-548 zoomToStreet add street if not in newMapSearchProperties
+//    052   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    053   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    054   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    055   02.10.24 Sean Flook       IMANN-550 Changed menu item order for streets.
-//    056   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    057   23.10.24 Sean Flook      IMANN-1019 Use the correct data when opening the record.
-//    058   01.11.24 Sean Flook      IMANN-1010 Use the correct data determining the street icon.
+//    054   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    055   02.10.24 Sean Flook        IMANN-550 Changed menu item order for streets.
+//    056   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    057   23.10.24 Sean Flook       IMANN-1019 Use the correct data when opening the record.
+//    058   01.11.24 Sean Flook       IMANN-1010 Use the correct data determining the street icon.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    059   21.11.24 Sean Flook      IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
+//    059   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    060   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React, { useContext, useState, useRef, Fragment, useEffect } from "react";
+// import { useNavigate } from "react-router";
 import { useHistory } from "react-router";
 import PropTypes from "prop-types";
 
@@ -96,7 +100,7 @@ import InformationContext from "../context/informationContext";
 
 import {
   Checkbox,
-  Grid,
+  Grid2,
   IconButton,
   List,
   ListItemButton,
@@ -182,6 +186,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
   const sandboxContext = useContext(SandboxContext);
   const informationContext = useContext(InformationContext);
 
+  // const navigate = useNavigate();
   const history = useHistory();
 
   const [itemSelected, setItemSelected] = useState(null);
@@ -417,6 +422,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
         );
       }
 
+      // if (!isRange) navigate.goBack();
       if (!isRange) history.goBack();
 
       const parentData =
@@ -1996,69 +2002,61 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                     </ListItemIcon>
                     <ListItemText
                       primary={
-                        <Grid container justifyContent="flex-start" alignItems="flex-start">
-                          <Grid
-                            item
-                            xs={6}
+                        <Grid2 container justifyContent="flex-start" alignItems="flex-start">
+                          <Grid2
                             container
                             direction="column"
                             justifyContent="space-between"
                             alignItems="flex-start"
                             spacing={1}
+                            size={6}
                           >
-                            <Grid item container direction="column">
+                            <Grid2 container direction="column">
                               {rec.type === 15 ? (
                                 <Fragment>
-                                  <Grid item>
+                                  <Grid2>
                                     <Typography variant="body2" sx={{ fontSize: "15px", color: adsMidGreyA }}>
                                       {rec.street.replace(/\w\S*/g, function (txt) {
                                         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
                                       })}
                                     </Typography>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Typography variant="body2" sx={{ fontSize: "15px", color: adsMidGreyA }}>
                                       {rec.town.replace(/\w\S*/g, function (txt) {
                                         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
                                       })}
                                     </Typography>
-                                  </Grid>
+                                  </Grid2>
                                 </Fragment>
                               ) : (
                                 formattedAddressToTitleCase(rec.formattedaddress, rec.postcode).map((address, idx) => (
-                                  <Grid item key={`key_${idx}`}>
+                                  <Grid2 key={`key_${idx}`}>
                                     <Typography variant="body2" sx={{ fontSize: "15px", color: adsMidGreyA }}>
                                       {address}
                                     </Typography>
-                                  </Grid>
+                                  </Grid2>
                                 ))
                               )}
-                            </Grid>
-                            <Grid item>
+                            </Grid2>
+                            <Grid2>
                               <Typography variant="body2" sx={{ fontSize: "15px", color: adsMidGreyA }}>
                                 {rec.type === 15 ? rec.usrn : rec.uprn}
                               </Typography>
-                            </Grid>
-                          </Grid>
-                          <Grid
-                            item
-                            xs={3}
+                            </Grid2>
+                          </Grid2>
+                          <Grid2
                             container
                             rowSpacing={2}
                             direction="column"
                             justifyContent="space-between"
                             alignItems="flex-start"
+                            size={3}
                           >
                             {rec.type === 15 ? (
                               <Fragment>
-                                <Grid
-                                  item
-                                  container
-                                  direction="column"
-                                  justifyContent="flex-start"
-                                  alignItems="flex-start"
-                                >
-                                  <Grid item>
+                                <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                                  <Grid2>
                                     <Typography
                                       sx={{
                                         color: adsMidGreyC,
@@ -2067,19 +2065,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       State
                                     </Typography>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Typography variant="body2">Open</Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid
-                                  item
-                                  container
-                                  direction="column"
-                                  justifyContent="flex-start"
-                                  alignItems="flex-start"
-                                >
-                                  <Grid item>
+                                  </Grid2>
+                                </Grid2>
+                                <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                                  <Grid2>
                                     <Typography
                                       sx={{
                                         color: adsMidGreyC,
@@ -2088,19 +2080,13 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       Surface
                                     </Typography>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Typography variant="body2">Metalled</Typography>
-                                  </Grid>
-                                </Grid>
-                                <Grid
-                                  item
-                                  container
-                                  direction="column"
-                                  justifyContent="flex-start"
-                                  alignItems="flex-start"
-                                >
-                                  <Grid item>
+                                  </Grid2>
+                                </Grid2>
+                                <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                                  <Grid2>
                                     <Typography
                                       sx={{
                                         color: adsMidGreyC,
@@ -2109,21 +2095,15 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       Direction
                                     </Typography>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Typography variant="body2">Two way</Typography>
-                                  </Grid>
-                                </Grid>
+                                  </Grid2>
+                                </Grid2>
                               </Fragment>
                             ) : (
-                              <Grid
-                                item
-                                container
-                                direction="column"
-                                justifyContent="flex-start"
-                                alignItems="flex-start"
-                              >
-                                <Grid item>
+                              <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                                <Grid2>
                                   <Typography
                                     sx={{
                                       color: adsMidGreyC,
@@ -2132,8 +2112,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   >
                                     Classification
                                   </Typography>
-                                </Grid>
-                                <Grid item>
+                                </Grid2>
+                                <Grid2>
                                   <Typography variant="body2">
                                     {GetClassificationLabel(
                                       rec.classification_code ? rec.classification_code : "U",
@@ -2141,11 +2121,11 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                       false
                                     )}
                                   </Typography>
-                                </Grid>
-                              </Grid>
+                                </Grid2>
+                              </Grid2>
                             )}
-                            <Grid item container direction="column" justifyContent="flex-start" alignItems="flex-start">
-                              <Grid item>
+                            <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+                              <Grid2>
                                 <Typography
                                   sx={{
                                     color: adsMidGreyC,
@@ -2154,28 +2134,21 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                 >
                                   Language
                                 </Typography>
-                              </Grid>
-                              <Grid item>
+                              </Grid2>
+                              <Grid2>
                                 <Typography variant="body2">{rec.language}</Typography>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Grid
-                            item
-                            xs={3}
+                              </Grid2>
+                            </Grid2>
+                          </Grid2>
+                          <Grid2
                             container
                             direction="column"
                             justifyContent="space-between"
                             alignItems="flex-start"
                             spacing={1}
+                            size={3}
                           >
-                            <Grid
-                              item
-                              container
-                              direction="column"
-                              justifyContent="space-between"
-                              alignItems="flex-end"
-                            >
+                            <Grid2 container direction="column" justifyContent="space-between" alignItems="flex-end">
                               {itemSelected && itemSelected === rec.id ? (
                                 rec.type === 15 ? (
                                   <Stack
@@ -2463,7 +2436,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                 )
                               ) : (
                                 <Fragment>
-                                  <Grid item>
+                                  <Grid2>
                                     <Typography
                                       sx={{
                                         color: adsMidGreyC,
@@ -2473,25 +2446,24 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       Last updated
                                     </Typography>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Typography variant="body2" sx={{ pr: theme.spacing(1) }}>
                                       22/07/2021
                                     </Typography>
-                                  </Grid>
+                                  </Grid2>
                                 </Fragment>
                               )}
-                            </Grid>
+                            </Grid2>
                             {rec.type === 15 ? (
-                              <Grid
-                                item
+                              <Grid2
                                 container
                                 direction="column"
                                 justifyContent="flex-end"
                                 alignItems="flex-end"
                                 sx={{ pr: theme.spacing(1) }}
                               >
-                                <Grid item>
+                                <Grid2>
                                   <Typography
                                     sx={{
                                       color: adsMidGreyC,
@@ -2500,9 +2472,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   >
                                     Special designation
                                   </Typography>
-                                </Grid>
-                                <Grid item container justifyContent="flex-end" spacing={1}>
-                                  <Grid item>
+                                </Grid2>
+                                <Grid2 container justifyContent="flex-end" spacing={1}>
+                                  <Grid2>
                                     <Avatar
                                       variant="rounded"
                                       sx={{
@@ -2514,8 +2486,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       <Typography variant="caption">1</Typography>
                                     </Avatar>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Avatar
                                       variant="rounded"
                                       sx={{
@@ -2527,8 +2499,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       <Typography variant="caption">2</Typography>
                                     </Avatar>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Avatar
                                       variant="rounded"
                                       sx={{
@@ -2540,19 +2512,18 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       <Typography variant="caption">3</Typography>
                                     </Avatar>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
+                                  </Grid2>
+                                </Grid2>
+                              </Grid2>
                             ) : (
-                              <Grid
-                                item
+                              <Grid2
                                 container
                                 direction="column"
                                 justifyContent="flex-end"
                                 alignItems="flex-end"
                                 sx={{ pr: theme.spacing(1) }}
                               >
-                                <Grid item>
+                                <Grid2>
                                   <Typography
                                     sx={{
                                       color: adsMidGreyC,
@@ -2561,9 +2532,9 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   >
                                     Cross refs
                                   </Typography>
-                                </Grid>
-                                <Grid item container justifyContent="flex-end" spacing={1}>
-                                  <Grid item>
+                                </Grid2>
+                                <Grid2 container justifyContent="flex-end" spacing={1}>
+                                  <Grid2>
                                     <Avatar
                                       variant="rounded"
                                       sx={{
@@ -2575,8 +2546,8 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       <Typography variant="caption">ER</Typography>
                                     </Avatar>
-                                  </Grid>
-                                  <Grid item>
+                                  </Grid2>
+                                  <Grid2>
                                     <Avatar
                                       variant="rounded"
                                       sx={{
@@ -2588,12 +2559,12 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                     >
                                       <Typography variant="caption">CT</Typography>
                                     </Avatar>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
+                                  </Grid2>
+                                </Grid2>
+                              </Grid2>
                             )}
-                          </Grid>
-                        </Grid>
+                          </Grid2>
+                        </Grid2>
                       }
                     />
                   </ListItemButton>

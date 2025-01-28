@@ -3,46 +3,49 @@
 //
 //  Description: Navigation Bar component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    003   03.07.23 Sean Flook                 Hide Users & permissions, Export and Import options.
-//    004   17.08.23 Sean Flook       IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
-//    005   06.10.23 Sean Flook                 Use colour variables.
-//    006   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
-//    007   10.11.23 Sean Flook                 Modified call to StringAvatar.
-//    008   24.11.23 Sean Flook                 Moved Stack to @mui/system and pass the correct parameter to StringAvatar.
-//    009   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    010   29.01.24 Sean Flook       IMANN-262 Changed from a Popper control to a Popover control, so we can handle closing when clicking away.
-//    011   29.01.24 Sean Flook       IMANN-262 Do not display the users settings card if no user is logged in.
-//    012   30.01.24 Sean Flook                 Updated to use new Idox logo.
-//    013   05.02.24 Sean Flook                 Tweaked position of logo.
-//    014   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    015   05.03.24 Sean Flook       IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
-//    016   07.03.24 Sean Flook       IMANN-338 Always clear any errors if we are leaving the current page.
-//    017   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
-//    018   08.03.24 Sean Flook       IMANN-338 If the save fails do not leave the current page.
-//    019   11.03.24 Sean Flook           GLB12 Correctly set widths.
-//    020   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    021   10.06.24 Sean Flook       IMANN-509 Allow a user to change their password.
-//    022   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    024   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
-//    025   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    026   04.07.24 Sean Flook       IMANN-705 Use displayName for the user icon.
-//    027   15.07.24 Sean Flook       IMANN-762 If user cannot see properties default to street template when opening the settings.
+//    001   02.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    003   03.07.23 Sean Flook                  Hide Users & permissions, Export and Import options.
+//    004   17.08.23 Sean Flook        IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
+//    005   06.10.23 Sean Flook                  Use colour variables.
+//    006   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
+//    007   10.11.23 Sean Flook                  Modified call to StringAvatar.
+//    008   24.11.23 Sean Flook                  Moved Stack to @mui/system and pass the correct parameter to StringAvatar.
+//    009   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    010   29.01.24 Sean Flook        IMANN-262 Changed from a Popper control to a Popover control, so we can handle closing when clicking away.
+//    011   29.01.24 Sean Flook        IMANN-262 Do not display the users settings card if no user is logged in.
+//    012   30.01.24 Sean Flook                  Updated to use new Idox logo.
+//    013   05.02.24 Sean Flook                  Tweaked position of logo.
+//    014   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    015   05.03.24 Sean Flook        IMANN-338 Check for changes when clicking any of the buttons which would cause to navigate away from a record.
+//    016   07.03.24 Sean Flook        IMANN-338 Always clear any errors if we are leaving the current page.
+//    017   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    018   08.03.24 Sean Flook        IMANN-338 If the save fails do not leave the current page.
+//    019   11.03.24 Sean Flook            GLB12 Correctly set widths.
+//    020   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    021   10.06.24 Sean Flook        IMANN-509 Allow a user to change their password.
+//    022   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    023   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    024   21.06.24 Sean Flook        IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
+//    025   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    026   04.07.24 Sean Flook        IMANN-705 Use displayName for the user icon.
+//    027   15.07.24 Sean Flook        IMANN-762 If user cannot see properties default to street template when opening the settings.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    028   24.10.24 Sean Flook      IMANN-1040 Call the logoff endpoint when logging a user off the system.
-//    029   07.01.25 Joshua McCormick IMANN-1050 Inital Check Notifications with changeset 65608
+//    028   24.10.24 Sean Flook       IMANN-1040 Call the logoff endpoint when logging a user off the system.
+//    029   07.01.25 Joshua McCormick IMANN-1050 Initial Check Notifications with changeset 65608
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    030   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -50,6 +53,7 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
+// import { useNavigate, useLocation } from "react-router";
 import { useHistory, useLocation } from "react-router";
 import StreetContext from "../context/streetContext";
 import PropertyContext from "../context/propertyContext";
@@ -78,7 +82,7 @@ import { useSaveConfirmation } from "../pages/SaveConfirmationPage";
 import {
   Tooltip,
   Drawer,
-  Grid,
+  Grid2,
   IconButton,
   Snackbar,
   Alert,
@@ -138,6 +142,7 @@ import { PostUserLogoffUrl } from "../configuration/ADSConfig";
 const ADSNavContent = (props) => {
   const theme = useTheme();
 
+  // const navigate = useNavigate();
   const history = useHistory();
   const location = useLocation();
 
@@ -311,7 +316,7 @@ const ADSNavContent = (props) => {
                     position={"absolute"}
                     top={theme.spacing(1.5)}
                     fontSize={12}
-                    color={adsMagenta}
+                    sx={{ color: adsMagenta }}
                   >
                     {notifications.length > 0 && (
                       <>
@@ -347,8 +352,7 @@ const ADSNavContent = (props) => {
   const NotificationMessageHolder = (props) => {
     return (
       <Typography>
-        <Grid
-          item
+        <Grid2
           sx={{
             background: props.unread ? adsPaleBlueA : "inherit",
             cursor: "pointer",
@@ -375,7 +379,7 @@ const ADSNavContent = (props) => {
           <Typography variant="subtitle2" sx={{ fontWeight: 200, color: adsMidGreyA, fontSize: 12 }}>
             {FormatDateTime(props.date)}
           </Typography>
-        </Grid>
+        </Grid2>
       </Typography>
     );
   };
@@ -671,8 +675,8 @@ const ADSNavContent = (props) => {
   const handleHomeClick = () => {
     streetContext.resetStreet();
     propertyContext.resetProperty();
-    history.push(HomeRoute);
     // navigate(HomeRoute);
+    history.push(HomeRoute);
     setActiveButton();
   };
 
@@ -680,8 +684,8 @@ const ADSNavContent = (props) => {
    * Event to handle when the gazetteer button is clicked.
    */
   const handleGazetteerClick = () => {
-    history.push(GazetteerRoute);
     // navigate(GazetteerRoute);
+    history.push(GazetteerRoute);
     setActiveButton();
   };
 
@@ -689,8 +693,8 @@ const ADSNavContent = (props) => {
    * Event to handle when the task management button is clicked.
    */
   const handleTaskManagementClick = () => {
-    history.push(TaskRoute);
     // navigate(TaskRoute);
+    history.push(TaskRoute);
     setActiveButton();
   };
 
@@ -698,8 +702,8 @@ const ADSNavContent = (props) => {
    * Event to handle when the reports button is clicked.
    */
   const handleReportsClick = () => {
-    history.push(ReportRoute);
     // navigate(ReportRoute);
+    history.push(ReportRoute);
     setActiveButton();
   };
 
@@ -781,8 +785,8 @@ const ADSNavContent = (props) => {
   const displayAdminSettingsPage = (initialNodeId) => {
     setAnchorEl(null);
     settingsContext.onNodeChange(initialNodeId);
-    history.push(AdminSettingsRoute);
     // navigate(AdminSettingsRoute);
+    history.push(AdminSettingsRoute);
     setActiveButton();
   };
 
@@ -837,33 +841,33 @@ const ADSNavContent = (props) => {
         variant="permanent"
         anchor="left"
       >
-        <Grid
+        <Grid2
           sx={dataFormStyle("ADSNavContent")}
           container
           direction="column"
           justifyContent="space-between"
           alignItems="center"
         >
-          <Grid item>
-            <Grid container direction="column" alignItems="center" justifyContent="flex-start">
-              <Grid item xs sx={{ mb: theme.spacing(2) }}>
+          <Grid2>
+            <Grid2 container direction="column" alignItems="center" justifyContent="flex-start">
+              <Grid2 sx={{ mb: theme.spacing(2) }} size="grow">
                 <img sx={{ ml: theme.spacing(2) }} src="/images/Idox_Logo.svg" alt="Idox" width="36" />
-              </Grid>
-              <Grid item xs>
+              </Grid2>
+              <Grid2 size="grow">
                 <Tooltip title="Home" arrow placement="right" sx={tooltipStyle}>
                   <IconButton aria-label="home" onClick={() => handlePageChangeClick("home")} size="large">
                     <DashboardIcon fontSize="large" sx={navigationIconStyle(homeActive)} />
                   </IconButton>
                 </Tooltip>
-              </Grid>
-              <Grid item xs>
+              </Grid2>
+              <Grid2 size="grow">
                 <Tooltip title="Gazetteer" arrow placement="right" sx={tooltipStyle}>
                   <IconButton aria-label="gazetteer" onClick={() => handlePageChangeClick("gazetteer")} size="large">
                     <ExploreIcon fontSize="large" sx={navigationIconStyle(gazetteerActive)} />
                   </IconButton>
                 </Tooltip>
-              </Grid>
-              <Grid item xs>
+              </Grid2>
+              <Grid2 size="grow">
                 {process.env.NODE_ENV === "development" && (
                   <Tooltip title="Task management" arrow placement="right" sx={tooltipStyle}>
                     <span>
@@ -878,8 +882,8 @@ const ADSNavContent = (props) => {
                     </span>
                   </Tooltip>
                 )}
-              </Grid>
-              <Grid item xs>
+              </Grid2>
+              <Grid2 size="grow">
                 {process.env.NODE_ENV === "development" && (
                   <Tooltip title="Reports" arrow placement="right" sx={tooltipStyle}>
                     <span>
@@ -894,11 +898,11 @@ const ADSNavContent = (props) => {
                     </span>
                   </Tooltip>
                 )}
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Grid container direction="column" alignItems="center" justifyContent="flex-end">
+              </Grid2>
+            </Grid2>
+          </Grid2>
+          <Grid2>
+            <Grid2 container direction="column" alignItems="center" justifyContent="flex-end">
               {process.env.NODE_ENV === "development" && (
                 <ADSWhatsNewAvatar count={0} handleClick={() => handlePageChangeClick("whatsNew")} />
               )}
@@ -909,9 +913,9 @@ const ADSNavContent = (props) => {
                 />
               )}
               <ADSUserAvatar onUserClick={() => handlePageChangeClick("user")} />
-            </Grid>
-          </Grid>
-        </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       </Drawer>
       <div>
         <Snackbar

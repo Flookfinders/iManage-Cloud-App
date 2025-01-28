@@ -3,34 +3,37 @@
 //
 //  Description: Dialog used to multi-edit the address fields
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   23.10.23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   11.01.24 Sean Flook                 Fix warnings.
-//    006   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
-//    008   11.03.24 Sean Flook           MUL13 Changed control alignment.
-//    009   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
-//    010   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    011   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    012   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
-//    013   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
-//    014   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    016   08.07.24 Sean Flook       IMANN-715 Corrected the Scottish property structure and increase the failed count if failed to save property.
+//    001   23.10.23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   11.01.24 Sean Flook                  Fix warnings.
+//    006   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    007   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    008   11.03.24 Sean Flook            MUL13 Changed control alignment.
+//    009   11.03.24 Sean Flook            MUL11 Reset counts when closing dialog.
+//    010   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    011   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    012   09.04.24 Sean Flook        IMANN-376 Allow lookups to be added on the fly.
+//    013   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
+//    014   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    015   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   08.07.24 Sean Flook        IMANN-715 Corrected the Scottish property structure and increase the failed count if failed to save property.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    017   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//    017   24.10.24 Sean Flook       IMANN-1033 Only sort and filter lookups when required.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -49,7 +52,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   List,
@@ -702,8 +705,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
               <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
                 Choose the updates that you wish to apply to the selected properties
               </Typography>
-              <Grid container justifyContent="center" alignItems="center">
-                <Grid item xs={12}>
+              <Grid2 container justifyContent="center" alignItems="center">
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Street"
                     isEditable
@@ -718,8 +721,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     onChange={handleStreetChangeEvent}
                     helperText="Unique Street reference number."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Post town"
                     isEditable
@@ -736,9 +739,9 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     onAddLookup={handleAddPostTownEvent}
                     helperText="Allocated by the Royal Mail to assist in delivery of mail."
                   />
-                </Grid>
+                </Grid2>
                 {settingsContext.isScottish && (
-                  <Grid item xs={12}>
+                  <Grid2 size={12}>
                     <ADSSelectControl
                       label="Sub-locality"
                       isEditable
@@ -755,9 +758,9 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                       onAddLookup={handleAddSubLocalityEvent}
                       helperText="Third level of geographic area name. e.g. to record an island name or property group."
                     />
-                  </Grid>
+                  </Grid2>
                 )}
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Postcode"
                     isEditable
@@ -775,8 +778,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     onAddLookup={handleAddPostcodeEvent}
                     helperText="Allocated by the Royal Mail to assist in delivery of mail."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Official address"
                     isEditable
@@ -792,8 +795,8 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     onChange={handleOfficialFlagChangeEvent}
                     helperText="Status of address."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
                     isEditable
@@ -809,9 +812,9 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                     onChange={handlePostalAddressChangeEvent}
                     helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
                   />
-                </Grid>
+                </Grid2>
                 {noteOpen && (
-                  <Grid item xs={12}>
+                  <Grid2 size={12}>
                     <ADSTextControl
                       isEditable
                       disabled={updating}
@@ -822,9 +825,9 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                       maxLines={10}
                       onChange={handleNoteChangeEvent}
                     />
-                  </Grid>
+                  </Grid2>
                 )}
-              </Grid>
+              </Grid2>
             </Fragment>
           ) : (
             <Fragment>

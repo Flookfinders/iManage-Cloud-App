@@ -3,21 +3,24 @@
 //
 //  Description: Upload shape file dialog
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.01.24 Sean Flook                 Initial Revision.
-//    002   03.01.24 Sean Flook                 Fixed warning.
-//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    004   11.01.24 Sean Flook                 Fix warnings.
-//    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    006   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    001   02.01.24 Sean Flook                  Initial Revision.
+//    002   03.01.24 Sean Flook                  Fixed warning.
+//    003   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    004   11.01.24 Sean Flook                  Fix warnings.
+//    005   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    006   27.03.24 Sean Flook                  Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    007   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -25,7 +28,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Button, Typography, Dialog, DialogActions, DialogContent, TextField, Grid, Tooltip } from "@mui/material";
+import { Button, Typography, Dialog, DialogActions, DialogContent, TextField, Grid2, Tooltip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSMinMaxControl from "../components/ADSMinMaxControl";
@@ -258,8 +261,8 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
       <Dialog open={showDialog} aria-labelledby="message-dialog" fullWidth maxWidth="md" onClose={handleCancelClick}>
         <ADSDialogTitle title="Load Shape file" closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0}>
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" spacing={0}>
+            <Grid2 size={12}>
               <Stack direction="column" spacing={0}>
                 <Typography
                   variant="body2"
@@ -282,7 +285,6 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                       margin="dense"
                       size="small"
                       value={filename}
-                      inputProps={{ type: "File", accept: "application/x-zip-compressed" }}
                       sx={{
                         pl: "8px",
                         pr: "8px",
@@ -298,6 +300,9 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                         },
                       }}
                       onChange={handleShpFileChangeEvent}
+                      slotProps={{
+                        htmlInput: { type: "File", accept: "application/x-zip-compressed" },
+                      }}
                     />
                   </Tooltip>
                   <ADSTextControl
@@ -389,8 +394,8 @@ function UploadShpFileDialog({ isOpen, currentIds, onClose }) {
                   />
                 </Box>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(2.25) }}>
           <Button

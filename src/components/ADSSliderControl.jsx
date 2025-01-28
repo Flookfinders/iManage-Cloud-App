@@ -3,28 +3,31 @@
 //
 //  Description: Slider component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    004   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    004   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Typography, Grid, Tooltip, Slider, TextField, Skeleton } from "@mui/material";
+import { Typography, Grid2, Tooltip, Slider, TextField, Skeleton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, skeletonHeight, tooltipStyle } from "../utils/ADSStyles";
@@ -139,8 +142,8 @@ function ADSSliderControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)} spacing={2}>
-        <Grid item xs={narrowLabel ? 3 : 4}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)} spacing={2}>
+        <Grid2 size={narrowLabel ? 3 : 4}>
           <Typography
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             variant="body2"
@@ -149,8 +152,8 @@ function ADSSliderControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={narrowLabel ? 9 : 8}>
+        </Grid2>
+        <Grid2 size={narrowLabel ? 9 : 8}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
@@ -182,15 +185,17 @@ function ADSSliderControl({
                     required={isRequired}
                     variant="outlined"
                     margin="dense"
-                    inputProps={{
-                      min: min,
-                      max: max,
-                    }}
                     size="small"
                     value={displayValue}
                     onChange={handleInputChangeEvent}
                     onBlur={handleBlur}
                     aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-slider`}
+                    slotProps={{
+                      htmlInput: {
+                        min: min,
+                        max: max,
+                      },
+                    }}
                   />
                 )}
                 {includeLabel && (
@@ -223,15 +228,17 @@ function ADSSliderControl({
                   required={isRequired}
                   variant="outlined"
                   margin="dense"
-                  inputProps={{
-                    min: min,
-                    max: max,
-                  }}
                   size="small"
                   value={displayValue}
                   onChange={handleInputChangeEvent}
                   onBlur={handleBlur}
                   aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-slider`}
+                  slotProps={{
+                    htmlInput: {
+                      min: min,
+                      max: max,
+                    },
+                  }}
                 />
               )}
               {includeLabel && (
@@ -241,9 +248,9 @@ function ADSSliderControl({
               )}
             </Stack>
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-number-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

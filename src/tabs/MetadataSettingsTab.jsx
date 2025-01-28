@@ -3,29 +3,32 @@
 //
 //  Description: Metadata settings tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   07.09.23 Sean Flook                 Cleaned the code.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    007   10.01.24 Sean Flook                 Fix warnings.
-//    008   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    009   24.01.24 Joel Benford               Interim with API changes and partial save (GP LLPG).
-//    010   24.01.24 Joel Benford               Save placeholder gazDate (will need adding to GUI)
-//    011   25.01.24 Sean Flook                 Changes required after UX review.
-//    012   31.01.24 Joel Benford               Changes to as save and support OS
-//    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    014   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   07.09.23 Sean Flook                  Cleaned the code.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    005   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    007   10.01.24 Sean Flook                  Fix warnings.
+//    008   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    009   24.01.24 Joel Benford                Interim with API changes and partial save (GP LLPG).
+//    010   24.01.24 Joel Benford                Save placeholder gazDate (will need adding to GUI)
+//    011   25.01.24 Sean Flook                  Changes required after UX review.
+//    012   31.01.24 Joel Benford                Changes to as save and support OS
+//    013   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    014   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -39,7 +42,7 @@ import { GetLSGMetadataUrl, GetASDMetadataUrl, GetLLPGMetadataUrl } from "../con
 import {
   Typography,
   Button,
-  Grid,
+  Grid2,
   Card,
   CardHeader,
   CardActionArea,
@@ -1305,8 +1308,8 @@ function MetadataSettingsTab({ variant }) {
             <Typography variant="body2">{getButtonText()}</Typography>
           </Button>
         </Stack>
-        <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
-          <Grid item xs={6}>
+        <Grid2 container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -1325,21 +1328,23 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Gazetteer details"
-                titleTypographyProps={{ sx: getTitleStyle(editGazetteer) }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: { sx: getTitleStyle(editGazetteer) },
+                }}
               />
               <CardActionArea onClick={doEditGazetteer}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Grid container rowSpacing={1}>
+                  <Grid2 container rowSpacing={1}>
                     {variant === "property" && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Name</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {variant === "property" && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         {loading ? (
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
@@ -1347,15 +1352,15 @@ function MetadataSettingsTab({ variant }) {
                             {gazName}
                           </Typography>
                         )}
-                      </Grid>
+                      </Grid2>
                     )}
                     {variant === "property" && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Scope</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {variant === "property" && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         {loading ? (
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
@@ -1363,12 +1368,12 @@ function MetadataSettingsTab({ variant }) {
                             {gazScope}
                           </Typography>
                         )}
-                      </Grid>
+                      </Grid2>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Territory</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1376,13 +1381,13 @@ function MetadataSettingsTab({ variant }) {
                           {terOfUse}
                         </Typography>
                       )}
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Linked data</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1390,16 +1395,16 @@ function MetadataSettingsTab({ variant }) {
                               {linkedData}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
                     {variant === "property" && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Owner</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {variant === "property" && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         {loading ? (
                           <Skeleton variant="rectangular" height="20px" width="100%" />
                         ) : (
@@ -1407,14 +1412,14 @@ function MetadataSettingsTab({ variant }) {
                             {gazOwner}
                           </Typography>
                         )}
-                      </Grid>
+                      </Grid2>
                     )}
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Frequency</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1422,15 +1427,15 @@ function MetadataSettingsTab({ variant }) {
                               {getFrequency(ngazFreq)}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                  </Grid>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
-          <Grid item xs={6}>
+          </Grid2>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -1449,18 +1454,20 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Custodian details"
-                titleTypographyProps={{ sx: getTitleStyle(editCustodian) }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: { sx: getTitleStyle(editCustodian) },
+                }}
               />
               <CardActionArea onClick={doEditCustodian}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Name</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1468,13 +1475,13 @@ function MetadataSettingsTab({ variant }) {
                           {custodianName}
                         </Typography>
                       )}
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">UPRN</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1482,13 +1489,13 @@ function MetadataSettingsTab({ variant }) {
                               {custodianUprn}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Code</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1496,13 +1503,13 @@ function MetadataSettingsTab({ variant }) {
                           {getAuthorityText(custodianCode)}
                         </Typography>
                       )}
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
-          <Grid item xs={6}>
+          </Grid2>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -1521,18 +1528,20 @@ function MetadataSettingsTab({ variant }) {
                   )
                 }
                 title="Miscellaneous details"
-                titleTypographyProps={{ sx: getTitleStyle(editMiscellaneous) }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: { sx: getTitleStyle(editMiscellaneous) },
+                }}
               />
               <CardActionArea onClick={doEditMiscellaneous}>
                 <CardContent
                   sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                 >
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Classification scheme</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1540,13 +1549,13 @@ function MetadataSettingsTab({ variant }) {
                           {classificationScheme}
                         </Typography>
                       )}
-                    </Grid>
+                    </Grid2>
                     {settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">State code scheme</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1554,13 +1563,13 @@ function MetadataSettingsTab({ variant }) {
                               {stateCodeScheme}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Metadata date</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1568,11 +1577,11 @@ function MetadataSettingsTab({ variant }) {
                           {getDisplayDate(metaDate)}
                         </Typography>
                       )}
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Gazetteer date</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1580,11 +1589,11 @@ function MetadataSettingsTab({ variant }) {
                           {getDisplayDate(gazDate)}
                         </Typography>
                       )}
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Language</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       {loading ? (
                         <Skeleton variant="rectangular" height="20px" width="100%" />
                       ) : (
@@ -1592,13 +1601,13 @@ function MetadataSettingsTab({ variant }) {
                           {getDisplayLanguage(language)}
                         </Typography>
                       )}
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
                       <>
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Character set</Typography>
-                        </Grid>
-                        <Grid item xs={9}>
+                        </Grid2>
+                        <Grid2 size={9}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1606,16 +1615,16 @@ function MetadataSettingsTab({ variant }) {
                               {characterSet}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       </>
                     )}
-                  </Grid>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
+          </Grid2>
           {variant !== "property" && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -1634,21 +1643,23 @@ function MetadataSettingsTab({ variant }) {
                     )
                   }
                   title="Content details"
-                  titleTypographyProps={{ sx: getTitleStyle(editContent) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editContent) },
+                  }}
                 />
                 <CardActionArea onClick={doEditContent}>
                   <CardContent
                     sx={settingsCardContentStyle(variant === "property" ? "property-metadata" : "street-asd-metadata")}
                   >
-                    <Grid container rowSpacing={1} sx={{ height: "260px", overflowY: "auto" }}>
+                    <Grid2 container rowSpacing={1} sx={{ height: "260px", overflowY: "auto" }}>
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Motorway trunk roads</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1656,15 +1667,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentMotorwayTrunkRoad ? contentMotorwayTrunkRoad : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Private streets</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1672,15 +1683,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentPrivateStreet ? contentPrivateStreet : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Primary route network</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1688,15 +1699,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentPrn ? contentPrn : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Classified roads</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1704,15 +1715,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentClassifiedRoad ? contentClassifiedRoad : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">PRoW footpaths</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1720,15 +1731,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentProwFootpath ? contentProwFootpath : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">PRoW bridleways</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1736,15 +1747,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentProwBridleway ? contentProwBridleway : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">PRoW restricted byways</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1752,15 +1763,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentProwRestrictedByway ? contentProwRestrictedByway : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">PRoW BOAT</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1768,15 +1779,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentProwBoat ? contentProwBoat : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">National cycle routes</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "street" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1784,15 +1795,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${contentNationalCycleRoute ? contentNationalCycleRoute : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Protected streets</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1800,15 +1811,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdProtectedStreet ? mdProtectedStreet : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Traffic sensitive streets</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1816,15 +1827,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdTrafficSensitive ? mdTrafficSensitive : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Special engineering difficulties</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1832,15 +1843,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdSed ? mdSed : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Proposed SEDs</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1848,15 +1859,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdProposedSed ? mdProposedSed : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Level crossing safety zone</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1864,15 +1875,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdLevelCrossing ? mdLevelCrossing : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Environmentally sensitive areas</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1880,15 +1891,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdEnvSensitiveArea ? mdEnvSensitiveArea : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Structures not SEDs</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1896,15 +1907,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdStructuresNotSed ? mdStructuresNotSed : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Pipelines and specialist cables</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1912,15 +1923,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdPipelinesAndCables ? mdPipelinesAndCables : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Priority lanes</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1928,15 +1939,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdPriorityLanes ? mdPriorityLanes : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Lane rental</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1944,15 +1955,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdLaneRental ? mdLaneRental : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Early notification streets</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1960,15 +1971,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdEarlyNotification ? mdEarlyNotification : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Special events</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1976,15 +1987,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdSpecialEvents ? mdSpecialEvents : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Parking bays and restrictions</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -1992,15 +2003,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdParking ? mdParking : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Pedestrian crossings and signals</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2008,15 +2019,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdPedCrossAndSignals ? mdPedCrossAndSignals : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Speed limits</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2024,15 +2035,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdSpeedLimit ? mdSpeedLimit : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Transport authority critical apparatus</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2040,15 +2051,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdTransAuthApp ? mdTransAuthApp : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Strategic route</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2056,15 +2067,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdStrategicRoute ? mdStrategicRoute : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Street lighting</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2072,15 +2083,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdStreetLight ? mdStreetLight : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Drainage and flood risk areas</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2088,15 +2099,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdDrainageAndFlood ? mdDrainageAndFlood : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Unusual traffic layouts</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2104,15 +2115,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdUnusualLayout ? mdUnusualLayout : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Local considerations</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2120,15 +2131,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdLocalConsider ? mdLocalConsider : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Winter maintenance routes</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2136,15 +2147,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdWinterMainRoute ? mdWinterMainRoute : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">HGV approved routes</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2152,15 +2163,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdHgvRoute ? mdHgvRoute : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           <Typography variant="body2">Emergency services routes</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {variant === "asd" && (
-                        <Grid item xs={6}>
+                        <Grid2 size={6}>
                           {loading ? (
                             <Skeleton variant="rectangular" height="20px" width="100%" />
                           ) : (
@@ -2168,15 +2179,15 @@ function MetadataSettingsTab({ variant }) {
                               {`${mdEmergencyRoute ? mdEmergencyRoute : 0}%`}
                             </Typography>
                           )}
-                        </Grid>
+                        </Grid2>
                       )}
-                    </Grid>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
       </Stack>
       <EditMetadataGazetteerDialog
         isOpen={showEditGazetteerDialog}

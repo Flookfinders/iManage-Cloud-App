@@ -3,19 +3,22 @@
 //
 //  Description: Checkbox component used in the highway dedication tab.
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   20.08.24 Sean Flook       IMANN-818 Initial version.
+//    001   20.08.24 Sean Flook        IMANN-818 Initial version.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    002   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    002   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -23,7 +26,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Box, Checkbox, FormControlLabel, Grid, Skeleton } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Grid2, Skeleton } from "@mui/material";
 
 import { DirectionsBike as NCRIcon } from "@mui/icons-material";
 import {
@@ -161,8 +164,8 @@ function ADSHDCheckbox({ variant, checked, isEditable, isFocused, loading, error
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : (
@@ -180,12 +183,12 @@ function ADSHDCheckbox({ variant, checked, isEditable, isFocused, loading, error
               sx={getIndicatorStyle(checked, hdCheckboxHover)}
             />
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay
           errorText={displayError}
           id={`${variant.toLowerCase().replaceAll(" ", "-")}-hd-checkbox-error`}
         />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

@@ -3,19 +3,22 @@
 //
 //  Description: Place on map component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -23,7 +26,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Typography, Button, ButtonGroup, IconButton, Grid } from "@mui/material";
+import { Typography, Button, ButtonGroup, IconButton, Grid2 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
@@ -376,8 +379,8 @@ function ADSPlaceOnMapControl({
             <Stack direction="row" alignItems="flex-start" spacing={3}>
               <Stack direction="column" spacing={0}>
                 <Typography variant="body2">Start point</Typography>
-                <Grid container sx={{ width: "120px" }}>
-                  <Grid item xs={4}>
+                <Grid2 container sx={{ width: "120px" }}>
+                  <Grid2 size={4}>
                     <IconButton aria-label="topLeft" onClick={handleTopLeftClick}>
                       {startPoint === "topLeft" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -385,8 +388,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="top" onClick={handleTopClick}>
                       {startPoint === "top" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -394,8 +397,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="topRight" onClick={handleTopRightClick}>
                       {startPoint === "topRight" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -403,8 +406,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="left" onClick={handleLeftClick}>
                       {startPoint === "left" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -412,9 +415,9 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4} />
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4} />
+                  <Grid2 size={4}>
                     <IconButton aria-label="right" onClick={handleRightClick}>
                       {startPoint === "right" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -422,8 +425,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="bottomLeft" onClick={handleBottomLeftClick}>
                       {startPoint === "bottomLeft" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -431,8 +434,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="bottom" onClick={handleBottomClick}>
                       {startPoint === "bottom" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -440,8 +443,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                  <Grid item xs={4}>
+                  </Grid2>
+                  <Grid2 size={4}>
                     <IconButton aria-label="bottomRight" onClick={handleBottomRightClick}>
                       {startPoint === "bottomRight" ? (
                         <SquareIcon sx={startPointButtonStyle(true)} />
@@ -449,8 +452,8 @@ function ADSPlaceOnMapControl({
                         <SquareOutlinedIcon sx={startPointButtonStyle(false)} />
                       )}
                     </IconButton>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </Stack>
               <Stack direction="column" spacing={0}>
                 <Typography variant="body2">Direction</Typography>

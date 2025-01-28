@@ -3,65 +3,68 @@
 //
 //  Description: Application Bar component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   28.03.23 Sean Flook         WI40632 Set the source for onWizardDone.
-//    003   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    004   23.08.23 Sean Flook       IMANN-160 Use the street template when creating a new street.
-//    005   07.09.23 Sean Flook                 Modified call to mapContext.onBackgroundDataChange.
-//    006   20.09.23 Sean Flook                 Tweak to handleBackToListClick method.
-//    007   06.10.23 Sean Flook                 Use colour variables.
-//    008   27.10.23 Sean Flook                 Updated call to SavePropertyAndUpdate.
-//    009   03.11.23 Sean Flook       IMANN-175 Added button to select properties from the map.
-//    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    011   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and added getClassificationCode.
-//    012   30.11.23 Sean Flook       IMANN-175 Make the button visible to all.
-//    013   19.12.23 Sean Flook                 Various bug fixes.
-//    014   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    015   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    016   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
-//    017   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    018   26.01.24 Sean Flook       IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
-//    019   05.02.24 Joel Benford               Hide close button on homepage, add spacing before auth avatar
-//    020   08.02.24 Sean Flook                 Display the Add street and Select properties button when in the gazetteer page.
-//    021   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    022   14.02.24 Joshua McCormick IMANN-282 shorthand padding and Add new street title change
-//    023   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
-//    024   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
-//    025   16.02.24 Joshua McCormick IMANN-282 currentSearchStreets title change
-//    026   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    027   16.02.24 Sean Flook        ESU27_GP Changed the Add street button to make it more prominent.
-//    028   20.02.24 Sean Flook            MUL1 Display information control for selecting properties.
-//    029   27.02.24 Sean Flook           MUL16 Hide the search control when required and reduce padding on the Add street button.
-//    030   05.03.24 Sean Flook       IMANN-338 Correctly display controls and navigate as required.
-//    031   07.03.24 Sean Flook       IMANN-338 Use the correct fields to hide the issue popper.
-//    032   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
-//    033   11.03.24 Sean Flook           GLB12 Use constants from ADSStyles to set heights and widths.
-//    034   15.03.24 Sean Flook            GLB6 Removed autofocus from the add street button as not required.
-//    035   04.04.24 Sean Flook                 Changes required to navigate back after deleting a property.
-//    036   05.04.24 Sean Flook                 Changes required to display errors even when records have not been edited (Delete and Get).
-//    037   01.05.24 Sean Flook                 Correctly set haveSearch.
-//    048   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    049   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    050   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    051   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    052   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    053   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   02.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   28.03.23 Sean Flook          WI40632 Set the source for onWizardDone.
+//    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    004   23.08.23 Sean Flook        IMANN-160 Use the street template when creating a new street.
+//    005   07.09.23 Sean Flook                  Modified call to mapContext.onBackgroundDataChange.
+//    006   20.09.23 Sean Flook                  Tweak to handleBackToListClick method.
+//    007   06.10.23 Sean Flook                  Use colour variables.
+//    008   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
+//    009   03.11.23 Sean Flook        IMANN-175 Added button to select properties from the map.
+//    010   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    011   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and added getClassificationCode.
+//    012   30.11.23 Sean Flook        IMANN-175 Make the button visible to all.
+//    013   19.12.23 Sean Flook                  Various bug fixes.
+//    014   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    015   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    016   12.01.24 Sean Flook        IMANN-163 Search results should be an array.
+//    017   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    018   26.01.24 Sean Flook        IMANN-251 Fix HandleChangeCheck and only do the postCheckAction after the record is saved.
+//    019   05.02.24 Joel Benford                Hide close button on homepage, add spacing before auth avatar
+//    020   08.02.24 Sean Flook                  Display the Add street and Select properties button when in the gazetteer page.
+//    021   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    022   14.02.24 Joshua McCormick  IMANN-282 shorthand padding and Add new street title change
+//    023   15.02.24 Joshua McCormick  IMANN-282 Changed logic for street title change
+//    024   15.02.24 Joshua McCormick  IMANN-282 Final tweaks, shortened condition
+//    025   16.02.24 Joshua McCormick  IMANN-282 currentSearchStreets title change
+//    026   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    027   16.02.24 Sean Flook         ESU27_GP Changed the Add street button to make it more prominent.
+//    028   20.02.24 Sean Flook             MUL1 Display information control for selecting properties.
+//    029   27.02.24 Sean Flook            MUL16 Hide the search control when required and reduce padding on the Add street button.
+//    030   05.03.24 Sean Flook        IMANN-338 Correctly display controls and navigate as required.
+//    031   07.03.24 Sean Flook        IMANN-338 Use the correct fields to hide the issue popper.
+//    032   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    033   11.03.24 Sean Flook            GLB12 Use constants from ADSStyles to set heights and widths.
+//    034   15.03.24 Sean Flook             GLB6 Removed autofocus from the add street button as not required.
+//    035   04.04.24 Sean Flook                  Changes required to navigate back after deleting a property.
+//    036   05.04.24 Sean Flook                  Changes required to display errors even when records have not been edited (Delete and Get).
+//    037   01.05.24 Sean Flook                  Correctly set haveSearch.
+//    048   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    049   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    050   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    051   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    052   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    053   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    054   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to create streets.
-//    055   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    054   10.10.24 Sean Flook       IMANN-1018 Allow LLPG editors to create streets.
+//    055   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    056   28.11.24 Sean Flook      IMANN-1073 If validation fails when trying to save do not proceed so validation messages can be seen.
+//    056   28.11.24 Sean Flook       IMANN-1073 If validation fails when trying to save do not proceed so validation messages can be seen.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    057   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -69,6 +72,7 @@
 /* #region imports */
 
 import React, { useContext, useState, useRef, useEffect, Fragment, useCallback } from "react";
+// import { useLocation, useNavigate } from "react-router";
 import { useHistory, useLocation } from "react-router";
 import StreetContext from "../context/streetContext";
 import PropertyContext from "../context/propertyContext";
@@ -201,6 +205,7 @@ function ADSAppBar(props) {
    * Event to handle when the search is clicked.
    */
   const handleSearchClick = () => {
+    // if (location.pathname !== GazetteerRoute) navigate(GazetteerRoute);
     if (location.pathname !== GazetteerRoute) history.push(GazetteerRoute);
   };
 
@@ -561,6 +566,8 @@ function ADSAppBar(props) {
     informationContext.onClearInformation();
     history.push(HomeRoute);
   }, [history, informationContext, mapContext, propertyContext, sandboxContext, searchContext, streetContext]);
+  //   navigate(HomeRoute);
+  // }, [navigate, informationContext, mapContext, propertyContext, sandboxContext, searchContext, streetContext]);
 
   /**
    * Event to handle when the back to list button is clicked.
@@ -570,6 +577,7 @@ function ADSAppBar(props) {
   const handleBackToListClick = useCallback(
     async (discardChanges) => {
       if (haveAdminSettings) {
+        // navigate.go(-1);
         history.go(-1);
       } else {
         const foundStreet =
@@ -780,11 +788,13 @@ function ADSAppBar(props) {
 
         informationContext.onClearInformation();
 
+        // navigate(GazetteerRoute);
         history.push(GazetteerRoute);
       }
     },
     [
       haveAdminSettings,
+      // navigate,
       history,
       informationContext,
       mapContext,

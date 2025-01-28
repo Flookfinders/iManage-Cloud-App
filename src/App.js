@@ -9,99 +9,103 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   16.08.22 Sean Flook         WI39??? Initial Revision.
-//    002   16.03.23 Sean Flook         WI40583 Correctly set/reset propertyErrors.
-//    003   28.03.23 Sean Flook         WI40632 Added source to HandleWizardDone.
-//    004   29.03.23 Sean Flook         WI40634 Do not prevent the map extent from being set due to zoom level.
-//    005   06.04.23 Sean Flook         WI40610 Include parentUprn in HandlePropertyValidateData.
-//    006   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    007            Sean Flook                 Added newRecord parameter to the HandleStreetRecordChange function.
-//    008   17.08.23 Sean Flook       IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
-//    009   23.08.23 Sean Flook       IMANN-159 Use the new street template structure.
-//    010   07.09.23 Sean Flook                 Added code to handle ESU maintenance.
-//    011   20.09.23 Sean Flook                 Handle OneScotland specific records types.
-//    012   10.10.23 Sean Flook       IMANN-163 Changes required to correctly handle opening the related tab after the property wizard has run.
-//    013   12.10.23 Sean Flook                 Added code to deal with storing the expanded ESU and ASD items.
-//    014   12.10.23 Sean Flook                 Reset the ESU and ASD list when resetting the street.
-//    015   03.11.23 Sean Flook       IMANN-175 Changes required to select properties from the map.
-//    016   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
-//    017   20.11.23 Sean Flook                 Removed unwanted code.
-//    018   24.11.23 Sean Flook                 Renamed successor to successorCrossRef.
-//    019   01.12.23 Sean Flook       IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
-//    020   14.12.23 Sean Flook                 Corrected note record type and tidied up validation code.
-//    021   19.12.23 Sean Flook                 Various bug fixes.
-//    022   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    023   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    024   10.01.24 Sean Flook       IMANN-163 Added previousStreet and previousProperty.
-//    025   12.01.24 Sean Flook       IMANN-163 Search results should be an array.
-//    026   25.01.24 Sean Flook                 Changes required after UX review.
-//    027   26.01.24 Sean Flook       IMANN-251 Only check why in HandleLeavingStreet.
-//    028   05.02.24 Sean Flook                 Further changes required for operational districts.
-//    029   13.02.24 Sean Flook                 Pass the authorityCode to ValidatePublicRightOfWayData.
-//    030   14.02.24 Sean Flook        ASD10_GP Changes required to filter the ASD map layers when editing a record.
-//    031   20.02.24 Sean Flook            MUL1 Changes required for handling selecting properties from the map.
-//    032   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
-//    033   27.02.24 Sean Flook           MUL16 Added ability too hide the search control.
-//    034   05.03.24 Sean Flook       IMANN-338 Store the last opened street and property tab.
-//    035   08.03.24 Sean Flook       IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
-//    036   11.03.24 Sean Flook           GLB12 Use appBarHeight to set the height of the control.
-//    037   13.03.24 Sean Flook            MUL9 Changes required to enable related refresh.
-//    038   04.04.24 Sean Flook                 Added navigate back and leaving a property.
-//    039   05.04.24 Sean Flook       IMANN-351 Changes to handle browser navigation.
-//    040   09.04.24 Sean Flook                 If we do not have user information do not close the login dialog.
-//    041   11.04.24 Sean Flook                 Use title case for authority name rather than sentence case.
-//    042   16.04.24 Sean Flook                 Changes required to handle loading and displaying SHP files.
-//    043   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
-//    044   30.04.24 Sean Flook       IMANN-371 Separate out streetTab and propertyTab.
-//    045   01.05.24 Sean Flook                 Only reload contexts if required.
-//    046   14.05.24 Joshua McCormick IMANN-270 Typo in Validation  for errors with hww & prow
-//    047   14.05.24 Sean Flook       IMANN-206 Changes required to display all the provenances.
-//    048   30.05.24 Sean Flook       IMANN-499 Include settingsNode in the settingsContext reload.
-//    049   04.06.24 Sean Flook       IMANN-510 Include the level field when validating the BLPU data.
-//    050   04.06.24 Sean Flook       IMANN-511 Handle when we do not have an internet connection.
-//    051   06.06.24 Sean Flook       IMANN-524 Ensure the sandbox has the current data.
-//    052   12.06.24 Sean Flook       IMANN-536 Added some additional checking to HandleMapReload.
-//    053   12.06.24 Sean Flook       IMANN-565 Handle polygon deletion.
-//    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    055   20.06.24 Sean Flook       IMANN-636 Bug fix.
-//    056   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    057   01.07.24 Sean Flook       IMANN-592 Use sandboxRef.current in HandleResetSandbox.
-//    058   04.07.24 Sean Flook       IMANN-705 Added displayName to contextUser.
-//    059   08.07.24 Sean Flook       IMANN-728 Include the new user rights.
-//    060   17.07.24 Sean Flook       IMANN-596 Modified HandleClearHighlight to set objects to empty arrays rather than null.
-//    061   19.07.24 Sean Flook       IMANN-801 Added polling objects to Offline and Online and changed the polling interval from every 5 seconds to every 60 seconds.
-//    062   23.07.24 Sean Flook       IMANN-801 Reduced the polling interval back to every 5 seconds.
-//    063   06.08.24 Sean Flook       IMANN-903 Use a reference to store the loaded SHP files.
-//    064   27.08.24 Sean Flook       IMANN-925 Corrected typo.
-//    065   10.09.24 Sean Flook       IMANN-980 Set the showMessages rights for users and only write to the console if the user has the showMessages right.
+//    001   16.08.22 Sean Flook          WI39??? Initial Revision.
+//    002   16.03.23 Sean Flook          WI40583 Correctly set/reset propertyErrors.
+//    003   28.03.23 Sean Flook          WI40632 Added source to HandleWizardDone.
+//    004   29.03.23 Sean Flook          WI40634 Do not prevent the map extent from being set due to zoom level.
+//    005   06.04.23 Sean Flook          WI40610 Include parentUprn in HandlePropertyValidateData.
+//    006   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    007            Sean Flook                  Added newRecord parameter to the HandleStreetRecordChange function.
+//    008   17.08.23 Sean Flook        IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
+//    009   23.08.23 Sean Flook        IMANN-159 Use the new street template structure.
+//    010   07.09.23 Sean Flook                  Added code to handle ESU maintenance.
+//    011   20.09.23 Sean Flook                  Handle OneScotland specific records types.
+//    012   10.10.23 Sean Flook        IMANN-163 Changes required to correctly handle opening the related tab after the property wizard has run.
+//    013   12.10.23 Sean Flook                  Added code to deal with storing the expanded ESU and ASD items.
+//    014   12.10.23 Sean Flook                  Reset the ESU and ASD list when resetting the street.
+//    015   03.11.23 Sean Flook        IMANN-175 Changes required to select properties from the map.
+//    016   10.11.23 Sean Flook        IMANN-175 Changes required for Move BLPU seed point.
+//    017   20.11.23 Sean Flook                  Removed unwanted code.
+//    018   24.11.23 Sean Flook                  Renamed successor to successorCrossRef.
+//    019   01.12.23 Sean Flook        IMANN-194 Added HandleUpdateLookup to enable updating a single lookup type.
+//    020   14.12.23 Sean Flook                  Corrected note record type and tidied up validation code.
+//    021   19.12.23 Sean Flook                  Various bug fixes.
+//    022   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    023   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    024   10.01.24 Sean Flook        IMANN-163 Added previousStreet and previousProperty.
+//    025   12.01.24 Sean Flook        IMANN-163 Search results should be an array.
+//    026   25.01.24 Sean Flook                  Changes required after UX review.
+//    027   26.01.24 Sean Flook        IMANN-251 Only check why in HandleLeavingStreet.
+//    028   05.02.24 Sean Flook                  Further changes required for operational districts.
+//    029   13.02.24 Sean Flook                  Pass the authorityCode to ValidatePublicRightOfWayData.
+//    030   14.02.24 Sean Flook         ASD10_GP Changes required to filter the ASD map layers when editing a record.
+//    031   20.02.24 Sean Flook             MUL1 Changes required for handling selecting properties from the map.
+//    032   26.02.24 Joel Benford      IMANN-242 Add DbAuthority to lookups context
+//    033   27.02.24 Sean Flook            MUL16 Added ability too hide the search control.
+//    034   05.03.24 Sean Flook        IMANN-338 Store the last opened street and property tab.
+//    035   08.03.24 Sean Flook        IMANN-348 If clearing ESU from sandbox ensure highway dedication and one way exemption are also cleared.
+//    036   11.03.24 Sean Flook            GLB12 Use appBarHeight to set the height of the control.
+//    037   13.03.24 Sean Flook             MUL9 Changes required to enable related refresh.
+//    038   04.04.24 Sean Flook                  Added navigate back and leaving a property.
+//    039   05.04.24 Sean Flook        IMANN-351 Changes to handle browser navigation.
+//    040   09.04.24 Sean Flook                  If we do not have user information do not close the login dialog.
+//    041   11.04.24 Sean Flook                  Use title case for authority name rather than sentence case.
+//    042   16.04.24 Sean Flook                  Changes required to handle loading and displaying SHP files.
+//    043   18.04.24 Sean Flook        IMANN-351 Changes required to reload the contexts after a refresh.
+//    044   30.04.24 Sean Flook        IMANN-371 Separate out streetTab and propertyTab.
+//    045   01.05.24 Sean Flook                  Only reload contexts if required.
+//    046   14.05.24 Joshua McCormick  IMANN-270 Typo in Validation  for errors with hww & prow
+//    047   14.05.24 Sean Flook        IMANN-206 Changes required to display all the provenances.
+//    048   30.05.24 Sean Flook        IMANN-499 Include settingsNode in the settingsContext reload.
+//    049   04.06.24 Sean Flook        IMANN-510 Include the level field when validating the BLPU data.
+//    050   04.06.24 Sean Flook        IMANN-511 Handle when we do not have an internet connection.
+//    051   06.06.24 Sean Flook        IMANN-524 Ensure the sandbox has the current data.
+//    052   12.06.24 Sean Flook        IMANN-536 Added some additional checking to HandleMapReload.
+//    053   12.06.24 Sean Flook        IMANN-565 Handle polygon deletion.
+//    054   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    055   20.06.24 Sean Flook        IMANN-636 Bug fix.
+//    056   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    057   01.07.24 Sean Flook        IMANN-592 Use sandboxRef.current in HandleResetSandbox.
+//    058   04.07.24 Sean Flook        IMANN-705 Added displayName to contextUser.
+//    059   08.07.24 Sean Flook        IMANN-728 Include the new user rights.
+//    060   17.07.24 Sean Flook        IMANN-596 Modified HandleClearHighlight to set objects to empty arrays rather than null.
+//    061   19.07.24 Sean Flook        IMANN-801 Added polling objects to Offline and Online and changed the polling interval from every 5 seconds to every 60 seconds.
+//    062   23.07.24 Sean Flook        IMANN-801 Reduced the polling interval back to every 5 seconds.
+//    063   06.08.24 Sean Flook        IMANN-903 Use a reference to store the loaded SHP files.
+//    064   27.08.24 Sean Flook        IMANN-925 Corrected typo.
+//    065   10.09.24 Sean Flook        IMANN-980 Set the showMessages rights for users and only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    066   26.09.24 Sean Flook       IMANN-573 Updated the version.
-//    067   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    068   28.10.24 Sean Flook      IMANN-1040 Clear the localStorage and sessionStorage items when logoff user.
-//    069   28.10.24 Joshua McCormick IMANN-904 added context for clearObject, setClearObject
-//    070   05.11.24 Sean Flook       IMANN-904 Correctly handle clearing the geometry in HandleSetLineGeometry.
-//    071   06.11.24 Sean Flook      IMANN-1047 Undo changes done for IMANN-904.
+//    066   26.09.24 Sean Flook        IMANN-573 Updated the version.
+//    067   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    068   28.10.24 Sean Flook       IMANN-1040 Clear the localStorage and sessionStorage items when logoff user.
+//    069   28.10.24 Joshua McCormick  IMANN-904 added context for clearObject, setClearObject
+//    070   05.11.24 Sean Flook        IMANN-904 Correctly handle clearing the geometry in HandleSetLineGeometry.
+//    071   06.11.24 Sean Flook       IMANN-1047 Undo changes done for IMANN-904.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    066   13.11.24 Sean Flook      IMANN-1012 Updated the version.
-//    067   27.11.24 Sean Flook      IMANN-1096 Do not store the lookups in the session storage.
+//    066   13.11.24 Sean Flook       IMANN-1012 Updated the version.
+//    067   27.11.24 Sean Flook       IMANN-1096 Do not store the lookups in the session storage.
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.3.0 changes
-//    068   02.01.25 Sean Flook      IMANN-1121 Updated the version.
-//    069   07.01.25 Sean Flook      IMANN-1124 When opening the related tab always include the current property in the expand list.
-//    070   09.01.25 Sean Flook      IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
-//    071   13.01.25 Sean Flook      IMANN-1136 Various changes to improve editing provenances.
-//    072   16.01.25 Sean Flook      IMANN-1136 Removed editingProvenance and changed provenanceMerged to provenanceMerging.
+//    068   02.01.25 Sean Flook       IMANN-1121 Updated the version.
+//    069   07.01.25 Sean Flook       IMANN-1124 When opening the related tab always include the current property in the expand list.
+//    070   09.01.25 Sean Flook       IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
+//    071   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
+//    072   16.01.25 Sean Flook       IMANN-1136 Removed editingProvenance and changed provenanceMerged to provenanceMerging.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    073   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React, { useState, useRef, Fragment } from "react";
 import { Router } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import ADSAppBar from "./components/ADSAppBar";
 import ADSNavContent from "./components/ADSNavContent";
 import history from "./history";
@@ -171,6 +175,9 @@ import { adsLightGreyD } from "./utils/ADSColours";
 
 function App() {
   const theme = createTheme();
+
+  // let navigate = useNavigate();
+
   const [currentUser, setCurrentUser] = useState(null);
   const userShowMessages = useRef(false);
 
@@ -179,7 +186,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "1.0.3.0";
+  const guiVersion = "1.0.4.0";
 
   const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
   const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
@@ -1488,6 +1495,11 @@ function App() {
       })
     );
 
+    // if (usrn && usrn > 0) navigate(`/street/${usrn}`);
+    // else if (newStreet) {
+    //   setCreatingStreet(true);
+    //   navigate("/street/0");
+    // }
     if (usrn && usrn > 0) history.push(`/street/${usrn}`);
     else if (newStreet) {
       setCreatingStreet(true);
@@ -2303,6 +2315,8 @@ function App() {
       );
     }
 
+    // if (uprn && uprn > 0) navigate(`/property/${uprn}`);
+    // else if (newProperty) navigate("/property/0");
     if (uprn && uprn > 0) history.push(`/property/${uprn}`);
     else if (newProperty) history.push("/property/0");
   }

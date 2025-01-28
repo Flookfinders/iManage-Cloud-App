@@ -3,17 +3,20 @@
 //
 //  Description: Notifications Avatar component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   06.07.21 Sean Flook                 Initial Revision.
-//    002   05.01.24 Sean Flook                 Changes to sort out warnings.
+//    001   06.07.21 Sean Flook                  Initial Revision.
+//    002   05.01.24 Sean Flook                  Changes to sort out warnings.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -22,7 +25,7 @@
 
 import React from "react";
 import NotificationsIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import { Tooltip, Grid, Badge, IconButton } from "@mui/material";
+import { Tooltip, Grid2, Badge, IconButton } from "@mui/material";
 import { ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
@@ -54,7 +57,7 @@ function ADSNotificationsAvatar(props) {
   }
 
   return (
-    <Grid item xs={12}>
+    <Grid2 size={12}>
       <Tooltip title="Notifications" arrow placement="right" sx={tooltipStyle}>
         <span>
           <IconButton aria-label="profile" onClick={handleClick} disabled={notificationCount === 0} size="large">
@@ -64,7 +67,7 @@ function ADSNotificationsAvatar(props) {
           </IconButton>
         </span>
       </Tooltip>
-    </Grid>
+    </Grid2>
   );
 }
 

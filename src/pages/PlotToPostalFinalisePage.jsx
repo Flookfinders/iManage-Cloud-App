@@ -3,16 +3,19 @@
 //
 //  Description: Plot to Postal Finalise Page
 //
-//  Copyright:   © 2024 Idox Software Limited.
+//  Copyright:   © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.1.0 changes
-//    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
+//    001   15.10.24 Sean Flook       IMANN-1012 Initial Revision.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    002   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1158,9 +1161,8 @@ function PlotToPostalFinalisePage({
                     <Typography
                       id={`${rec.id}-${idx}`}
                       variant="body2"
-                      color={adsRed}
                       align="left"
-                      sx={{ fontWeight: 600, fontSize: "14px" }}
+                      sx={{ fontWeight: 600, fontSize: "14px", color: adsRed }}
                     >
                       {error}
                     </Typography>

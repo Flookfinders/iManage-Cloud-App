@@ -3,67 +3,70 @@
 //
 //  Description: Street data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   17.03.23 Sean Flook         WI40585 Hide Add property and range menu items.
-//    003   20.07.23 Sean Flook                 Added ability to display the street in Google street view.
-//    004   06.10.23 Sean Flook                 Added a call to DisplayStreetInStreetView and use colour variables.
-//    005   16.10.23 Sean Flook       IMANN-157 Display the create property and create properties menu actions for all builds.
-//    006   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    007   03.11.23 Sean Flook                 Corrected actions icon and closing a street.
-//    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    009   24.11.23 Sean Flook                 Moved Box to @mui/system and fixed a warning.
-//    010   20.12.23 Sean Flook                 Hide the Delete button until code has been written.
-//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    012   11.01.24 Sean Flook                 Fix warnings.
-//    013   25.01.24 Joel Benford               Stop overriding descriptor background.
-//    014   15.02.24 Joel Benford     IMANN-296 Changing state to closed sets state/end dates to today.
-//    015   15.02.24 Joshua McCormick IMANN-282 Changed logic for street title change
-//    016   15.02.24 Joshua McCormick IMANN-282 Final tweaks, shortened condition
-//    017   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    018   21.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
-//    019   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    020   22.03.24 Sean Flook                 Sort the descriptor records so that the English one always appears first.
-//    021   04.04.24 Sean Flook                 Changes required to handle deleting ESUs when deleting a street.
-//    022   05.04.24 Sean Flook       IMANN-326 If state is changed to 4 set the surface to 2.
-//    023   17.05.24 Joshua McCormick           Added noWrap to street title for when too many characters overflow
-//    024   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
-//    025   29.05.24 Sean Flook       IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
-//    026   30.05.24 Joel Benford     IMANN-493 Hide "Add language version" menu unless in dev
-//    027   11.06.24 Sean Flook       IMANN-490 Added code to update the USRN.
-//    028   12.06.24 Sean Flook       IMANN-536 Removed a warning.
-//    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    030   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    031   21.06.24 Sean Flook       IMANN-636 Fixed warnings.
-//    032   03.07.24 Joshua McCormick IMANN-699 Renamed Add Property on Street to Add property
-//    033   08.07.24 Sean Flook       IMANN-728 Use the new user rights.
-//    034   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
-//    035   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
-//    036   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
-//    037   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData
-//    038   17.07.24 Joshua McCormick IMANN-548 removed GetStreetMapData
-//    039   17.07.24 Sean Flook       IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
-//    040   18.07.24 Joshua McCormick IMANN-548 removed debug code
-//    041   24.07.24 Sean Flook       IMANN-830 When changing the type there is no need to update the map.
-//    042   25.07.24 Sean Flook       IMANN-849 Convert the correct variables to numbers.
-//    043   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    001   30.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
+//    003   20.07.23 Sean Flook                  Added ability to display the street in Google street view.
+//    004   06.10.23 Sean Flook                  Added a call to DisplayStreetInStreetView and use colour variables.
+//    005   16.10.23 Sean Flook        IMANN-157 Display the create property and create properties menu actions for all builds.
+//    006   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    007   03.11.23 Sean Flook                  Corrected actions icon and closing a street.
+//    008   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    009   24.11.23 Sean Flook                  Moved Box to @mui/system and fixed a warning.
+//    010   20.12.23 Sean Flook                  Hide the Delete button until code has been written.
+//    011   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    012   11.01.24 Sean Flook                  Fix warnings.
+//    013   25.01.24 Joel Benford                Stop overriding descriptor background.
+//    014   15.02.24 Joel Benford      IMANN-296 Changing state to closed sets state/end dates to today.
+//    015   15.02.24 Joshua McCormick  IMANN-282 Changed logic for street title change
+//    016   15.02.24 Joshua McCormick  IMANN-282 Final tweaks, shortened condition
+//    017   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    018   21.03.24 Joshua McCormick  IMANN-280 Adjusted toolbar spacing
+//    019   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    020   22.03.24 Sean Flook                  Sort the descriptor records so that the English one always appears first.
+//    021   04.04.24 Sean Flook                  Changes required to handle deleting ESUs when deleting a street.
+//    022   05.04.24 Sean Flook        IMANN-326 If state is changed to 4 set the surface to 2.
+//    023   17.05.24 Joshua McCormick            Added noWrap to street title for when too many characters overflow
+//    024   23.05.24 Sean Flook        IMANN-485 When state changes set the state date to current date.
+//    025   29.05.24 Sean Flook        IMANN-490 Modified USRN to be read only, but able to be edited via button and dialog.
+//    026   30.05.24 Joel Benford      IMANN-493 Hide "Add language version" menu unless in dev
+//    027   11.06.24 Sean Flook        IMANN-490 Added code to update the USRN.
+//    028   12.06.24 Sean Flook        IMANN-536 Removed a warning.
+//    029   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    030   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    031   21.06.24 Sean Flook        IMANN-636 Fixed warnings.
+//    032   03.07.24 Joshua McCormick  IMANN-699 Renamed Add Property on Street to Add property
+//    033   08.07.24 Sean Flook        IMANN-728 Use the new user rights.
+//    034   11.07.24 Sean Flook        IMANN-748 Only display menu items if user has the correct rights.
+//    035   11.07.24 Sean Flook        IMANN-749 Do not display the add button if user cannot edit.
+//    036   17.07.24 Joshua McCormick  IMANN-548 zoomToStreet fix
+//    037   17.07.24 Joshua McCormick  IMANN-548 changed FormatStreetData to getStreetSearchData
+//    038   17.07.24 Joshua McCormick  IMANN-548 removed GetStreetMapData
+//    039   17.07.24 Sean Flook        IMANN-782 Do not display create property menu items if the street is a type 3 or 4 street.
+//    040   18.07.24 Joshua McCormick  IMANN-548 removed debug code
+//    041   24.07.24 Sean Flook        IMANN-830 When changing the type there is no need to update the map.
+//    042   25.07.24 Sean Flook        IMANN-849 Convert the correct variables to numbers.
+//    043   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    044   30.09.24 Sean Flook       IMANN-617 Check we have a USRN before calling onUpdateUsrn.
-//    045   02.10.24 Sean Flook       IMANN-550 Changed menu item order.
-//    046   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
-//    047   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
+//    044   30.09.24 Sean Flook        IMANN-617 Check we have a USRN before calling onUpdateUsrn.
+//    045   02.10.24 Sean Flook        IMANN-550 Changed menu item order.
+//    046   02.10.24 Sean Flook        IMANN-999 Changed label to State date.
+//    047   10.10.24 Sean Flook       IMANN-1018 Allow LLPG editors to edit streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    048   25.11.24 Sean Flook      IMANN-1052 Changed label of classification so it will not clash with property wizard.
+//    048   25.11.24 Sean Flook       IMANN-1052 Changed label of classification so it will not clash with property wizard.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    049   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -87,7 +90,7 @@ import StreetClassification from "../data/StreetClassification";
 
 import {
   Chip,
-  Grid,
+  Grid2,
   IconButton,
   Menu,
   MenuItem,
@@ -1017,13 +1020,13 @@ function StreetDataTab({
         </Stack>
       </Box>
       <Box sx={dataFormStyle("StreetDataTab")}>
-        <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-          <Grid item xs={3}>
+        <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+          <Grid2 size={3}>
             <Typography variant="body2" color="textPrimary" align="left">
               Street descriptor*
             </Typography>
-          </Grid>
-          <Grid item xs={9}>
+          </Grid2>
+          <Grid2 size={9}>
             {loading ? (
               <Skeleton variant="rectangular" height="30px" width="100%" />
             ) : data && data.streetDescriptors && data.streetDescriptors.length > 0 ? (
@@ -1134,8 +1137,8 @@ function StreetDataTab({
                 </ListItemButton>
               </List>
             )}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
         <ADSReadOnlyControl
           loading={loading}
           label="USRN"

@@ -3,25 +3,28 @@
 //
 //  Description: Test toggle control
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    004   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Typography, Grid, Tooltip, ButtonGroup, Button, Skeleton } from "@mui/material";
+import { Typography, Grid2, Tooltip, ButtonGroup, Button, Skeleton } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle, getButtonStyle } from "../utils/ADSStyles";
@@ -90,8 +93,8 @@ function ADSTextToggleControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Typography
             id={`ads-text-label-${label.toLowerCase().replaceAll(" ", "-")}`}
             variant="body2"
@@ -100,8 +103,8 @@ function ADSTextToggleControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height="30px" width="100%" />
           ) : helperText && helperText.length > 0 ? (
@@ -162,12 +165,12 @@ function ADSTextToggleControl({
               </Button>
             </ButtonGroup>
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay
           errorText={displayError}
           id={`${label.toLowerCase().replaceAll(" ", "-")}-text-toggle-error`}
         />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

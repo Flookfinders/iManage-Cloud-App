@@ -3,28 +3,31 @@
 //
 //  Description: Dialog used to multi-edit removing cross references
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   24.10.23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    003   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   11.01.24 Sean Flook                 Fix warnings.
-//    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
-//    007   11.03.24 Sean Flook           MUL13 Changed control alignment.
-//    008   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
-//    009   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    011   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    013   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
+//    001   24.10.23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   11.01.24 Sean Flook                  Fix warnings.
+//    006   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    007   11.03.24 Sean Flook            MUL13 Changed control alignment.
+//    008   11.03.24 Sean Flook            MUL11 Reset counts when closing dialog.
+//    009   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    010   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    011   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    012   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   09.07.24 Sean Flook        IMANN-731 Corrected Scottish data.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    014   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -43,7 +46,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   FormControl,
@@ -688,8 +691,8 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
             <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
               Choose an action to perform on the selected records
             </Typography>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={12}>
+            <Grid2 container justifyContent="center" alignItems="center">
+              <Grid2 size={12}>
                 <FormControl>
                   <RadioGroup
                     aria-labelledby="add-cross-reference-action-radio-buttons-group"
@@ -721,7 +724,7 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
                             <li {...props}>
                               <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                                 {getItemAvatar(option)}
-                                <Typography variant="body2" color={adsDarkGrey} align="left">
+                                <Typography variant="body2" sx={{ color: adsDarkGrey }} align="left">
                                   {lookupToTitleCase(option, false)}
                                 </Typography>
                               </Stack>
@@ -739,9 +742,13 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
                             variant="outlined"
                             margin="dense"
                             size="small"
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: <InputAdornment position="start">{getItemAvatar(source)}</InputAdornment>,
+                            slotProps={{
+                              input: {
+                                ...params.InputProps,
+                                startAdornment: (
+                                  <InputAdornment position="start">{getItemAvatar(source)}</InputAdornment>
+                                ),
+                              },
                             }}
                           />
                         )}
@@ -771,10 +778,12 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
                         variant="outlined"
                         margin="dense"
                         size="small"
-                        inputProps={{ maxLength: "50" }}
                         value={crossReference}
                         onChange={handleCrossReferenceChangeEvent}
                         aria-labelledby={`ads-text-label-cross-reference`}
+                        slotProps={{
+                          htmlInput: { maxLength: "50" },
+                        }}
                       />
                     </Tooltip>
                     <FormControlLabel
@@ -787,9 +796,9 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
                     />
                   </RadioGroup>
                 </FormControl>
-              </Grid>
+              </Grid2>
               {noteOpen && (
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <ADSTextControl
                     isEditable
                     disabled={updating}
@@ -800,9 +809,9 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
                     maxLines={10}
                     onChange={handleNoteChangeEvent}
                   />
-                </Grid>
+                </Grid2>
               )}
-            </Grid>
+            </Grid2>
           </Fragment>
         ) : (
           <Fragment>

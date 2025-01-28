@@ -9,66 +9,69 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   30.07.21 Sean Flook                 Initial Revision.
-//    002   17.03.23 Sean Flook         WI40585 Hide Add property and range menu items.
-//    003   18.04.23 Sean Flook         WI40685 Modified call to ADSSelectionControl.
-//    004   30.06.23 Sean Flook                 Ensure the current property is initially in view.
-//    005   24.07.23 Sean Flook                 Removed Edit property menu item.
-//    006   20.07.23 Sean Flook                 Added ability to display the property in Google street view.
-//    007   06.10.23 Sean Flook                 Use colour variables.
-//    007   10.10.23 Sean Flook       IMANN-163 Changes required for opening the tab after the property wizard.
-//    008   27.10.23 Sean Flook       IMANN-175 Changes required for multi-edit of properties.
-//    009   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
-//    010   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
-//    011   20.11.23 Sean Flook                 Undone above change.
-//    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed some warnings.
-//    013   29.11.23 Sean Flook       IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
-//    014   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    015   10.01.24 Sean Flook                 Fix warnings.
-//    016   11.01.24 Sean Flook                 Fix warnings.
-//    017   12.01.24 Sean Flook                 Fixed duplicate key warning.
-//    018   25.01.24 Sean Flook                 Changes required after UX review.
-//    019   06.02.24 Joel Benford               Change flavour of light blue
-//    020   07.02.24 Joel Benford               Spacing and colours
-//    021   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
-//    022   14.02.24 Joel Benford         RTAB5 Interim check-in for comments
-//    023   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    024   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
-//    025   22.02.24 Joel Benford     IMANN-287 Checked items blue
-//    026   01.03.24 Sean Flook           MUL16 Handle make child of.
-//    027   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    028   12.03.24 Sean Flook            MUL8 Display an alert if properties are successfully moved.
-//    029   13.03.24 Sean Flook            MUL9 Added new parameters to handle the checking of records.
-//    030   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    031   19.03.24 Sean Flook       PRFRM2_GP Ensure onRelatedOpened is always called.
-//    032   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    033   25.03.24 Sean Flook           MUL16 Removed option to remove from parent.
-//    034   04.04.24 Sean Flook                 Use the new getWizardParentDetails method.
-//    035   16.04.24 Sean Flook                 Added ability to select historic properties.
-//    036   22.04.24 Sean Flook       IMANN-374 Correctly call DataFormStyle.
-//    037   25.04.24 Sean Flook       IMANN-166 After putting the current property in focus do not keep doing it.
-//    038   26.04.24 Sean Flook       IMANN-166 Reset flag if the data changes.
-//    039   13.05.24 Sean Flook       IMANN-439 Changed to use grids to display the data as well as other display improvements.
-//    040   17.05.24 Sean Flook       IMANN-458 Correctly highlight the avatar when items are hovered.
-//    041   20.05.24 Sean Flook       IMANN-450 Correctly get the USRN when creating a child/children.
-//    042   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    044   26.06.24 Sean Flook       IMANN-488 Correctly filter the data in getPropertyFromId.
-//    045   26.06.24 Joshua McCormick IMANN-548 ZoomToProperty fix, properties correctly add to list
-//    046   07.08.24 Sean Flook       IMANN-891 Use stopPropagation rather than persist.
-//    047   07.08.24 Sean Flook       IMANN-973 Use a string for the makeChildUprn.
-//    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   30.07.21 Sean Flook                  Initial Revision.
+//    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
+//    003   18.04.23 Sean Flook          WI40685 Modified call to ADSSelectionControl.
+//    004   30.06.23 Sean Flook                  Ensure the current property is initially in view.
+//    005   24.07.23 Sean Flook                  Removed Edit property menu item.
+//    006   20.07.23 Sean Flook                  Added ability to display the property in Google street view.
+//    007   06.10.23 Sean Flook                  Use colour variables.
+//    007   10.10.23 Sean Flook        IMANN-163 Changes required for opening the tab after the property wizard.
+//    008   27.10.23 Sean Flook        IMANN-175 Changes required for multi-edit of properties.
+//    009   03.11.23 Sean Flook                  Updated TreeView and TreeItem.
+//    010   20.11.23 Sean Flook                  Tweak the classification code for street BLPUs.
+//    011   20.11.23 Sean Flook                  Undone above change.
+//    012   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed some warnings.
+//    013   29.11.23 Sean Flook        IMANN-163 Added id's to the TreeItem to remove warning and corrected expanded data type.
+//    014   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    015   10.01.24 Sean Flook                  Fix warnings.
+//    016   11.01.24 Sean Flook                  Fix warnings.
+//    017   12.01.24 Sean Flook                  Fixed duplicate key warning.
+//    018   25.01.24 Sean Flook                  Changes required after UX review.
+//    019   06.02.24 Joel Benford                Change flavour of light blue
+//    020   07.02.24 Joel Benford                Spacing and colours
+//    021   08.02.24 Joel Benford          RTAB3 Supply null street state to classification icon tooltip
+//    022   14.02.24 Joel Benford          RTAB5 Interim check-in for comments
+//    023   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    024   20.02.24 Sean Flook         ESU16_GP Undone above change as not required.
+//    025   22.02.24 Joel Benford      IMANN-287 Checked items blue
+//    026   01.03.24 Sean Flook            MUL16 Handle make child of.
+//    027   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    028   12.03.24 Sean Flook             MUL8 Display an alert if properties are successfully moved.
+//    029   13.03.24 Sean Flook             MUL9 Added new parameters to handle the checking of records.
+//    030   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    031   19.03.24 Sean Flook        PRFRM2_GP Ensure onRelatedOpened is always called.
+//    032   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    033   25.03.24 Sean Flook            MUL16 Removed option to remove from parent.
+//    034   04.04.24 Sean Flook                  Use the new getWizardParentDetails method.
+//    035   16.04.24 Sean Flook                  Added ability to select historic properties.
+//    036   22.04.24 Sean Flook        IMANN-374 Correctly call DataFormStyle.
+//    037   25.04.24 Sean Flook        IMANN-166 After putting the current property in focus do not keep doing it.
+//    038   26.04.24 Sean Flook        IMANN-166 Reset flag if the data changes.
+//    039   13.05.24 Sean Flook        IMANN-439 Changed to use grids to display the data as well as other display improvements.
+//    040   17.05.24 Sean Flook        IMANN-458 Correctly highlight the avatar when items are hovered.
+//    041   20.05.24 Sean Flook        IMANN-450 Correctly get the USRN when creating a child/children.
+//    042   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    043   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    044   26.06.24 Sean Flook        IMANN-488 Correctly filter the data in getPropertyFromId.
+//    045   26.06.24 Joshua McCormick  IMANN-548 ZoomToProperty fix, properties correctly add to list
+//    046   07.08.24 Sean Flook        IMANN-891 Use stopPropagation rather than persist.
+//    047   07.08.24 Sean Flook        IMANN-973 Use a string for the makeChildUprn.
+//    048   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    049   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
-//    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    049   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
+//    050   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.3.0 changes
-//    051   07.01.25 Sean Flook      IMANN-1124 Ensure the current property is in view when opening the related tab from code.
-//    052   09.01.25 Sean Flook      IMANN-1124 Check the object exists before trying to bring it in to view.
+//    051   07.01.25 Sean Flook       IMANN-1124 Ensure the current property is in view when opening the related tab from code.
+//    052   09.01.25 Sean Flook       IMANN-1124 Check the object exists before trying to bring it in to view.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    053   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -97,10 +100,10 @@ import {
   Avatar,
   Snackbar,
   Alert,
-  Grid,
+  Grid2,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import ADSSelectionControl from "../components/ADSSelectionControl";
 import MakeChildDialog from "../dialogs/MakeChildDialog";
 
@@ -830,7 +833,7 @@ function RelatedPropertyTab({
     canAddChild.current = allowCreateChild;
 
     return (
-      <Grid
+      <Grid2
         container
         spacing={0}
         justifyContent="flex-start"
@@ -839,7 +842,7 @@ function RelatedPropertyTab({
         rowSpacing={1}
         id={`related-property-item-${rec.uprn}`}
       >
-        <Grid item xs={1}>
+        <Grid2 size={1}>
           {data.properties && data.properties.filter((x) => x.parentUprn === rec.uprn).length > 0 && (
             <Avatar
               variant="rounded"
@@ -859,8 +862,8 @@ function RelatedPropertyTab({
               </Typography>
             </Avatar>
           )}
-        </Grid>
-        <Grid item xs={1}>
+        </Grid2>
+        <Grid2 size={1}>
           <Stack direction="row" justifyContent="flex-end" alignItems="center">
             {((propertySelected && propertySelected === rec.uprn) || propertyChecked.includes(rec.uprn.toString())) && (
               <Checkbox
@@ -887,38 +890,38 @@ function RelatedPropertyTab({
               {GetClassificationIcon(rec.blpuClass ? rec.blpuClass : "R", GetAvatarColour(rec.primary.logicalStatus))}
             </Tooltip>
           </Stack>
-        </Grid>
-        <Grid container item xs={8} rowSpacing={1}>
-          <Grid item xs={2}>
+        </Grid2>
+        <Grid2 container rowSpacing={1} size={8}>
+          <Grid2 size={2}>
             <Chip size="small" label={rec.primary.language} sx={PropertyLanguageChipStyle(rec.primary.logicalStatus)} />
-          </Grid>
-          <Grid item xs={10}>
+          </Grid2>
+          <Grid2 size={10}>
             <Typography
               variant="subtitle2"
               sx={AddressStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
             >
               {addressToTitleCase(rec.primary.address, rec.primary.postcode)}
             </Typography>
-          </Grid>
+          </Grid2>
           {rec.additional.map((recAdd) => {
             return (
               <>
-                <Grid item xs={2}>
+                <Grid2 size={2}>
                   <Chip size="small" label={recAdd.language} sx={PropertyLanguageChipStyle(recAdd.logicalStatus)} />
-                </Grid>
-                <Grid item xs={10}>
+                </Grid2>
+                <Grid2 size={10}>
                   <Typography
                     variant="subtitle2"
                     sx={AddressStyle(rec.uprn.toString() === propertyContext.currentProperty.uprn.toString())}
                   >
                     {addressToTitleCase(recAdd.address, recAdd.postcode)}
                   </Typography>
-                </Grid>
+                </Grid2>
               </>
             );
           })}
-        </Grid>
-        <Grid item xs={2}>
+        </Grid2>
+        <Grid2 size={2}>
           {propertySelected && propertySelected === rec.uprn && propertyChecked && propertyChecked.length < 2 && (
             <Stack direction="row" justifyContent="flex-end" alignItems="center">
               <Tooltip title="Copy UPRN" arrow placement="bottom" sx={tooltipStyle}>
@@ -944,8 +947,8 @@ function RelatedPropertyTab({
               {AddMenuItems(rec, "property-actions-menu", anchorPropertyActionsEl, handlePropertyActionsMenuClose)}
             </Stack>
           )}
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     );
   };
 
@@ -1105,15 +1108,16 @@ function RelatedPropertyTab({
         {loading ? (
           <Skeleton variant="rectangular" height="30px" width="100%" />
         ) : (
-          <TreeView
+          <SimpleTreeView
             sx={{ flexGrow: 1, overflowY: "auto" }}
             aria-label="property related tree"
             id="property-related-tree"
-            defaultCollapseIcon={<ExpandMoreIcon sx={{ width: "24px", height: "24px" }} />}
-            defaultExpandIcon={<ChevronRightIcon sx={{ width: "24px", height: "24px" }} />}
-            expanded={expanded}
-            onNodeSelect={handleNodeSelected}
-            onNodeToggle={handleNodeToggle}
+            // defaultCollapseIcon={<ExpandMoreIcon sx={{ width: "24px", height: "24px" }} />}
+            // defaultExpandIcon={<ChevronRightIcon sx={{ width: "24px", height: "24px" }} />}
+            expandedItems={expanded}
+            slots={{ expandIcon: ChevronRightIcon, collapseIcon: ExpandMoreIcon }}
+            onSelectedItemsChange={handleNodeSelected}
+            onExpandedItemsChange={handleNodeToggle}
           >
             {data &&
               data.properties &&
@@ -1132,7 +1136,7 @@ function RelatedPropertyTab({
                   return (
                     <TreeItem
                       key={rec.uprn}
-                      nodeId={rec.uprn.toString()}
+                      itemId={rec.uprn.toString()}
                       sx={treeItemStyle(rec.uprn)}
                       label={getRelatedPropertyItem(rec)}
                       onMouseEnter={() => handleMouseEnterProperty(rec.uprn)}
@@ -1153,7 +1157,7 @@ function RelatedPropertyTab({
                             return (
                               <TreeItem
                                 key={child1.uprn}
-                                nodeId={child1.uprn.toString()}
+                                itemId={child1.uprn.toString()}
                                 sx={treeItemStyle(child1.uprn)}
                                 label={getRelatedPropertyItem(child1)}
                                 onMouseEnter={() => handleMouseEnterProperty(child1.uprn)}
@@ -1174,7 +1178,7 @@ function RelatedPropertyTab({
                                       return (
                                         <TreeItem
                                           key={child2.uprn}
-                                          nodeId={child2.uprn.toString()}
+                                          itemId={child2.uprn.toString()}
                                           sx={treeItemStyle(child2.uprn)}
                                           label={getRelatedPropertyItem(child2)}
                                           onMouseEnter={() => handleMouseEnterProperty(child2.uprn)}
@@ -1195,7 +1199,7 @@ function RelatedPropertyTab({
                                                 return (
                                                   <TreeItem
                                                     key={child3.uprn}
-                                                    nodeId={child3.uprn.toString()}
+                                                    itemId={child3.uprn.toString()}
                                                     sx={treeItemStyle(child3.uprn)}
                                                     label={getRelatedPropertyItem(child3, false)}
                                                     onMouseEnter={() => handleMouseEnterProperty(child3.uprn)}
@@ -1214,7 +1218,7 @@ function RelatedPropertyTab({
                     </TreeItem>
                   );
                 })}
-          </TreeView>
+          </SimpleTreeView>
         )}
         <Box sx={{ height: "24px" }} />
       </Box>

@@ -3,23 +3,26 @@
 //
 //  Description: Filter by Date component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   13.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   08.12.23 Sean Flook                 Migrated DatePicker to v6.
-//    003   18.12.23 Sean Flook                 Ensure tooltip is displayed
-//    004   03.01.24 Sean Flook                 Fixed warning.
-//    005   16.01.24 Sean Flook       IMANN-237 Added a clear button.
+//    001   13.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   08.12.23 Sean Flook                  Migrated DatePicker to v6.
+//    003   18.12.23 Sean Flook                  Ensure tooltip is displayed
+//    004   03.01.24 Sean Flook                  Fixed warning.
+//    005   16.01.24 Sean Flook        IMANN-237 Added a clear button.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
-//    006   12.11.24 Sean Flook                 Various required to improve the display of the controls.
+//    006   12.11.24 Sean Flook                  Various required to improve the display of the controls.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    007   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -28,7 +31,7 @@
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Badge, TextField, MenuItem, Stack } from "@mui/material";
+import { Grid2, Typography, Badge, TextField, MenuItem, Stack } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { parseISO } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
@@ -189,9 +192,11 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               margin="dense"
               size="small"
               value={withinNumber}
-              inputProps={{ min: 1 }}
               onChange={handleWithinNumberChangeEvent}
               aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              slotProps={{
+                htmlInput: { min: 1 },
+              }}
             />
             <TextField
               id={`${label.toLowerCase().replaceAll(" ", "-")}-within-last-type`}
@@ -204,10 +209,12 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               size="small"
               value={withinPeriod}
               onChange={handleWithinPeriodChangeEvent}
-              InputProps={{
-                alignItems: "center",
-              }}
               aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              slotProps={{
+                input: {
+                  alignItems: "center",
+                },
+              }}
             >
               {withinItems.map((option) => (
                 <MenuItem key={option} value={option} sx={menuItemStyle(false)}>
@@ -364,8 +371,8 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
   }, [filterType, lastN, lastPeriod, date1, date2]);
 
   return (
-    <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle()}>
-      <Grid item xs={3}>
+    <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle()}>
+      <Grid2 size={3}>
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
           <Typography
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
@@ -377,10 +384,10 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
           </Typography>
           <Badge color="error" variant="dot" invisible={!indicateChange || !dataChanged} />
         </Stack>
-      </Grid>
-      <Grid item xs={9}>
-        <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
-          <Grid item xs={3}>
+      </Grid2>
+      <Grid2 size={9}>
+        <Grid2 container justifyContent="flex-start" alignItems="center" spacing={1}>
+          <Grid2 size={3}>
             <TextField
               id={`${label.toLowerCase().replaceAll(" ", "-")}-select-type`}
               sx={FormSelectInputStyle()}
@@ -392,10 +399,12 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
               size="small"
               value={type}
               onChange={handleTypeChangeEvent}
-              InputProps={{
-                alignItems: "center",
-              }}
               aria-labelledby={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
+              slotProps={{
+                input: {
+                  alignItems: "center",
+                },
+              }}
             >
               {dateFilters.map((option) => (
                 <MenuItem key={option.id} value={option.id} sx={menuItemStyle(false)}>
@@ -411,13 +420,11 @@ function ADSFilterDateControl({ label, indicateChange, filterType, lastN, lastPe
                 </MenuItem>
               ))}
             </TextField>
-          </Grid>
-          <Grid item xs={9}>
-            {getDateControls()}
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+          </Grid2>
+          <Grid2 size={9}>{getDateControls()}</Grid2>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }
 

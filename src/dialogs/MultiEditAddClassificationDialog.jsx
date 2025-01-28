@@ -3,34 +3,37 @@
 //
 //  Description: Dialog used to multi-edit add classification for OneScotland authorities
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   26.10.23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    003   30.11.23 Sean Flook                 Use a constant for the default classification scheme.
-//    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   11.01.24 Sean Flook                 Fix warnings.
-//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    008   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
-//    009   11.03.24 Sean Flook           MUL13 Changed control alignment.
-//    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
-//    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    015   08.07.24 Sean Flook       IMANN-714 Corrected field name.
-//    016   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
-//    017   22.08.24 Sean Flook       IMANN-946 Only display the Keep option when end date is set.
-//    018   28.08.24 Sean Flook       IMANN-959 When we have an end date set only display the keep option.
-//    019   10.09.24 Sean Flook       IMANN-979 When updating existing do not add a new record.
+//    001   26.10.23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   30.11.23 Sean Flook                  Use a constant for the default classification scheme.
+//    004   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   11.01.24 Sean Flook                  Fix warnings.
+//    007   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    008   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    009   11.03.24 Sean Flook            MUL13 Changed control alignment.
+//    010   11.03.24 Sean Flook            MUL11 Reset counts when closing dialog.
+//    011   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    012   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    013   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    014   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    015   08.07.24 Sean Flook        IMANN-714 Corrected field name.
+//    016   08.07.24 Sean Flook        IMANN-715 Increase the failed count if failed to save property.
+//    017   22.08.24 Sean Flook        IMANN-946 Only display the Keep option when end date is set.
+//    018   28.08.24 Sean Flook        IMANN-959 When we have an end date set only display the keep option.
+//    019   10.09.24 Sean Flook        IMANN-979 When updating existing do not add a new record.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -49,7 +52,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   FormControl,
@@ -660,8 +663,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
             <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
               Enter the details for the classification to add to the selected properties
             </Typography>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={12}>
+            <Grid2 container justifyContent="center" alignItems="center">
+              <Grid2 size={12}>
                 <ADSSelectControl
                   label="Classification"
                   isEditable
@@ -679,8 +682,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                   onChange={handleClassificationChangeEvent}
                   helperText="Classification for the BLPU."
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <ADSDateControl
                   label="Start date"
                   isEditable
@@ -691,8 +694,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                   errorText={startDateError}
                   onChange={handleStartDateChangeEvent}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <ADSDateControl
                   label="End date"
                   isEditable
@@ -702,8 +705,8 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                   errorText={endDateError}
                   onChange={handleEndDateChangeEvent}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormControl>
                   <FormLabel id="add-cross-reference-action-radio-buttons-group" sx={{ pt: "4px" }}>
                     <Typography variant="body2" sx={{ ml: "10px" }}>
@@ -750,9 +753,9 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     )}
                   </RadioGroup>
                 </FormControl>
-              </Grid>
+              </Grid2>
               {noteOpen && (
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <ADSTextControl
                     isEditable
                     disabled={updating}
@@ -763,9 +766,9 @@ function MultiEditAddClassificationDialog({ propertyUprns, isOpen, onClose }) {
                     maxLines={10}
                     onChange={handleNoteChangeEvent}
                   />
-                </Grid>
+                </Grid2>
               )}
-            </Grid>
+            </Grid2>
           </Fragment>
         ) : (
           <Fragment>

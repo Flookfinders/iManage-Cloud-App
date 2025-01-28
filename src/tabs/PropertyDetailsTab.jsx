@@ -3,73 +3,76 @@
 //
 //  Description: Property Details Tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   17.03.23 Sean Flook         WI40585 Hide Add property and range menu items.
-//    003   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
-//    004   28.03.23 Sean Flook         WI40596 Removed above change.
-//    005   06.04.23 Sean Flook         WI40656 Fixed typo and changed siteVisit to siteSurvey for consistency.
-//    006   27.06.23 Sean Flook         WI40234 Added local custodian [Authority].
-//    007   27.06.23 Sean Flook         WI40234 Make authority read only.
-//    008   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    009   30.06.23 Sean Flook         WI40770 Set suffix letters to uppercase.
-//    010   20.07.23 Sean Flook                 Added ability to display the property in Google street view.
-//    011   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    012   06.10.23 Sean Flook                 Use colour variables.
-//    013   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    014   03.11.23 Sean Flook                 Added tooltip to the actions button.
-//    015   24.11.23 Sean Flook                 Moved Box to @mui/system and changes required for Scottish authorities.
-//    016   30.11.23 Sean Flook                 Make state and state date visible for Scottish authorities.
-//    017   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    018   10.01.24 Sean Flook                 Fix warnings.
-//    019   11.01.24 Sean Flook                 Fix warnings.
-//    020   25.01.24 Joel Benford               Stop overriding descriptor background.
-//    021   27.02.24 Sean Flook           MUL16 Changes required to handle parent child relationships.
-//    022   04.03.24 Sean Flook           MUL16 Temporarily changed field name whilst waiting for API to be fixed.
-//    023   04.03.24 Sean Flook           MUL16 Field name has been fixed.
-//    024   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    025   15.03.24 Sean Flook       PRFRM2_GP Added display for number of children.
-//    026   12.03.24 Joshua McCormick  IMANN-280 Toolbar styling, fixed margin
-//    027   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    028   12.03.24 Joshua McCormick IMANN-280 Adjusted toolbar spacing
-//    029   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    030   22.03.24 Sean Flook       PRFRM5_GP Display information control for moving a BLPU.
-//    031   04.04.24 Sean Flook                 Various changes for action menu items.
-//    032   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
-//    033   17.04.24 Joshua McCormick IMANN-207 endDate set to null if logical status is less than 7
-//    034   08.05.24 Joel Benford     IMANN-398 BLPU State is now mandatory
-//    035   23.05.24 Sean Flook       IMANN-485 When state changes set the state date to current date.
-//    036   05.06.24 Sean Flook       IMANN-485 Make above change for Scottish authorities as well.
-//    037   12.06.24 Sean Flook       IMANN-553 correctly set the required flag for state and state date.
-//    038   19.06.24 Joshua McCormick IMANN-503 BLPU Level field max characters 30 and removed up down counter.
-//    039   19.06.24 Joshua McCormick IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
-//    040   19.06.24 Joshua McCormick IMANN-503 BLPU Level removed type prop
-//    041   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
-//    042   19.06.24 Joshua McCormick IMANN-548 Property Details options zoom fix
-//    043   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    044   21.06.24 Sean Flook       IMANN-636 Fixed warning.
-//    045   01.07.24 Joel Benford     IMANN-603 Set displayed UPRN from param not context
-//    045   01.07.24 Joel Benford     IMANN-603 Handle undefined
-//    046   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
-//    047   11.07.24 Sean Flook       IMANN-749 Do not display the add button if user cannot edit.
-//    048   18.07.24 Sean Flook       IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
-//    049   19.07.24 Sean Flook       IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
-//    050   23.07.24 Sean Flook       IMANN-403 Only update the map if the coordinates are within the valid range.
-//    051   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
+//    001   20.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
+//    003   22.03.23 Sean Flook          WI40596 Only allow editing if BLPU logical status is not historic or rejected.
+//    004   28.03.23 Sean Flook          WI40596 Removed above change.
+//    005   06.04.23 Sean Flook          WI40656 Fixed typo and changed siteVisit to siteSurvey for consistency.
+//    006   27.06.23 Sean Flook          WI40234 Added local custodian [Authority].
+//    007   27.06.23 Sean Flook          WI40234 Make authority read only.
+//    008   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    009   30.06.23 Sean Flook          WI40770 Set suffix letters to uppercase.
+//    010   20.07.23 Sean Flook                  Added ability to display the property in Google street view.
+//    011   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    012   06.10.23 Sean Flook                  Use colour variables.
+//    013   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    014   03.11.23 Sean Flook                  Added tooltip to the actions button.
+//    015   24.11.23 Sean Flook                  Moved Box to @mui/system and changes required for Scottish authorities.
+//    016   30.11.23 Sean Flook                  Make state and state date visible for Scottish authorities.
+//    017   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    018   10.01.24 Sean Flook                  Fix warnings.
+//    019   11.01.24 Sean Flook                  Fix warnings.
+//    020   25.01.24 Joel Benford                Stop overriding descriptor background.
+//    021   27.02.24 Sean Flook            MUL16 Changes required to handle parent child relationships.
+//    022   04.03.24 Sean Flook            MUL16 Temporarily changed field name whilst waiting for API to be fixed.
+//    023   04.03.24 Sean Flook            MUL16 Field name has been fixed.
+//    024   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    025   15.03.24 Sean Flook        PRFRM2_GP Added display for number of children.
+//    026   12.03.24 Joshua McCormick   IMANN-280 Toolbar styling, fixed margin
+//    027   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    028   12.03.24 Joshua McCormick  IMANN-280 Adjusted toolbar spacing
+//    029   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    030   22.03.24 Sean Flook        PRFRM5_GP Display information control for moving a BLPU.
+//    031   04.04.24 Sean Flook                  Various changes for action menu items.
+//    032   09.04.24 Joshua McCormick  IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
+//    033   17.04.24 Joshua McCormick  IMANN-207 endDate set to null if logical status is less than 7
+//    034   08.05.24 Joel Benford      IMANN-398 BLPU State is now mandatory
+//    035   23.05.24 Sean Flook        IMANN-485 When state changes set the state date to current date.
+//    036   05.06.24 Sean Flook        IMANN-485 Make above change for Scottish authorities as well.
+//    037   12.06.24 Sean Flook        IMANN-553 correctly set the required flag for state and state date.
+//    038   19.06.24 Joshua McCormick  IMANN-503 BLPU Level field max characters 30 and removed up down counter.
+//    039   19.06.24 Joshua McCormick  IMANN-503 BLPU Level AdsNumberControl type set to text to hide up down
+//    040   19.06.24 Joshua McCormick  IMANN-503 BLPU Level removed type prop
+//    041   19.06.24 Joshua McCormick  IMANN-503 BLPU Level max set to 99.9
+//    042   19.06.24 Joshua McCormick  IMANN-548 Property Details options zoom fix
+//    043   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    044   21.06.24 Sean Flook        IMANN-636 Fixed warning.
+//    045   01.07.24 Joel Benford      IMANN-603 Set displayed UPRN from param not context
+//    045   01.07.24 Joel Benford      IMANN-603 Handle undefined
+//    046   11.07.24 Sean Flook        IMANN-748 Only display menu items if user has the correct rights.
+//    047   11.07.24 Sean Flook        IMANN-749 Do not display the add button if user cannot edit.
+//    048   18.07.24 Sean Flook        IMANN-775 When changing the logical status of for Scottish authorities also set the state if new logical status is provisional or historic.
+//    049   19.07.24 Sean Flook        IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
+//    050   23.07.24 Sean Flook        IMANN-403 Only update the map if the coordinates are within the valid range.
+//    051   20.08.24 Sean Flook        IMANN-941 Corrected field name used for focused field.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    052   30.10.24 Joel Benford    IMANN-1036 Set OS blpu state 0 when LS -> 9
-//    053   07.01.25 Joshua McCormick IMANN-1122 Hide organisation change when editing
-//    054   07.01.25 Joshua McCormick IMANN-1122 Removed onOrganisationChange check inside updateCurrentData
-//    055   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary if statement for onOrganisationChange
+//    052   30.10.24 Joel Benford      IMANN-1036 Set OS blpu state 0 when LS -> 9
+//    053   07.01.25 Joshua McCormick  IMANN-1122 Hide organisation change when editing
+//    054   07.01.25 Joshua McCormick  IMANN-1122 Removed onOrganisationChange check inside updateCurrentData
+//    055   07.01.25 Joshua McCormick  IMANN-1122 Removed unnecessary if statement for onOrganisationChange
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    056   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -102,7 +105,7 @@ import {
 } from "../utils/PropertyUtils";
 
 import {
-  Grid,
+  Grid2,
   Menu,
   MenuItem,
   Typography,
@@ -1303,13 +1306,13 @@ function PropertyDetailsTab({
         </Stack>
       </Box>
       <Box sx={dataFormStyle("PropertyDetailsTab")}>
-        <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-          <Grid item xs={3}>
+        <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+          <Grid2 size={3}>
             <Typography variant="body2" color="textPrimary" align="left" sx={controlLabelStyle}>
               LPI*
             </Typography>
-          </Grid>
-          <Grid item xs={9}>
+          </Grid2>
+          <Grid2 size={9}>
             {loading ? (
               <Skeleton variant="rectangular" height="50px" width="100%" />
             ) : data && data.lpis && data.lpis.length > 0 ? (
@@ -1446,8 +1449,8 @@ function PropertyDetailsTab({
                 </ListItemButton>
               </List>
             )}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
         {hasParent && (
           <ADSReadOnlyControl
             loading={loading}

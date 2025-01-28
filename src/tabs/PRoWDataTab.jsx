@@ -3,37 +3,40 @@
 //
 //  Description: Public right of way data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
-//    003   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    006   11.01.24 Sean Flook                 Fix warnings.
-//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    008   29.01.24 Sean Flook       IMANN-252 Restrict the characters that can be used in text fields.
-//    009   05.02.24 Sean Flook                 Filter available districts by the organisation.
-//    010   13.02.24 Sean Flook                 Changes required to handle the geometry.
-//    011   13.02.24 Sean Flook                 Corrected ADSWholeRoadControl variant.
-//    012   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    013   14.02.24 Joel Benford     IMANN-299 Toolbar changes
-//    014   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
-//    015   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    016   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    017   16.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
-//    018   17.04.24 Joshua McCormick IMANN-277 Added dataTabToolBar styling for PRoW spacing
-//    019   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    020   09.07.24 Joshua McCormick IMANN-594 Added displayCharactersLeft to PRoW source
-//    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//    022   29.08.24 Sean Flook       IMANN-908 Correctly set the defMapGeometryType variable.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Ensure the OK button is enabled when creating a new record and use colour variables.
+//    003   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    005   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    006   11.01.24 Sean Flook                  Fix warnings.
+//    007   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    008   29.01.24 Sean Flook        IMANN-252 Restrict the characters that can be used in text fields.
+//    009   05.02.24 Sean Flook                  Filter available districts by the organisation.
+//    010   13.02.24 Sean Flook                  Changes required to handle the geometry.
+//    011   13.02.24 Sean Flook                  Corrected ADSWholeRoadControl variant.
+//    012   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    013   14.02.24 Joel Benford      IMANN-299 Toolbar changes
+//    014   07.03.24 Sean Flook        IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
+//    015   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    016   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    017   16.04.24 Joshua McCormick  IMANN-277 Added displayCharactersLeft to consultation and appeal refs and details input
+//    018   17.04.24 Joshua McCormick  IMANN-277 Added dataTabToolBar styling for PRoW spacing
+//    019   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    020   09.07.24 Joshua McCormick  IMANN-594 Added displayCharactersLeft to PRoW source
+//    021   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
+//    022   29.08.24 Sean Flook        IMANN-908 Correctly set the defMapGeometryType variable.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    023   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -56,7 +59,7 @@ import SwaOrgRef from "../data/SwaOrgRef";
 import PRoWDedicationCode from "../data/PRoWDedicationCode";
 import PRoWStatusCode from "../data/PRoWStatusCode";
 
-import { Grid, Typography, Avatar, Accordion, AccordionSummary, AccordionDetails, Popper } from "@mui/material";
+import { Grid2, Typography, Avatar, Accordion, AccordionSummary, AccordionDetails, Popper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -1131,15 +1134,15 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
             onChange={handleEndDateChangeEvent}
           />
         )}
-        <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-          <Grid item xs={3}>
+        <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+          <Grid2 size={3}>
             <Typography variant="body2" align="left" id="access-label" color="textPrimary">
               Access
             </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
-              <Grid item>
+          </Grid2>
+          <Grid2 size={9}>
+            <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
+              <Grid2>
                 <ADSProwAccessControl
                   variant="Pedestrian"
                   value={pedestrianAccess}
@@ -1149,8 +1152,8 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
                   errorText={pedestrianAccessError}
                   onChange={handlePedestrianAccessChangeEvent}
                 />
-              </Grid>
-              <Grid item>
+              </Grid2>
+              <Grid2>
                 <ADSProwAccessControl
                   variant="Equestrian"
                   value={equestrianAccess}
@@ -1160,8 +1163,8 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
                   errorText={equestrianAccessError}
                   onChange={handleEquestrianAccessChangeEvent}
                 />
-              </Grid>
-              <Grid item>
+              </Grid2>
+              <Grid2>
                 <ADSProwAccessControl
                   variant="NonMotorised"
                   value={nonMotorisedAccess}
@@ -1171,8 +1174,8 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
                   errorText={nonMotorisedAccessError}
                   onChange={handleNonMotorisedAccessChangeEvent}
                 />
-              </Grid>
-              <Grid item>
+              </Grid2>
+              <Grid2>
                 <ADSProwAccessControl
                   variant="Bicycle"
                   value={cycleAccess}
@@ -1182,8 +1185,8 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
                   errorText={cycleAccessError}
                   onChange={handleCycleAccessChangeEvent}
                 />
-              </Grid>
-              <Grid item>
+              </Grid2>
+              <Grid2>
                 <ADSProwAccessControl
                   variant="Motorised"
                   value={motorisedAccess}
@@ -1193,10 +1196,10 @@ function PRoWDataTab({ data, errors, loading, focusedField, onHomeClick, onAdd, 
                   errorText={motorisedAccessError}
                   onChange={handleMotorisedAccessChangeEvent}
                 />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Grid2>
+            </Grid2>
+          </Grid2>
+        </Grid2>
         <Accordion
           sx={{
             border: `1px solid ${theme.palette.divider}`,

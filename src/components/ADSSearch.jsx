@@ -59,6 +59,9 @@
 //    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    041   09.01.25 Sean Flook       IMANN-1125 Only get background data if required.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1573,7 +1576,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
   }, [userContext]);
 
   return (
-    <Fragment>
+    (<Fragment>
       <Autocomplete
         id={`ads-${variant}-search`}
         open={searchContext.searchPopupOpen}
@@ -1597,7 +1600,6 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         onInputChange={onSearchChange}
         onFocus={onSearchFocus}
         onBlur={onSearchBlur}
-        PopperComponent={StyledPopper}
         renderOption={(props, option) => {
           return (
             <li {...props}>
@@ -1626,40 +1628,45 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
             sx={getSearchStyle()}
             fullWidth
             onKeyDownCapture={handleKeyDown}
-            InputProps={{
-              disableUnderline: true,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconButton id="btnSearch" onClick={handleSearchCheck} aria-label="search button" size="large">
-                    <SearchIcon sx={ActionIconStyle()} />
-                  </IconButton>
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
-                    <ClearIcon sx={ClearSearchIconStyle(search)} />
-                  </IconButton>
-                  {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
-                    <IconButton id="filter-button" onClick={handleFilterClick} aria-label="filter button">
-                      <FilterListIcon sx={ActionIconStyle()} />
+            slotProps={{
+              input: {
+                disableUnderline: true,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton id="btnSearch" onClick={handleSearchCheck} aria-label="search button" size="large">
+                      <SearchIcon sx={ActionIconStyle()} />
                     </IconButton>
-                  )}
-                  {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
-                    <IconButton
-                      id="query-builder-button"
-                      disabled
-                      onClick={handleQueryBuilderClick}
-                      aria-label="query builder button"
-                    >
-                      <TuneIcon sx={ActionIconStyle()} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton id="btnClear" onClick={handleClearSearch} aria-label="clear button" size="small">
+                      <ClearIcon sx={ClearSearchIconStyle(search)} />
                     </IconButton>
-                  )}
-                </InputAdornment>
-              ),
+                    {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
+                      <IconButton id="filter-button" onClick={handleFilterClick} aria-label="filter button">
+                        <FilterListIcon sx={ActionIconStyle()} />
+                      </IconButton>
+                    )}
+                    {process.env.NODE_ENV === "development" && showIcons && variant === "appBar" && (
+                      <IconButton
+                        id="query-builder-button"
+                        disabled
+                        onClick={handleQueryBuilderClick}
+                        aria-label="query builder button"
+                      >
+                        <TuneIcon sx={ActionIconStyle()} />
+                      </IconButton>
+                    )}
+                  </InputAdornment>
+                ),
+              }
             }}
           />
         )}
+        slots={{
+          popper: StyledPopper
+        }}
       />
       <Popper id={filterId} open={filterOpen} anchorEl={filterAnchorEl} placement="bottom-end">
         <ADSFilterControl searchButton="Search" onFilter={handleFilterResults} onCancel={handleCancelFilter} />
@@ -1686,7 +1693,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         }`}</Alert>
       </Snackbar>
       <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
-    </Fragment>
+    </Fragment>)
   );
 }
 

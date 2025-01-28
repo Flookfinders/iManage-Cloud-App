@@ -3,30 +3,33 @@
 //
 //  Description: Edit authority details dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    004   03.01.24 Sean Flook                 Fixed warning.
-//    006   03.01.24 Sean Flook                 For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
-//    007   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    008   10.01.24 Sean Flook                 Fix warnings.
-//    009   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    010   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    011   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    004   03.01.24 Sean Flook                  Fixed warning.
+//    006   03.01.24 Sean Flook                  For Scottish authorities force Create Street BLPU to true and prevent the user from changing it.
+//    007   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    008   10.01.24 Sean Flook                  Fix warnings.
+//    009   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    010   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    011   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    012   02.10.24 Sean Flook       IMANN-997 Removed display language.
-//    013   08.10.24 Sean Flook       IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
-//    014   10.10.24 Sean Flook       IMANN-986 Call correct method.
+//    012   02.10.24 Sean Flook        IMANN-997 Removed display language.
+//    013   08.10.24 Sean Flook        IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
+//    014   10.10.24 Sean Flook        IMANN-986 Call correct method.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -36,7 +39,7 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 
-import { Dialog, DialogActions, DialogContent, Grid, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid2, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSMinMaxControl from "../components/ADSMinMaxControl";
@@ -467,8 +470,8 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
       >
         <ADSDialogTitle title="Edit authority details" closeTooltip="Cancel" onClose={handleCancelClick} />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
+            <Grid2 size={12}>
               <Stack direction="column" spacing={2}>
                 <Typography sx={{ fontSize: 24, flexGrow: 1 }}>Authority details</Typography>
                 <Box>
@@ -559,8 +562,8 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
                   />
                 </Box>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
           <Button onClick={handleDoneClick} autoFocus variant="contained" sx={blueButtonStyle} startIcon={<DoneIcon />}>

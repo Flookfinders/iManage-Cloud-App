@@ -3,33 +3,36 @@
 //
 //  Description: Highway dedication data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   16.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
-//    004   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    006   20.12.23 Sean Flook       IMANN-201 Corrected controls and form layout.
-//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    008   11.01.24 Sean Flook                 Fix warnings.
-//    009   25.01.24 Sean Flook                 Changes required after UX review.
-//    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
-//    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
-//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    015   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//    016   06.08.24 Sean Flook       IMANN-893 Check we have a source ESU before getting the highway dedication record.
-//    017   06.08.24 Sean Flook       IMANN-905 When determining if the record has changed and we do not have it in the sourceStreet use the currentStreet.
-//    018   20.08.24 Sean Flook       IMANN-818 Use the new ADSHDCheckbox controls and handle errors for those controls.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   16.10.23 Sean Flook                  Ensure the OK button is enabled when creating a new record and use colour variables.
+//    004   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    006   20.12.23 Sean Flook        IMANN-201 Corrected controls and form layout.
+//    007   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    008   11.01.24 Sean Flook                  Fix warnings.
+//    009   25.01.24 Sean Flook                  Changes required after UX review.
+//    010   07.03.24 Sean Flook        IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
+//    011   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    012   13.03.24 Joshua McCormick  IMANN-280 Added dataTabToolBar for inner toolbar styling
+//    013   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    015   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
+//    016   06.08.24 Sean Flook        IMANN-893 Check we have a source ESU before getting the highway dedication record.
+//    017   06.08.24 Sean Flook        IMANN-905 When determining if the record has changed and we do not have it in the sourceStreet use the currentStreet.
+//    018   20.08.24 Sean Flook        IMANN-818 Use the new ADSHDCheckbox controls and handle errors for those controls.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    019   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -43,7 +46,7 @@ import UserContext from "../context/userContext";
 import { GetLookupLabel, ConvertDate } from "../utils/HelperUtils";
 import ObjectComparison, { highwayDedicationKeysToIgnore } from "../utils/ObjectComparison";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSActionButton from "../components/ADSActionButton";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -628,14 +631,14 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
           onDateChange={handleEndDateChangeEvent}
           onTimeChange={handleEndTimeChangeEvent}
         />
-        <Grid container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
-          <Grid item xs={3}>
+        <Grid2 container justifyContent="flex-start" alignItems="baseline" sx={FormRowStyle()}>
+          <Grid2 size={3}>
             <Typography variant="body2" align="left" id="indicator-label" color="textPrimary">
               Indicator
             </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start">
+          </Grid2>
+          <Grid2 size={9}>
+            <Grid2 container direction="column" justifyContent="flex-start" alignItems="flex-start">
               <ADSHDCheckbox
                 variant={"PRoW"}
                 checked={prow}
@@ -690,9 +693,9 @@ function HighwayDedicationDataTab({ data, errors, loading, focusedField, onHomeC
                 errorText={vehiclesProhibitedError}
                 onChange={handleVehiclesProhibitedChangeEvent}
               />
-            </Grid>
-          </Grid>
-        </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
         <ADSDateControl
           label="Seasonal start"
           isEditable={userCanEdit}

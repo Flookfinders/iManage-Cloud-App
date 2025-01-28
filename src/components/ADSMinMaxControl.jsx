@@ -3,24 +3,27 @@
 //
 //  Description: Min Max component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   10.01.24 Sean Flook                 Fix warnings.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   10.01.24 Sean Flook                  Fix warnings.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    007   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    007   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -28,7 +31,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Grid, Typography, Tooltip, Skeleton, Button } from "@mui/material";
+import { Grid2, Typography, Tooltip, Skeleton, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
@@ -108,8 +111,8 @@ function ADSMinMaxControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Typography
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             variant="body2"
@@ -118,8 +121,8 @@ function ADSMinMaxControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : helperText && helperText.length > 0 ? (
@@ -129,13 +132,13 @@ function ADSMinMaxControl({
               placement="right"
               sx={tooltipStyle}
             >
-              <Grid container justifyContent="flex-start" alignItems="center">
-                <Grid item xs={1}>
+              <Grid2 container justifyContent="flex-start" alignItems="center">
+                <Grid2 size={1}>
                   <Typography id={`${label.toLowerCase().replaceAll(" ", "-")}-min-label`} variant="body2" align="left">
                     Min
                   </Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Grid2>
+                <Grid2 size={4}>
                   <Box sx={boxStyle}>
                     <Typography
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-min-value`}
@@ -144,13 +147,13 @@ function ADSMinMaxControl({
                       sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                     >{`${minValue ? minValue : 0}`}</Typography>
                   </Box>
-                </Grid>
-                <Grid item xs={1}>
+                </Grid2>
+                <Grid2 size={1}>
                   <Typography id={`${label.toLowerCase().replaceAll(" ", "-")}-max-label`} variant="body2" align="left">
                     Max
                   </Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Grid2>
+                <Grid2 size={4}>
                   <Box sx={boxStyle}>
                     <Typography
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-max-value`}
@@ -159,22 +162,22 @@ function ADSMinMaxControl({
                       sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                     >{`${maxValue ? maxValue : 0}`}</Typography>
                   </Box>
-                </Grid>
-                <Grid item xs={2}>
+                </Grid2>
+                <Grid2 size={2}>
                   <Button variant="contained" sx={whiteButtonStyle} disabled={!isEditable} onClick={handleUpdateClick}>
                     {buttonText}
                   </Button>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </Tooltip>
           ) : (
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item xs={1}>
+            <Grid2 container justifyContent="flex-start" alignItems="center">
+              <Grid2 size={1}>
                 <Typography id={`${label.toLowerCase().replaceAll(" ", "-")}-min-label`} variant="body2" align="left">
                   Min
                 </Typography>
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Box sx={boxStyle}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-min-value`}
@@ -183,13 +186,13 @@ function ADSMinMaxControl({
                     sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                   >{`${minValue ? minValue : 0}`}</Typography>
                 </Box>
-              </Grid>
-              <Grid item xs={1}>
+              </Grid2>
+              <Grid2 size={1}>
                 <Typography id={`${label.toLowerCase().replaceAll(" ", "-")}-max-label`} variant="body2" align="left">
                   Max
                 </Typography>
-              </Grid>
-              <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={4}>
                 <Box sx={boxStyle}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-max-value`}
@@ -198,17 +201,17 @@ function ADSMinMaxControl({
                     sx={{ pb: "8.5px", pl: "14px", pr: "14px", pt: "8.5px" }}
                   >{`${maxValue ? maxValue : 0}`}</Typography>
                 </Box>
-              </Grid>
-              <Grid item xs={2}>
+              </Grid2>
+              <Grid2 size={2}>
                 <Button variant="contained" sx={whiteButtonStyle} disabled={!isEditable} onClick={handleUpdateClick}>
                   {buttonText}
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-min-max-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

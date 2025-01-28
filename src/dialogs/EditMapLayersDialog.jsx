@@ -3,30 +3,33 @@
 //
 //  Description: Edit map layers dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    004   02.01.24 Sean Flook                 Changes required to load shape files.
-//    005   03.01.24 Sean Flook                 Fixed warning.
-//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    007   10.01.24 Sean Flook                 Fix warnings.
-//    008   11.01.24 Sean Flook                 Fix warnings.
-//    009   07.02.24 Sean Flook                 Changes required for viaEuropa.
-//    010   07.02.24 Sean Flook                 Changes required to support WFS from viaEuropa mapping for OneScotland.
-//    011   08.02.24 Sean Flook                 Correctly set additional fields.
-//    012   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    013   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    014   09.07.24 Joshua McCormick IMANN-520 Property Names input set to required 
-//    015   15.07.24 Sean Flook                 Display non-field errors.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    004   02.01.24 Sean Flook                  Changes required to load shape files.
+//    005   03.01.24 Sean Flook                  Fixed warning.
+//    006   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    007   10.01.24 Sean Flook                  Fix warnings.
+//    008   11.01.24 Sean Flook                  Fix warnings.
+//    009   07.02.24 Sean Flook                  Changes required for viaEuropa.
+//    010   07.02.24 Sean Flook                  Changes required to support WFS from viaEuropa mapping for OneScotland.
+//    011   08.02.24 Sean Flook                  Correctly set additional fields.
+//    012   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    013   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    014   09.07.24 Joshua McCormick  IMANN-520 Property Names input set to required 
+//    015   15.07.24 Sean Flook                  Display non-field errors.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -37,7 +40,7 @@ import PropTypes from "prop-types";
 import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 
-import { Dialog, DialogActions, DialogContent, Grid, Typography, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Grid2, Typography, Button } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSSelectControl from "../components/ADSSelectControl";
@@ -686,8 +689,8 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
           onClose={handleCancelClick}
         />
         <DialogContent sx={{ mt: theme.spacing(2) }}>
-          <Grid container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
-            <Grid item xs={12}>
+          <Grid2 container justifyContent="flex-start" spacing={0} sx={{ pl: theme.spacing(3.5) }}>
+            <Grid2 size={12}>
               <Stack direction="column" spacing={2}>
                 <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={0.25}>
                   <Typography sx={{ fontSize: 24, flexGrow: 1 }}>Map layer</Typography>
@@ -696,9 +699,8 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                       <PriorityHighIcon sx={{ color: adsRed, height: "16px", width: "16px" }} />
                       <Typography
                         variant="caption"
-                        color={adsRed}
                         align="left"
-                        sx={{ fontWeight: 600, fontSize: "14px" }}
+                        sx={{ fontWeight: 600, fontSize: "14px", color: adsRed }}
                       >
                         {mapLayerError}
                       </Typography>
@@ -997,8 +999,8 @@ function EditMapLayersDialog({ isOpen, isNew, data, errors, onDataChanged, onErr
                   /> */}
                 </Box>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
           <Button

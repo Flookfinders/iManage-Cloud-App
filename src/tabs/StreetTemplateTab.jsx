@@ -3,36 +3,39 @@
 //
 //  Description: Street template tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   10.08.23 Sean Flook                 Modified to call the API to update the values.
-//    003   23.08.23 Sean Flook       IMANN-159 Use the new street template structure.
-//    004   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    005   03.11.23 Sean Flook                 Added hyphen to one-way.
-//    006   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    007   05.12.23 Joel Benford               Various fixes to display and save
-//    008   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    009   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    010   10.01.24 Sean Flook                 Fix warnings.
-//    011   25.01.24 Sean Flook                 Changes required after UX review.
-//    012   30.01.24 Sean Flook                 Added ESU tolerance for GeoPlace.
-//    013   13.02.24 Sean Flook                 Only set the data if it exists.
-//    014   19.02.24 Sean Flook       IMANN-307 Check for the ESU objects when trying to edit the ESU template.
-//    015   08.05.24 Sean Flook       IMANN-447 Added exclude from export.
-//    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    017   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   10.08.23 Sean Flook                  Modified to call the API to update the values.
+//    003   23.08.23 Sean Flook        IMANN-159 Use the new street template structure.
+//    004   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    005   03.11.23 Sean Flook                  Added hyphen to one-way.
+//    006   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    007   05.12.23 Joel Benford                Various fixes to display and save
+//    008   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    009   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    010   10.01.24 Sean Flook                  Fix warnings.
+//    011   25.01.24 Sean Flook                  Changes required after UX review.
+//    012   30.01.24 Sean Flook                  Added ESU tolerance for GeoPlace.
+//    013   13.02.24 Sean Flook                  Only set the data if it exists.
+//    014   19.02.24 Sean Flook        IMANN-307 Check for the ESU objects when trying to edit the ESU template.
+//    015   08.05.24 Sean Flook        IMANN-447 Added exclude from export.
+//    016   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    017   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    018   01.10.24 Sean Flook       IMANN-664 Changed Indicators to Indicator.
-//    019   22.10.24 Sean Flook      IMANN-1018 Hide ESU and associated cards if do not have streets.
+//    018   01.10.24 Sean Flook        IMANN-664 Changed Indicators to Indicator.
+//    019   22.10.24 Sean Flook       IMANN-1018 Hide ESU and associated cards if do not have streets.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -42,7 +45,7 @@ import SettingsContext from "../context/settingsContext";
 import LookupContext from "../context/lookupContext";
 import UserContext from "../context/userContext";
 
-import { Typography, Tooltip, Grid, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
+import { Typography, Tooltip, Grid2, Card, CardHeader, CardActionArea, CardContent, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 
 import EditTemplateDialog from "../dialogs/EditTemplateDialog";
@@ -642,8 +645,8 @@ function StreetTemplateTab() {
             </Typography>
           )}
         </Stack>
-        <Grid container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
-          <Grid item xs={6}>
+        <Grid2 container sx={{ pr: theme.spacing(3.5) }} spacing={3}>
+          <Grid2 size={6}>
             <Card
               variant="outlined"
               elevation={0}
@@ -662,107 +665,109 @@ function StreetTemplateTab() {
                   )
                 }
                 title="Street defaults"
-                titleTypographyProps={{ sx: getTitleStyle(editStreet) }}
                 sx={{ height: "66px" }}
+                slotProps={{
+                  title: { sx: getTitleStyle(editStreet) },
+                }}
               />
               <CardActionArea onClick={doEditStreet}>
                 <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
-                  <Grid container rowSpacing={1}>
-                    <Grid item xs={3}>
+                  <Grid2 container rowSpacing={1}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Type</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {getStreetType(streetRefType)}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">State</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {!settingsContext.isScottish && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getState(state)}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Locality</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {StringToTitleCase(getLocality(localityRef))}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
+                    </Grid2>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Town</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {StringToTitleCase(getTown(townRef))}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {settingsContext.isScottish && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Island</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {settingsContext.isScottish && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {StringToTitleCase(getIsland(islandRef))}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Admin area</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {StringToTitleCase(getAdminArea(adminAreaRef))}
                       </Typography>
-                    </Grid>
+                    </Grid2>
                     {!settingsContext.isScottish && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Classification</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {!settingsContext.isScottish && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getClassification(classification)}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {!settingsContext.isScottish && (
-                      <Grid item xs={3}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Surface</Typography>
-                      </Grid>
+                      </Grid2>
                     )}
                     {!settingsContext.isScottish && (
-                      <Grid item xs={9}>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getSurface(surface)}
                         </Typography>
-                      </Grid>
+                      </Grid2>
                     )}
-                    <Grid item xs={3}>
+                    <Grid2 size={3}>
                       <Typography variant="body2">Exclude from export</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
+                    </Grid2>
+                    <Grid2 size={9}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {`${excludeFromExport ? "Yes" : "No"}`}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </CardContent>
               </CardActionArea>
             </Card>
-          </Grid>
+          </Grid2>
           {userContext.currentUser.hasStreet && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -781,68 +786,70 @@ function StreetTemplateTab() {
                     )
                   }
                   title="ESU defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editEsu) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editEsu) },
+                  }}
                 />
                 <CardActionArea onClick={doEditEsu}>
                   <CardContent sx={settingsCardContentStyle(settingsContext.isScottish ? "os-street" : "street")}>
-                    <Grid container rowSpacing={1}>
+                    <Grid2 container rowSpacing={1}>
                       {!settingsContext.isScottish && (
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Direction</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {!settingsContext.isScottish && (
-                        <Grid item xs={9}>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {getDirection(esuDirection)}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {!settingsContext.isScottish && (
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Tolerance</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {!settingsContext.isScottish && (
-                        <Grid item xs={9}>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {getTolerance(esuTolerance)}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {settingsContext.isScottish && (
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">State</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {settingsContext.isScottish && (
-                        <Grid item xs={9}>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {getState(esuState)}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {settingsContext.isScottish && (
-                        <Grid item xs={3}>
+                        <Grid2 size={3}>
                           <Typography variant="body2">Classification</Typography>
-                        </Grid>
+                        </Grid2>
                       )}
                       {settingsContext.isScottish && (
-                        <Grid item xs={9}>
+                        <Grid2 size={9}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             {getClassification(esuClassification)}
                           </Typography>
-                        </Grid>
+                        </Grid2>
                       )}
-                    </Grid>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && userContext.currentUser.hasStreet && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -861,36 +868,38 @@ function StreetTemplateTab() {
                     )
                   }
                   title="One-way exemption defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editOneWayExemption) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editOneWayExemption) },
+                  }}
                 />
                 <CardActionArea onClick={doEditOneWayExemption}>
                   <CardContent sx={settingsCardContentStyle("street")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOweType(oweType)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Periodicity</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getOwePeriodicity(owePeriodicityCode)}
                         </Typography>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {!settingsContext.isScottish && userContext.currentUser.hasStreet && (
-            <Grid item xs={6}>
+            <Grid2 size={6}>
               <Card
                 variant="outlined"
                 elevation={0}
@@ -909,24 +918,26 @@ function StreetTemplateTab() {
                     )
                   }
                   title="Highway dedication defaults"
-                  titleTypographyProps={{ sx: getTitleStyle(editHighwayDedication) }}
                   sx={{ height: "66px" }}
+                  slotProps={{
+                    title: { sx: getTitleStyle(editHighwayDedication) },
+                  }}
                 />
                 <CardActionArea onClick={doEditHighwayDedication}>
                   <CardContent sx={settingsCardContentStyle("street")}>
-                    <Grid container rowSpacing={1}>
-                      <Grid item xs={3}>
+                    <Grid2 container rowSpacing={1}>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Type</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {getHdCode(hdCode)}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={3}>
+                      </Grid2>
+                      <Grid2 size={3}>
                         <Typography variant="body2">Indicator</Typography>
-                      </Grid>
-                      <Grid item xs={9}>
+                      </Grid2>
+                      <Grid2 size={9}>
                         <Stack direction="row" spacing={1}>
                           <PRoWIcon fontSize="small" sx={getTemplateIconStyle(hdPRoW)} />
                           <DirectionsBikeIcon fontSize="small" sx={getTemplateIconStyle(hdNCR)} />
@@ -935,14 +946,14 @@ function StreetTemplateTab() {
                           <PlanningOrderIcon fontSize="small" sx={getTemplateIconStyle(hdPlanningOrder)} />
                           <VehiclesProhibitedIcon fontSize="small" sx={getTemplateIconStyle(hdVehiclesProhibited)} />
                         </Stack>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            </Grid>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
       </Stack>
       <EditTemplateDialog
         isOpen={showEditDialog}

@@ -3,44 +3,47 @@
 //
 //  Description: Select component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   13.04.21 Sean Flook         WI39345 Initial Revision.
-//    002   05.05.21 Sean Flook         WI39345 Tweaks to the UI after design review meeting.
-//    003   12.05.21 Sean Flook         WI39345 Changed to allow for the display of icons.
-//    004   14.05.21 Sean Flook         WI39345 Updated className.
-//    005   18.05.21 Sean Flook         WI39345 Use the value directly.
-//    006   20.05.21 Sean Flook         WI39345 Display a tooltip if required.
-//    007   25.05.21 Sean Flook         WI39345 Include required field text if required to tooltip.
-//    008   01.06.21 Sean Flook         WI39345 Ensure the image is inline with the text.
-//    009   08.06.21 Sean Flook         WI39345 Changed read-only version to a label and altered colour of outline.
-//    010   16.03.23 Sean Flook         WI40580 Handle missing xrefSourceRef73 data in getAvatarValue.
-//    011   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    012   27.06.23 Sean Flook         WI40234 Handle the doNotSetTitleCase flag when control is read only.
-//    013   06.10.23 Sean Flook                 Use colour variables.
-//    014   27.10.23 Sean Flook       IMANN-175 Added a placeholder to display 'No change' if required.
-//    015   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    016   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    017   06.02.23 Sean Flook       IMANN-264 If we have no lookup data ensure the options are cleared.
-//    018   14.03.24 Sean Flook        ESU19_GP Use the lookupColour for the icon background colour.
-//    019   09.04.24 Sean Flook       IMANN-376 Modified to show an add button if required.
-//    020   13.06.24 Sean Flook       IMANN-553 Changes required to handle values of 0.
-//    021   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
+//    001   13.04.21 Sean Flook          WI39345 Initial Revision.
+//    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
+//    003   12.05.21 Sean Flook          WI39345 Changed to allow for the display of icons.
+//    004   14.05.21 Sean Flook          WI39345 Updated className.
+//    005   18.05.21 Sean Flook          WI39345 Use the value directly.
+//    006   20.05.21 Sean Flook          WI39345 Display a tooltip if required.
+//    007   25.05.21 Sean Flook          WI39345 Include required field text if required to tooltip.
+//    008   01.06.21 Sean Flook          WI39345 Ensure the image is inline with the text.
+//    009   08.06.21 Sean Flook          WI39345 Changed read-only version to a label and altered colour of outline.
+//    010   16.03.23 Sean Flook          WI40580 Handle missing xrefSourceRef73 data in getAvatarValue.
+//    011   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    012   27.06.23 Sean Flook          WI40234 Handle the doNotSetTitleCase flag when control is read only.
+//    013   06.10.23 Sean Flook                  Use colour variables.
+//    014   27.10.23 Sean Flook        IMANN-175 Added a placeholder to display 'No change' if required.
+//    015   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    016   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    017   06.02.23 Sean Flook        IMANN-264 If we have no lookup data ensure the options are cleared.
+//    018   14.03.24 Sean Flook         ESU19_GP Use the lookupColour for the icon background colour.
+//    019   09.04.24 Sean Flook        IMANN-376 Modified to show an add button if required.
+//    020   13.06.24 Sean Flook        IMANN-553 Changes required to handle values of 0.
+//    021   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    022   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    022   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    023   12.11.24 Sean Flook                 Added ability to show the data has been changed.
-//    024   25.11.24 Sean Flook      IMANN-1052 Changes required for the change in label for street classification.
-//    025   25.11.24 Sean Flook      IMANN-1052 Removed debug message which is no longer required.
+//    023   12.11.24 Sean Flook                  Added ability to show the data has been changed.
+//    024   25.11.24 Sean Flook       IMANN-1052 Changes required for the change in label for street classification.
+//    025   25.11.24 Sean Flook       IMANN-1052 Removed debug message which is no longer required.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    026   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -51,7 +54,7 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 
 import {
-  Grid,
+  Grid2,
   TextField,
   Typography,
   Tooltip,
@@ -275,14 +278,16 @@ function ADSSelectControl({
               variant="outlined"
               margin="dense"
               size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {getIcon(currentRow[lookupIcon], lookupColour ? currentRow[lookupColour] : adsBlueA)}
-                  </InputAdornment>
-                ),
-              }}
               value={lookupToTitleCase(currentRow[lookupLabel], doNotSetTitleCase)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {getIcon(currentRow[lookupIcon], lookupColour ? currentRow[lookupColour] : adsBlueA)}
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           );
         } else {
@@ -523,8 +528,8 @@ function ADSSelectControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
             <Typography
               id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
@@ -536,8 +541,8 @@ function ADSSelectControl({
             </Typography>
             <Badge color="error" variant="dot" invisible={!indicateChange} />
           </Stack>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
@@ -574,7 +579,7 @@ function ADSSelectControl({
                                 <Fragment>
                                   <Typography
                                     variant="body2"
-                                    color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                    sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                     align="left"
                                   >
                                     {lookupToTitleCase(
@@ -584,8 +589,10 @@ function ADSSelectControl({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ visibility: "hidden" }}
-                                    color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                    sx={{
+                                      visibility: "hidden",
+                                      color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                    }}
                                     align="left"
                                   >
                                     {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -594,7 +601,7 @@ function ADSSelectControl({
                               ) : (
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -616,11 +623,13 @@ function ADSSelectControl({
                           variant="outlined"
                           margin="dense"
                           size="small"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              ...params.InputProps,
+                              startAdornment: (
+                                <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                              ),
+                            },
                           }}
                         />
                       )}
@@ -657,7 +666,7 @@ function ADSSelectControl({
                                 <Fragment>
                                   <Typography
                                     variant="body2"
-                                    color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                    sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                     align="left"
                                   >
                                     {lookupToTitleCase(
@@ -667,8 +676,10 @@ function ADSSelectControl({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ visibility: "hidden" }}
-                                    color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                    sx={{
+                                      visibility: "hidden",
+                                      color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                    }}
                                     align="left"
                                   >
                                     {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -677,7 +688,7 @@ function ADSSelectControl({
                               ) : (
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -699,23 +710,25 @@ function ADSSelectControl({
                           variant="outlined"
                           margin="dense"
                           size="small"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
-                            ),
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  id="btnClear"
-                                  onClick={handleAddLookup}
-                                  aria-label="add button"
-                                  size="small"
-                                >
-                                  <AddCircleOutlineIcon sx={ActionIconStyle()} />
-                                </IconButton>
-                              </InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              ...params.InputProps,
+                              startAdornment: (
+                                <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                              ),
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    id="btnClear"
+                                    onClick={handleAddLookup}
+                                    aria-label="add button"
+                                    size="small"
+                                  >
+                                    <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            },
                           }}
                         />
                       )}
@@ -752,7 +765,7 @@ function ADSSelectControl({
                                 <Fragment>
                                   <Typography
                                     variant="body2"
-                                    color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                    sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                     align="left"
                                   >
                                     {lookupToTitleCase(
@@ -762,8 +775,10 @@ function ADSSelectControl({
                                   </Typography>
                                   <Typography
                                     variant="caption"
-                                    sx={{ visibility: "hidden" }}
-                                    color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                    sx={{
+                                      visibility: "hidden",
+                                      color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                    }}
                                     align="left"
                                   >
                                     {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -772,7 +787,7 @@ function ADSSelectControl({
                               ) : (
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -794,11 +809,13 @@ function ADSSelectControl({
                           variant="outlined"
                           margin="dense"
                           size="small"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
-                            ),
+                          slotProps={{
+                            input: {
+                              ...params.InputProps,
+                              startAdornment: (
+                                <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                              ),
+                            },
                           }}
                         />
                       )}
@@ -837,7 +854,7 @@ function ADSSelectControl({
                               <Fragment>
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(
@@ -847,8 +864,10 @@ function ADSSelectControl({
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ visibility: "hidden" }}
-                                  color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                  sx={{
+                                    visibility: "hidden",
+                                    color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                  }}
                                   align="left"
                                 >
                                   {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -857,7 +876,7 @@ function ADSSelectControl({
                             ) : (
                               <Typography
                                 variant="body2"
-                                color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                 align="left"
                               >
                                 {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -879,8 +898,10 @@ function ADSSelectControl({
                         variant="outlined"
                         margin="dense"
                         size="small"
-                        InputProps={{
-                          ...params.InputProps,
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                          },
                         }}
                       />
                     )}
@@ -917,7 +938,7 @@ function ADSSelectControl({
                               <Fragment>
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(
@@ -927,8 +948,10 @@ function ADSSelectControl({
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ visibility: "hidden" }}
-                                  color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                  sx={{
+                                    visibility: "hidden",
+                                    color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                  }}
                                   align="left"
                                 >
                                   {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -937,7 +960,7 @@ function ADSSelectControl({
                             ) : (
                               <Typography
                                 variant="body2"
-                                color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                 align="left"
                               >
                                 {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -959,15 +982,22 @@ function ADSSelectControl({
                         variant="outlined"
                         margin="dense"
                         size="small"
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
-                                <AddCircleOutlineIcon sx={ActionIconStyle()} />
-                              </IconButton>
-                            </InputAdornment>
-                          ),
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  id="btnClear"
+                                  onClick={handleAddLookup}
+                                  aria-label="add button"
+                                  size="small"
+                                >
+                                  <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          },
                         }}
                       />
                     )}
@@ -1004,7 +1034,7 @@ function ADSSelectControl({
                               <Fragment>
                                 <Typography
                                   variant="body2"
-                                  color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                  sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                   align="left"
                                 >
                                   {lookupToTitleCase(
@@ -1014,8 +1044,10 @@ function ADSSelectControl({
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  sx={{ visibility: "hidden" }}
-                                  color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                                  sx={{
+                                    visibility: "hidden",
+                                    color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                                  }}
                                   align="left"
                                 >
                                   {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1024,7 +1056,7 @@ function ADSSelectControl({
                             ) : (
                               <Typography
                                 variant="body2"
-                                color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                                sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                                 align="left"
                               >
                                 {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1046,8 +1078,10 @@ function ADSSelectControl({
                         variant="outlined"
                         margin="dense"
                         size="small"
-                        InputProps={{
-                          ...params.InputProps,
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                          },
                         }}
                       />
                     )}
@@ -1079,7 +1113,7 @@ function ADSSelectControl({
                           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                             <Typography
                               variant="body2"
-                              color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                              sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                               align="left"
                             >
                               {lookupToTitleCase(
@@ -1089,8 +1123,10 @@ function ADSSelectControl({
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ visibility: "hidden" }}
-                              color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                              sx={{
+                                visibility: "hidden",
+                                color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                              }}
                               align="left"
                             >
                               {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1099,7 +1135,7 @@ function ADSSelectControl({
                         ) : (
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1120,9 +1156,13 @@ function ADSSelectControl({
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>,
+                      slotProps={{
+                        input: {
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                          ),
+                        },
                       }}
                     />
                   )}
@@ -1150,7 +1190,7 @@ function ADSSelectControl({
                           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                             <Typography
                               variant="body2"
-                              color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                              sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                               align="left"
                             >
                               {lookupToTitleCase(
@@ -1160,8 +1200,10 @@ function ADSSelectControl({
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ visibility: "hidden" }}
-                              color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                              sx={{
+                                visibility: "hidden",
+                                color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                              }}
                               align="left"
                             >
                               {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1170,7 +1212,7 @@ function ADSSelectControl({
                         ) : (
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1191,16 +1233,20 @@ function ADSSelectControl({
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>,
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
-                              <AddCircleOutlineIcon sx={ActionIconStyle()} />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
+                      slotProps={{
+                        input: {
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
+                                <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        },
                       }}
                     />
                   )}
@@ -1228,7 +1274,7 @@ function ADSSelectControl({
                           <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                             <Typography
                               variant="body2"
-                              color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                              sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                               align="left"
                             >
                               {lookupToTitleCase(
@@ -1238,8 +1284,10 @@ function ADSSelectControl({
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ visibility: "hidden" }}
-                              color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                              sx={{
+                                visibility: "hidden",
+                                color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                              }}
                               align="left"
                             >
                               {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1248,7 +1296,7 @@ function ADSSelectControl({
                         ) : (
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1269,9 +1317,13 @@ function ADSSelectControl({
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>,
+                      slotProps={{
+                        input: {
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">{getItemAvatar(controlValue)}</InputAdornment>
+                          ),
+                        },
                       }}
                     />
                   )}
@@ -1301,7 +1353,7 @@ function ADSSelectControl({
                         <Stack direction="row">
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(
@@ -1311,8 +1363,10 @@ function ADSSelectControl({
                           </Typography>
                           <Typography
                             variant="caption"
-                            sx={{ visibility: "hidden" }}
-                            color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                            sx={{
+                              visibility: "hidden",
+                              color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                            }}
                             align="left"
                           >
                             {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1321,7 +1375,7 @@ function ADSSelectControl({
                       ) : (
                         <Typography
                           variant="body2"
-                          color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                          sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                           align="left"
                         >
                           {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1342,8 +1396,10 @@ function ADSSelectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    InputProps={{
-                      ...params.InputProps,
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                      },
                     }}
                   />
                 )}
@@ -1371,7 +1427,7 @@ function ADSSelectControl({
                         <Stack direction="row">
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(
@@ -1381,8 +1437,10 @@ function ADSSelectControl({
                           </Typography>
                           <Typography
                             variant="caption"
-                            sx={{ visibility: "hidden" }}
-                            color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                            sx={{
+                              visibility: "hidden",
+                              color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                            }}
                             align="left"
                           >
                             {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1391,7 +1449,7 @@ function ADSSelectControl({
                       ) : (
                         <Typography
                           variant="body2"
-                          color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                          sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                           align="left"
                         >
                           {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1412,15 +1470,17 @@ function ADSSelectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
-                            <AddCircleOutlineIcon sx={ActionIconStyle()} />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton id="btnClear" onClick={handleAddLookup} aria-label="add button" size="small">
+                              <AddCircleOutlineIcon sx={ActionIconStyle()} />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                   />
                 )}
@@ -1448,7 +1508,7 @@ function ADSSelectControl({
                         <Stack direction="row">
                           <Typography
                             variant="body2"
-                            color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                            sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                             align="left"
                           >
                             {lookupToTitleCase(
@@ -1458,8 +1518,10 @@ function ADSSelectControl({
                           </Typography>
                           <Typography
                             variant="caption"
-                            sx={{ visibility: "hidden" }}
-                            color={includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}
+                            sx={{
+                              visibility: "hidden",
+                              color: `${includeHistoric && isHistoric(option) ? adsRed : "textDisabled"}`,
+                            }}
                             align="left"
                           >
                             {option ? option.substring(option.indexOf("|") + 1) : option}
@@ -1468,7 +1530,7 @@ function ADSSelectControl({
                       ) : (
                         <Typography
                           variant="body2"
-                          color={includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}
+                          sx={{ color: `${includeHistoric && isHistoric(option) ? adsRed : adsDarkGrey}` }}
                           align="left"
                         >
                           {lookupToTitleCase(option, doNotSetTitleCase)}
@@ -1489,8 +1551,10 @@ function ADSSelectControl({
                     variant="outlined"
                     margin="dense"
                     size="small"
-                    InputProps={{
-                      ...params.InputProps,
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                      },
                     }}
                   />
                 )}
@@ -1500,9 +1564,9 @@ function ADSSelectControl({
           ) : (
             getLookupInfo(value)
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-select-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

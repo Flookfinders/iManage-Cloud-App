@@ -3,29 +3,32 @@
 //
 //  Description: Control used to display a list of the errors.
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    007   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
-//    008   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    001            Sean Flook                  Initial Revision.
+//    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   10.11.23 Sean Flook        IMANN-175 Changes required for Move BLPU seed point.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    006   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    007   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle.
+//    008   27.03.24 Sean Flook                  Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    009   31.10.24 Sean Flook      IMANN-1012 Added plotToPostal.
+//    009   31.10.24 Sean Flook       IMANN-1012 Added plotToPostal.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    010   03.12.24 Sean Flook      IMANN-1081 Include classification errors for Scottish authorities.
+//    010   03.12.24 Sean Flook       IMANN-1081 Include classification errors for Scottish authorities.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -244,7 +247,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
                     {finalisedErrors.map((error, idx) => (
                       <Stack direction="row" spacing={1} alignItems="center" key={`property_error_${idx}`}>
                         <PriorityHighIcon sx={{ color: adsRed, height: "16px", width: "16px" }} />
-                        <Typography variant="body2" color={adsRed}>
+                        <Typography variant="body2" sx={{ color: adsRed }}>
                           {error}
                         </Typography>
                       </Stack>
@@ -263,14 +266,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: "20px", color: adsGreenC }}>{`${createdCount}`}</Typography>
                   <Typography variant="body2">{`${
                     createdCount === 1 ? "property was" : "properties were"
                   } successfully created.`}</Typography>
                 </Stack>
                 {failedCount > 0 && (
                   <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="h6" sx={{ fontSize: "20px", color: adsRed }}>{`${failedCount}`}</Typography>
                     <Typography variant="body2">{`${
                       failedCount === 1 ? "property" : "properties"
                     } failed to be created.`}</Typography>
@@ -300,7 +303,7 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
                     {finalisedErrors.map((error, idx) => (
                       <Stack direction="row" spacing={1} alignItems="center" key={`child_error_${idx}`}>
                         <PriorityHighIcon sx={{ color: adsRed, height: "16px", width: "16px" }} />
-                        <Typography variant="body2" color={adsRed}>
+                        <Typography variant="body2" sx={{ color: adsRed }}>
                           {error}
                         </Typography>
                       </Stack>
@@ -319,14 +322,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: "20px", color: adsGreenC }}>{`${createdCount}`}</Typography>
                   <Typography variant="body2">{`${
                     createdCount === 1 ? "child was" : "children were"
                   } successfully created.`}</Typography>
                 </Stack>
                 {failedCount > 0 && (
                   <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="h6" sx={{ fontSize: "20px", color: adsRed }}>{`${failedCount}`}</Typography>
                     <Typography variant="body2">{`${
                       failedCount === 1 ? "child" : "children"
                     } failed to be created.`}</Typography>
@@ -344,14 +347,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: "20px", color: adsGreenC }}>{`${createdCount}`}</Typography>
                   <Typography variant="body2">{`${
                     createdCount === 1 ? "property was" : "properties were"
                   } successfully updated.`}</Typography>
                 </Stack>
                 {failedCount > 0 && (
                   <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="h6" sx={{ fontSize: "20px", color: adsRed }}>{`${failedCount}`}</Typography>
                     <Typography variant="body2">{`${
                       failedCount === 1 ? "property" : "properties"
                     } failed to be updated.`}</Typography>
@@ -371,14 +374,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: "20px", color: adsGreenC }}>{`${createdCount}`}</Typography>
                   <Typography variant="body2">{`${
                     createdCount === 1 ? "property was" : "properties were"
                   } successfully updated.`}</Typography>
                 </Stack>
                 {failedCount > 0 && (
                   <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="h6" sx={{ fontSize: "20px", color: adsRed }}>{`${failedCount}`}</Typography>
                     <Typography variant="body2">{`${
                       failedCount === 1 ? "property" : "properties"
                     } failed to be updated.`}</Typography>
@@ -398,14 +401,14 @@ function WizardFinaliseDialog({ open, variant, errors, createdCount, failedCount
             <Box sx={{ maxHeight: maxContentHeight, fontSize: "16px", color: adsMidGreyA, lineHeight: "22px" }}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                  <Typography variant="h6" color={adsGreenC} sx={{ fontSize: "20px" }}>{`${createdCount}`}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: "20px", color: adsGreenC }}>{`${createdCount}`}</Typography>
                   <Typography variant="body2">{`${
                     createdCount === 1 ? "property was" : "properties were"
                   } successfully updated.`}</Typography>
                 </Stack>
                 {failedCount > 0 && (
                   <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
-                    <Typography variant="h6" color={adsRed} sx={{ fontSize: "20px" }}>{`${failedCount}`}</Typography>
+                    <Typography variant="h6" sx={{ fontSize: "20px", color: adsRed }}>{`${failedCount}`}</Typography>
                     <Typography variant="body2">{`${
                       failedCount === 1 ? "property" : "properties"
                     } failed to be updated.`}</Typography>

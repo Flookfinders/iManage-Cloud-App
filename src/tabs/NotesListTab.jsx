@@ -3,29 +3,32 @@
 //
 //  Description: Notes list tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   10.08.23 Sean Flook                 Do not display the deleted records.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
-//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    007   22.02.24 Joel Benford     IMANN-287 Correct blue on hover
-//    008   23.02.24 Joel Benford     IMANN-287 Tweak layout since bottom padding hid hover on row below
-//    009   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    010   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    011   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    012   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    014   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
+//    001            Sean Flook                  Initial Revision.
+//    002   10.08.23 Sean Flook                  Do not display the deleted records.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed a warning.
+//    006   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    007   22.02.24 Joel Benford      IMANN-287 Correct blue on hover
+//    008   23.02.24 Joel Benford      IMANN-287 Tweak layout since bottom padding hid hover on row below
+//    009   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    010   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    011   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    012   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    013   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    014   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -34,7 +37,7 @@ import React, { useContext, useState, useRef, useEffect, Fragment } from "react"
 import PropTypes from "prop-types";
 import UserContext from "../context/userContext";
 import { FormatDate, FormatDateTime, GetUserAvatar, GetUserName } from "../utils/HelperUtils";
-import { Typography, Grid, Skeleton, Tooltip, IconButton, List, ListItemButton } from "@mui/material";
+import { Typography, Grid2, Skeleton, Tooltip, IconButton, List, ListItemButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import {
@@ -258,20 +261,20 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                   onMouseEnter={(event) => handleMouseEnterRecord(event, rec.pkId)}
                   onMouseLeave={handleMouseLeaveRecord}
                 >
-                  <Grid
+                  <Grid2
                     container
                     justifyContent="space-between"
                     alignItems="center"
                     // sx={{ pl: theme.spacing(1) }}
                   >
-                    <Grid item xs={2}>
+                    <Grid2 size={2}>
                       <Box sx={getDateBoxStyle(rec.pkId)}>
                         <Typography variant="body2" align="center">
                           {FormatDate(rec.lastUpdatedDate)}
                         </Typography>
                       </Box>
-                    </Grid>
-                    <Grid item xs={10}>
+                    </Grid2>
+                    <Grid2 size={10}>
                       {selectedItem && selectedItem === rec.pkId && (
                         <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
                           <Tooltip title="Edit note" arrow placement="bottom" sx={tooltipStyle}>
@@ -294,8 +297,8 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                           </Tooltip>
                         </Stack>
                       )}
-                    </Grid>
-                    <Grid item xs={2}>
+                    </Grid2>
+                    <Grid2 size={2}>
                       <Stack direction="row" justifyContent="center" alignItems="center">
                         {GetUserAvatar(
                           rec.lastUser === userContext.currentUser.auditName
@@ -303,20 +306,20 @@ function NotesListTab({ data, errors, loading, variant, onNoteSelected, onNoteDe
                             : rec.lastUser
                         )}
                       </Stack>
-                    </Grid>
-                    <Grid item xs={10}>
+                    </Grid2>
+                    <Grid2 size={10}>
                       <Typography variant="body1">{rec.note}</Typography>
-                    </Grid>
-                    <Grid item xs={2}>
+                    </Grid2>
+                    <Grid2 size={2}>
                       <Typography variant="body2">{""}</Typography>
-                    </Grid>
-                    <Grid item xs={10}>
+                    </Grid2>
+                    <Grid2 size={10}>
                       <Stack direction="column">
                         <Typography variant="caption">{FormatDateTime(rec.lastUpdatedDate)}</Typography>
                         <Typography variant="caption">{GetUserName(rec.lastUser)}</Typography>
                       </Stack>
-                    </Grid>
-                  </Grid>
+                    </Grid2>
+                  </Grid2>
                 </ListItemButton>
               </List>
             ))

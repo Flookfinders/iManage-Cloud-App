@@ -3,18 +3,21 @@
 //
 //  Description: Tab to display all the operational district information
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   01.02.24 Sean Flook                 Initial Revision.
-//    002   27.03.24 Sean Flook                 Further changes to fix warnings.
-//    003   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
+//    001   01.02.24 Sean Flook                  Initial Revision.
+//    002   27.03.24 Sean Flook                  Further changes to fix warnings.
+//    003   02.07.24 Sean Flook        IMANN-666 Moved permit scheme id and out of hours arrangement.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    004   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -29,7 +32,7 @@ import { FormatDate } from "../utils/HelperUtils";
 import {
   Divider,
   Typography,
-  Grid,
+  Grid2,
   Tooltip,
   IconButton,
   Card,
@@ -550,104 +553,106 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
               )
             }
             title="District"
-            titleTypographyProps={{
-              sx: getTitleStyle(editDistrict),
-            }}
             sx={{ height: "66px" }}
+            slotProps={{
+              title: {
+                sx: getTitleStyle(editDistrict),
+              },
+            }}
           />
           <CardActionArea onClick={doEditDistrict}>
             <CardContent sx={settingsCardContentStyle("district")}>
               <>
-                <Grid container rowSpacing={1}>
-                  <Grid item xs={3}>
+                <Grid2 container rowSpacing={1}>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Authority</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {GetAuthorityLabel(organisationId, settingsContext.isScottish)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Name</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {lookupToTitleCase(districtName, false)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">ID</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {districtId}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Function</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {getFunction()}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Address</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {getDistrictAddress()}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Postcode</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {districtPostcode}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Telephone no.</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {districtTelNo}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Fax no.</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {districtFaxNo}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Closed date</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {FormatDate(districtClosed)}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Permit scheme ID</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {districtPermitSchemeId}
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography variant="body2">Out of hours arrangements made</Typography>
-                  </Grid>
-                  <Grid item xs={9}>
+                  </Grid2>
+                  <Grid2 size={9}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                       {`${outOfHoursArrangements ? "Yes" : "No"}`}
                     </Typography>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </>
             </CardContent>
           </CardActionArea>
@@ -671,55 +676,57 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
               )
             }
             title="FTP"
-            titleTypographyProps={{
-              sx: getTitleStyle(editFtp),
-            }}
             sx={{ height: "66px" }}
+            slotProps={{
+              title: {
+                sx: getTitleStyle(editFtp),
+              },
+            }}
           />
           <CardActionArea onClick={doEditFtp}>
             <CardContent sx={settingsCardContentStyle("districtFtp")}>
-              <Grid container rowSpacing={1}>
-                <Grid item xs={3}>
+              <Grid2 container rowSpacing={1}>
+                <Grid2 size={3}>
                   <Typography variant="body2">FTP server name</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {districtFtpServerName}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Server IP address</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {districtServerIpAddress}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">FTP directory</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {districtFtpDirectory}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Notification URL</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {districtNotificationsUrl}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Attachment URL prefix</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {attachmentUrlPrefix}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </CardContent>
           </CardActionArea>
         </Card>
@@ -742,47 +749,49 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
               )
             }
             title="Fixed penalty notice: delivery"
-            titleTypographyProps={{
-              sx: getTitleStyle(editFpnDelivery),
-            }}
             sx={{ height: "66px" }}
+            slotProps={{
+              title: {
+                sx: getTitleStyle(editFpnDelivery),
+              },
+            }}
           />
           <CardActionArea onClick={doEditFpnDelivery}>
             <CardContent sx={settingsCardContentStyle("districtFpnDelivery")}>
-              <Grid container rowSpacing={1}>
-                <Grid item xs={3}>
+              <Grid2 container rowSpacing={1}>
+                <Grid2 size={3}>
                   <Typography variant="body2">Delivery URL</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnDeliveryUrl}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Address</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {getFpnDeliveryAddress()}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Postcode</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnDeliveryPostcode}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Email address</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnDeliveryEmailAddress}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </CardContent>
           </CardActionArea>
         </Card>
@@ -805,79 +814,81 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
               )
             }
             title="Fixed penalty notice: payment"
-            titleTypographyProps={{
-              sx: getTitleStyle(editFpnPayment),
-            }}
             sx={{ height: "66px" }}
+            slotProps={{
+              title: {
+                sx: getTitleStyle(editFpnPayment),
+              },
+            }}
           />
           <CardActionArea onClick={doEditFpnPayment}>
             <CardContent sx={settingsCardContentStyle("districtFpnPayment")}>
-              <Grid container rowSpacing={1}>
-                <Grid item xs={3}>
+              <Grid2 container rowSpacing={1}>
+                <Grid2 size={3}>
                   <Typography variant="body2">Payment URL</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentUrl}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Bank name</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentBankName}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Account name</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentAccountName}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Account no.</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentAccountNo}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Sort code</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentSortCode}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Payment address</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {getFpnPaymentAddress()}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Postcode</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentPostcode}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Telephone no.</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnPaymentTelNo}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </CardContent>
           </CardActionArea>
         </Card>
@@ -900,47 +911,49 @@ function DistrictLookupTab({ data, onHomeClick, onUpdateData }) {
               )
             }
             title="Fixed penalty notice: contact"
-            titleTypographyProps={{
-              sx: getTitleStyle(editFpnContact),
-            }}
             sx={{ height: "66px" }}
+            slotProps={{
+              title: {
+                sx: getTitleStyle(editFpnContact),
+              },
+            }}
           />
           <CardActionArea onClick={doEditFpnContact}>
             <CardContent sx={settingsCardContentStyle("districtFpnContact")}>
-              <Grid container rowSpacing={1}>
-                <Grid item xs={3}>
+              <Grid2 container rowSpacing={1}>
+                <Grid2 size={3}>
                   <Typography variant="body2">Contact name</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnContactName}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Contact address</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {getFpnContactAddress()}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Postcode</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnContactPostcode}
                   </Typography>
-                </Grid>
-                <Grid item xs={3}>
+                </Grid2>
+                <Grid2 size={3}>
                   <Typography variant="body2">Telephone no.</Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {fpnContactTelNo}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Grid2>
+              </Grid2>
             </CardContent>
           </CardActionArea>
         </Card>

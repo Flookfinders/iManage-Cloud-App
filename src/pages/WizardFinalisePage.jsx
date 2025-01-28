@@ -3,18 +3,21 @@
 //
 //  Description: Wizard finalise page
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    003   30.04.24 Sean Flook       IMANN-384 Set the updating flag on the ADSWizardAddressList.
+//    001            Sean Flook                  Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    003   30.04.24 Sean Flook        IMANN-384 Set the updating flag on the ADSWizardAddressList.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    004   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -24,7 +27,7 @@ import PropTypes from "prop-types";
 
 import MapContext from "../context/mapContext";
 
-import { Grid, Backdrop, CircularProgress } from "@mui/material";
+import { Grid2, Backdrop, CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import ADSWizardMap from "../components/ADSWizardMap";
 import ADSWizardAddressList from "../components/ADSWizardAddressList";
@@ -82,10 +85,10 @@ function WizardFinalisePage({ data, isChild, errors, creating, onDataChange, onE
 
   return (
     <Box>
-      <Grid container justifyContent="flex-start" spacing={0}>
-        <Grid item xs={12}>
-          <Grid container spacing={0} justifyContent="flex-start">
-            <Grid item xs={12} sm={4}>
+      <Grid2 container justifyContent="flex-start" spacing={0}>
+        <Grid2 size={12}>
+          <Grid2 container spacing={0} justifyContent="flex-start">
+            <Grid2 size={4}>
               <ADSWizardAddressList
                 data={data}
                 checked={checked}
@@ -95,13 +98,13 @@ function WizardFinalisePage({ data, isChild, errors, creating, onDataChange, onE
                 onDataChanged={handleDataChanged}
                 onErrorChanged={handleErrorChanged}
               />
-            </Grid>
-            <Grid item xs={12} sm={8}>
+            </Grid2>
+            <Grid2 size={8}>
               <ADSWizardMap data={data} isChild={isChild} isRange />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
+      </Grid2>
       {creating && (
         <Backdrop open={creating}>
           <CircularProgress color="inherit" />

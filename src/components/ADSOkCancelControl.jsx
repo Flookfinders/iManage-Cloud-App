@@ -3,24 +3,27 @@
 //
 //  Description: OK Cancel component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    ï¿½ 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.07.21 Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
+//    001   02.07.21 Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid2, Typography, Button } from "@mui/material";
 import { Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 import { adsBlueA, adsLightBlue10 } from "../utils/ADSColours";
 import { FormRowStyle } from "../utils/ADSStyles";
@@ -67,17 +70,17 @@ function ADSOkCancelControl({
   };
 
   return (
-    <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle()}>
+    <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle()}>
       {indented && (
-        <Grid item xs={3}>
+        <Grid2 size={3}>
           <Typography variant="body2" align="left">
             {""}
           </Typography>
-        </Grid>
+        </Grid2>
       )}
-      <Grid item xs={indented ? 9 : 12}>
-        <Grid container justifyContent="flex-start" alignItems="center" spacing={2}>
-          <Grid item>
+      <Grid2 size={indented ? 9 : 12}>
+        <Grid2 container justifyContent="flex-start" alignItems="center" spacing={2}>
+          <Grid2>
             <Button
               id={`${okLabel.toLowerCase().replaceAll(" ", "-")}-button`}
               sx={{ mt: "6px" }}
@@ -89,8 +92,8 @@ function ADSOkCancelControl({
             >
               {okLabel}
             </Button>
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2>
             <Button
               id={`${cancelLabel.toLowerCase().replaceAll(" ", "-")}-button`}
               sx={{
@@ -107,10 +110,10 @@ function ADSOkCancelControl({
             >
               {cancelLabel}
             </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+          </Grid2>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }
 

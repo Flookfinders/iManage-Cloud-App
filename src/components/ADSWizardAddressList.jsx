@@ -3,40 +3,43 @@
 //
 //  Description: Wizard Address List
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   29.03.23 Sean Flook         WI40639 Correctly set the note when adding a new one.
-//    003   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    004   06.10.23 Sean Flook                 Use colour variables.
-//    005   10.11.23 Sean Flook       IMANN-175 Changes required for Move BLPU seed point.
-//    006   20.11.23 Sean Flook                 Tweak the classification code for street BLPUs.
-//    007   20.11.23 Sean Flook                 Undone above change.
-//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and sorted some warnings.
-//    009   30.11.23 Sean Flook                 Change required for Scottish authorities.
-//    010   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    011   12.01.24 Sean Flook                 Fixed duplicate key warning.
-//    012   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    013   25.01.24 Sean Flook                 Changes required after UX review.
-//    014   08.02.24 Joel Benford         RTAB3 Supply null street state to classification icon tooltip
-//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    016   11.04.24 Sean Flook       IMANN-384 Hide information and selection control when updating.
-//    017   12.04.24 Sean Flook       IMANN-384 Clear checked when updating.
-//    018   25.04.24 Sean Flook                 Display the information control for the wizard as well.
-//    019   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
-//    020   18.06.24 Sean Flook       IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
+//    001            Sean Flook                  Initial Revision.
+//    002   29.03.23 Sean Flook          WI40639 Correctly set the note when adding a new one.
+//    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    004   06.10.23 Sean Flook                  Use colour variables.
+//    005   10.11.23 Sean Flook        IMANN-175 Changes required for Move BLPU seed point.
+//    006   20.11.23 Sean Flook                  Tweak the classification code for street BLPUs.
+//    007   20.11.23 Sean Flook                  Undone above change.
+//    008   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and sorted some warnings.
+//    009   30.11.23 Sean Flook                  Change required for Scottish authorities.
+//    010   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    011   12.01.24 Sean Flook                  Fixed duplicate key warning.
+//    012   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    013   25.01.24 Sean Flook                  Changes required after UX review.
+//    014   08.02.24 Joel Benford          RTAB3 Supply null street state to classification icon tooltip
+//    015   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   11.04.24 Sean Flook        IMANN-384 Hide information and selection control when updating.
+//    017   12.04.24 Sean Flook        IMANN-384 Clear checked when updating.
+//    018   25.04.24 Sean Flook                  Display the information control for the wizard as well.
+//    019   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
+//    020   18.06.24 Sean Flook        IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
-//    021   21.11.24 Sean Flook      IMANN-1065 Include the UPRN when dealing with move BLPU.
-//    022   22.11.24 Sean Flook      IMANN-1065 When moving a BLPU keep the classification in the BLPU object for Scottish authorities.
-//    023   03.12.24 Sean Flook      IMANN-1081 Include classification errors for Scottish authorities.
+//    021   21.11.24 Sean Flook       IMANN-1065 Include the UPRN when dealing with move BLPU.
+//    022   22.11.24 Sean Flook       IMANN-1065 When moving a BLPU keep the classification in the BLPU object for Scottish authorities.
+//    023   03.12.24 Sean Flook       IMANN-1081 Include classification errors for Scottish authorities.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    024   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -1107,9 +1110,8 @@ function ADSWizardAddressList({
                     <Typography
                       id={`${rec.id}-${idx}`}
                       variant="body2"
-                      color={adsRed}
                       align="left"
-                      sx={{ fontWeight: 600, fontSize: "14px" }}
+                      sx={{ fontWeight: 600, fontSize: "14px", color: adsRed }}
                     >
                       {error}
                     </Typography>

@@ -134,12 +134,16 @@
 //    114   16.01.25 Sean Flook       IMANN-1135 When selecting properties adjust the opacity of the street layer.
 //    115   16.01.25 Sean Flook       IMANN-1136 Correctly handle merging provenance extents.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    116   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
 
 /* #region imports */
 import React, { useContext, useState, useRef, useCallback, useEffect, Fragment } from "react";
+// import { useNavigate } from "react-router";
 import { useHistory } from "react-router";
 import PropTypes from "prop-types";
 
@@ -1230,6 +1234,7 @@ function ADSEsriMap(startExtent) {
         }
   );
 
+  // const navigate = useNavigate();
   const history = useHistory();
 
   const saveConfirmDialog = useSaveConfirmation();
@@ -1840,6 +1845,7 @@ function ADSEsriMap(startExtent) {
         );
       }
 
+      // if (!isRange) navigate.goBack();
       if (!isRange) history.goBack();
 
       const parentData =
@@ -2975,26 +2981,33 @@ function ADSEsriMap(startExtent) {
       layer.opacity = opacity;
 
       if (view) {
-        view.whenLayerView(layer).then((layerView) => {
-          function incrementOpacityByFrame() {
-            if (opacity >= finalOpacity && animating) {
-              animating = false;
-              return;
+        view
+          .whenLayerView(layer)
+          .then((layerView) => {
+            function incrementOpacityByFrame() {
+              if (opacity >= finalOpacity && animating) {
+                animating = false;
+                return;
+              }
+
+              layer.opacity = opacity;
+              opacity += 0.02;
+
+              requestAnimationFrame(incrementOpacityByFrame);
             }
 
-            layer.opacity = opacity;
-            opacity += 0.02;
-
-            requestAnimationFrame(incrementOpacityByFrame);
-          }
-
-          // Wait for tiles to finish loading before beginning the fade
-          reactiveUtils
-            .whenOnce(() => !layerView.updating)
-            .then(() => {
-              requestAnimationFrame(incrementOpacityByFrame);
-            });
-        });
+            // Wait for tiles to finish loading before beginning the fade
+            reactiveUtils
+              .whenOnce(() => !layerView.updating)
+              .then(() => {
+                requestAnimationFrame(incrementOpacityByFrame);
+              });
+          })
+          .catch((error) => {
+            if (error && userContext.current.currentUser.showMessages) {
+              console.error("Error fading layer visibility", error);
+            }
+          });
       }
     },
     [view]
@@ -6345,149 +6358,170 @@ function ADSEsriMap(startExtent) {
       });
     }
 
-    streetLayer.when(function () {
-      if (
-        !mapContext.currentLayers.zoomStreet &&
-        !mapContext.currentLayers.zoomProperty &&
-        (!editingObject.current || editingObject.current.objectType !== 13)
-      ) {
-        if (propertyLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin:
-              (streetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
-                ? streetLayer.fullExtent.xmin
-                : propertyLayer.fullExtent.xmin) - extentBorder,
-            ymin:
-              (streetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
-                ? streetLayer.fullExtent.ymin
-                : propertyLayer.fullExtent.ymin) - extentBorder,
-            xmax:
-              (streetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
-                ? streetLayer.fullExtent.xmax
-                : propertyLayer.fullExtent.xmax) + extentBorder,
-            ymax:
-              (streetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
-                ? streetLayer.fullExtent.ymax
-                : propertyLayer.fullExtent.ymax) + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
-        } else if (streetLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin: streetLayer.fullExtent.xmin - extentBorder,
-            ymin: streetLayer.fullExtent.ymin - extentBorder,
-            xmax: streetLayer.fullExtent.xmax + extentBorder,
-            ymax: streetLayer.fullExtent.ymax + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
+    streetLayer.when(
+      function () {
+        if (
+          !mapContext.currentLayers.zoomStreet &&
+          !mapContext.currentLayers.zoomProperty &&
+          (!editingObject.current || editingObject.current.objectType !== 13)
+        ) {
+          if (propertyLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin:
+                (streetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                  ? streetLayer.fullExtent.xmin
+                  : propertyLayer.fullExtent.xmin) - extentBorder,
+              ymin:
+                (streetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                  ? streetLayer.fullExtent.ymin
+                  : propertyLayer.fullExtent.ymin) - extentBorder,
+              xmax:
+                (streetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                  ? streetLayer.fullExtent.xmax
+                  : propertyLayer.fullExtent.xmax) + extentBorder,
+              ymax:
+                (streetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                  ? streetLayer.fullExtent.ymax
+                  : propertyLayer.fullExtent.ymax) + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          } else if (streetLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin: streetLayer.fullExtent.xmin - extentBorder,
+              ymin: streetLayer.fullExtent.ymin - extentBorder,
+              xmax: streetLayer.fullExtent.xmax + extentBorder,
+              ymax: streetLayer.fullExtent.ymax + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          }
+          view.extent = backgroundExtent.current;
         }
-        view.extent = backgroundExtent.current;
+      },
+      function (error) {
+        if (error && userContext.current.currentUser.showMessages) {
+          console.error("Error loading street layer: ", error);
+        }
       }
-    });
+    );
 
-    llpgStreetLayer.when(function () {
-      if (
-        !mapContext.currentLayers.zoomStreet &&
-        !mapContext.currentLayers.zoomProperty &&
-        (!editingObject.current || editingObject.current.objectType !== 13)
-      ) {
-        if (propertyLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin:
-              (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
-                ? llpgStreetLayer.fullExtent.xmin
-                : propertyLayer.fullExtent.xmin) - extentBorder,
-            ymin:
-              (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
-                ? llpgStreetLayer.fullExtent.ymin
-                : propertyLayer.fullExtent.ymin) - extentBorder,
-            xmax:
-              (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
-                ? llpgStreetLayer.fullExtent.xmax
-                : propertyLayer.fullExtent.xmax) + extentBorder,
-            ymax:
-              (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
-                ? llpgStreetLayer.fullExtent.ymax
-                : propertyLayer.fullExtent.ymax) + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
-        } else if (llpgStreetLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin: llpgStreetLayer.fullExtent.xmin - extentBorder,
-            ymin: llpgStreetLayer.fullExtent.ymin - extentBorder,
-            xmax: llpgStreetLayer.fullExtent.xmax + extentBorder,
-            ymax: llpgStreetLayer.fullExtent.ymax + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
+    llpgStreetLayer.when(
+      function () {
+        if (
+          !mapContext.currentLayers.zoomStreet &&
+          !mapContext.currentLayers.zoomProperty &&
+          (!editingObject.current || editingObject.current.objectType !== 13)
+        ) {
+          if (propertyLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin:
+                (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                  ? llpgStreetLayer.fullExtent.xmin
+                  : propertyLayer.fullExtent.xmin) - extentBorder,
+              ymin:
+                (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                  ? llpgStreetLayer.fullExtent.ymin
+                  : propertyLayer.fullExtent.ymin) - extentBorder,
+              xmax:
+                (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                  ? llpgStreetLayer.fullExtent.xmax
+                  : propertyLayer.fullExtent.xmax) + extentBorder,
+              ymax:
+                (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                  ? llpgStreetLayer.fullExtent.ymax
+                  : propertyLayer.fullExtent.ymax) + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          } else if (llpgStreetLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin: llpgStreetLayer.fullExtent.xmin - extentBorder,
+              ymin: llpgStreetLayer.fullExtent.ymin - extentBorder,
+              xmax: llpgStreetLayer.fullExtent.xmax + extentBorder,
+              ymax: llpgStreetLayer.fullExtent.ymax + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          }
+          view.extent = backgroundExtent.current;
         }
-        view.extent = backgroundExtent.current;
+      },
+      function (error) {
+        if (error && userContext.current.currentUser.showMessages) {
+          console.error("Error loading LLPG street layer: ", error);
+        }
       }
-    });
+    );
 
-    propertyLayer.when(function () {
-      if (
-        !mapContext.currentLayers.zoomStreet &&
-        !mapContext.currentLayers.zoomProperty &&
-        (!editingObject.current || editingObject.current.objectType !== 22)
-      ) {
-        if (streetLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin:
-              (streetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
-                ? streetLayer.fullExtent.xmin
-                : propertyLayer.fullExtent.xmin) - extentBorder,
-            ymin:
-              (streetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
-                ? streetLayer.fullExtent.ymin
-                : propertyLayer.fullExtent.ymin) - extentBorder,
-            xmax:
-              (streetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
-                ? streetLayer.fullExtent.xmax
-                : propertyLayer.fullExtent.xmax) + extentBorder,
-            ymax:
-              (streetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
-                ? streetLayer.fullExtent.ymax
-                : propertyLayer.fullExtent.ymax) + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
-        } else if (llpgStreetLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin:
-              (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
-                ? llpgStreetLayer.fullExtent.xmin
-                : propertyLayer.fullExtent.xmin) - extentBorder,
-            ymin:
-              (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
-                ? llpgStreetLayer.fullExtent.ymin
-                : propertyLayer.fullExtent.ymin) - extentBorder,
-            xmax:
-              (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
-                ? llpgStreetLayer.fullExtent.xmax
-                : propertyLayer.fullExtent.xmax) + extentBorder,
-            ymax:
-              (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
-                ? llpgStreetLayer.fullExtent.ymax
-                : propertyLayer.fullExtent.ymax) + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
-        } else if (propertyLayer.fullExtent) {
-          backgroundExtent.current = {
-            xmin: propertyLayer.fullExtent.xmin - extentBorder,
-            ymin: propertyLayer.fullExtent.ymin - extentBorder,
-            xmax: propertyLayer.fullExtent.xmax + extentBorder,
-            ymax: propertyLayer.fullExtent.ymax + extentBorder,
-            spatialReference: { wkid: 27700 },
-            zoomLevel: view.zoom,
-          };
+    propertyLayer.when(
+      function () {
+        if (
+          !mapContext.currentLayers.zoomStreet &&
+          !mapContext.currentLayers.zoomProperty &&
+          (!editingObject.current || editingObject.current.objectType !== 22)
+        ) {
+          if (streetLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin:
+                (streetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                  ? streetLayer.fullExtent.xmin
+                  : propertyLayer.fullExtent.xmin) - extentBorder,
+              ymin:
+                (streetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                  ? streetLayer.fullExtent.ymin
+                  : propertyLayer.fullExtent.ymin) - extentBorder,
+              xmax:
+                (streetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                  ? streetLayer.fullExtent.xmax
+                  : propertyLayer.fullExtent.xmax) + extentBorder,
+              ymax:
+                (streetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                  ? streetLayer.fullExtent.ymax
+                  : propertyLayer.fullExtent.ymax) + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          } else if (llpgStreetLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin:
+                (llpgStreetLayer.fullExtent.xmin < propertyLayer.fullExtent.xmin
+                  ? llpgStreetLayer.fullExtent.xmin
+                  : propertyLayer.fullExtent.xmin) - extentBorder,
+              ymin:
+                (llpgStreetLayer.fullExtent.ymin < propertyLayer.fullExtent.ymin
+                  ? llpgStreetLayer.fullExtent.ymin
+                  : propertyLayer.fullExtent.ymin) - extentBorder,
+              xmax:
+                (llpgStreetLayer.fullExtent.xmax > propertyLayer.fullExtent.xmax
+                  ? llpgStreetLayer.fullExtent.xmax
+                  : propertyLayer.fullExtent.xmax) + extentBorder,
+              ymax:
+                (llpgStreetLayer.fullExtent.ymax > propertyLayer.fullExtent.ymax
+                  ? llpgStreetLayer.fullExtent.ymax
+                  : propertyLayer.fullExtent.ymax) + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          } else if (propertyLayer.fullExtent) {
+            backgroundExtent.current = {
+              xmin: propertyLayer.fullExtent.xmin - extentBorder,
+              ymin: propertyLayer.fullExtent.ymin - extentBorder,
+              xmax: propertyLayer.fullExtent.xmax + extentBorder,
+              ymax: propertyLayer.fullExtent.ymax + extentBorder,
+              spatialReference: { wkid: 27700 },
+              zoomLevel: view.zoom,
+            };
+          }
+          view.extent = backgroundExtent.current;
         }
-        view.extent = backgroundExtent.current;
+      },
+      function (error) {
+        if (error && userContext.current.currentUser.showMessages) {
+          console.error("Error loading property layer: ", error);
+        }
       }
-    });
+    );
 
     if (mapContext.currentLayers.zoomProperty && zoomPropertyDataRef && zoomPropertyDataRef.length > 0) {
       backgroundExtent.current = {
@@ -7107,17 +7141,22 @@ function ADSEsriMap(startExtent) {
         });
     }
 
-    view.when().then(() => {
-      // When the user toggles a layer on or off, transition
-      // the layer's visibility using opacity
-      layerListRef.current.operationalItems.forEach((item) => {
-        item.watch("visible", (visible) => {
-          if (visible) {
-            fadeVisibilityOn(item.layer);
-          }
+    view
+      .when()
+      .then(() => {
+        // When the user toggles a layer on or off, transition
+        // the layer's visibility using opacity
+        layerListRef.current.operationalItems.forEach((item) => {
+          item.watch("visible", (visible) => {
+            if (visible) {
+              fadeVisibilityOn(item.layer);
+            }
+          });
         });
+      })
+      .catch((error) => {
+        if (userContext.current.currentUser.showMessages) console.error("Error loading map view: ", error);
       });
-    });
 
     layerListRef.current.on("trigger-action", (event) => {
       switch (event.action.id) {
@@ -9217,167 +9256,272 @@ function ADSEsriMap(startExtent) {
     }
 
     if (mapContext.currentHighlight.street && streetLayer) {
-      view.whenLayerView(streetLayer).then(function (layerView) {
-        let streetQuery = streetLayer.createQuery();
-        streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
-        streetLayer.queryFeatures(streetQuery).then(function (result) {
-          if (highlightStreet.current) highlightStreet.current.remove();
-          highlightStreet.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(streetLayer)
+        .then(function (layerView) {
+          let streetQuery = streetLayer.createQuery();
+          streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
+          streetLayer.queryFeatures(streetQuery).then(function (result) {
+            if (highlightStreet.current) highlightStreet.current.remove();
+            highlightStreet.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting street", error);
+          }
         });
-      });
     } else if (mapContext.currentHighlight.street && llpgStreetLayer) {
-      view.whenLayerView(llpgStreetLayer).then(function (layerView) {
-        let streetQuery = llpgStreetLayer.createQuery();
-        streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
-        llpgStreetLayer.queryFeatures(streetQuery).then(function (result) {
-          if (highlightStreet.current) highlightStreet.current.remove();
-          highlightStreet.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(llpgStreetLayer)
+        .then(function (layerView) {
+          let streetQuery = llpgStreetLayer.createQuery();
+          streetQuery.where = `usrn IN ('${mapContext.currentHighlight.street.join("', '")}')`;
+          llpgStreetLayer.queryFeatures(streetQuery).then(function (result) {
+            if (highlightStreet.current) highlightStreet.current.remove();
+            highlightStreet.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting street", error);
+          }
         });
-      });
     } else if (highlightStreet.current) highlightStreet.current.remove();
 
     if (mapContext.currentHighlight.esu && streetLayer) {
-      view.whenLayerView(streetLayer).then(function (layerView) {
-        let esuQuery = streetLayer.createQuery();
-        esuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
-        streetLayer.queryFeatures(esuQuery).then(function (result) {
-          if (highlightESU.current) highlightESU.current.remove();
-          highlightESU.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(streetLayer)
+        .then(function (layerView) {
+          let esuQuery = streetLayer.createQuery();
+          esuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
+          streetLayer.queryFeatures(esuQuery).then(function (result) {
+            if (highlightESU.current) highlightESU.current.remove();
+            highlightESU.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ESU", error);
+          }
         });
-      });
     } else if (highlightESU.current) highlightESU.current.remove();
 
     if (mapContext.currentHighlight.esu && backgroundStreetLayer) {
-      view.whenLayerView(backgroundStreetLayer).then(function (layerView) {
-        let backgroundEsuQuery = backgroundStreetLayer.createQuery();
-        backgroundEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
-        backgroundStreetLayer.queryFeatures(backgroundEsuQuery).then(function (result) {
-          if (highlightBackgroundESU.current) highlightBackgroundESU.current.remove();
-          highlightBackgroundESU.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(backgroundStreetLayer)
+        .then(function (layerView) {
+          let backgroundEsuQuery = backgroundStreetLayer.createQuery();
+          backgroundEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
+          backgroundStreetLayer.queryFeatures(backgroundEsuQuery).then(function (result) {
+            if (highlightBackgroundESU.current) highlightBackgroundESU.current.remove();
+            highlightBackgroundESU.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting background ESU", error);
+          }
         });
-      });
     } else if (highlightBackgroundESU.current) highlightBackgroundESU.current.remove();
 
     if (mapContext.currentHighlight.esu && unassignedEsuLayer) {
-      view.whenLayerView(unassignedEsuLayer).then(function (layerView) {
-        let unassignedEsuQuery = unassignedEsuLayer.createQuery();
-        unassignedEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
-        unassignedEsuLayer.queryFeatures(unassignedEsuQuery).then(function (result) {
-          if (highlightUnassignedESU.current) highlightUnassignedESU.current.remove();
-          highlightUnassignedESU.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(unassignedEsuLayer)
+        .then(function (layerView) {
+          let unassignedEsuQuery = unassignedEsuLayer.createQuery();
+          unassignedEsuQuery.where = `esuId IN ('${mapContext.currentHighlight.esu.join("', '")}')`;
+          unassignedEsuLayer.queryFeatures(unassignedEsuQuery).then(function (result) {
+            if (highlightUnassignedESU.current) highlightUnassignedESU.current.remove();
+            highlightUnassignedESU.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting unassigned ESU", error);
+          }
         });
-      });
     } else if (highlightUnassignedESU.current) highlightUnassignedESU.current.remove();
 
     if (mapContext.currentHighlight.asd51 && asd51Layer) {
-      view.whenLayerView(asd51Layer).then(function (layerView) {
-        let asd51Query = asd51Layer.createQuery();
-        asd51Query.where = `PkId IN ('${mapContext.currentHighlight.asd51.join("', '")}')`;
-        asd51Layer.queryFeatures(asd51Query).then(function (result) {
-          if (highlightASD51.current) highlightASD51.current.remove();
-          highlightASD51.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd51Layer)
+        .then(function (layerView) {
+          let asd51Query = asd51Layer.createQuery();
+          asd51Query.where = `PkId IN ('${mapContext.currentHighlight.asd51.join("', '")}')`;
+          asd51Layer.queryFeatures(asd51Query).then(function (result) {
+            if (highlightASD51.current) highlightASD51.current.remove();
+            highlightASD51.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD51", error);
+          }
         });
-      });
     } else if (highlightASD51.current) highlightASD51.current.remove();
 
     if (mapContext.currentHighlight.asd52 && asd52Layer) {
-      view.whenLayerView(asd52Layer).then(function (layerView) {
-        let asd52Query = asd52Layer.createQuery();
-        asd52Query.where = `PkId IN ('${mapContext.currentHighlight.asd52.join("', '")}')`;
-        asd52Layer.queryFeatures(asd52Query).then(function (result) {
-          if (highlightASD52.current) highlightASD52.current.remove();
-          highlightASD52.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd52Layer)
+        .then(function (layerView) {
+          let asd52Query = asd52Layer.createQuery();
+          asd52Query.where = `PkId IN ('${mapContext.currentHighlight.asd52.join("', '")}')`;
+          asd52Layer.queryFeatures(asd52Query).then(function (result) {
+            if (highlightASD52.current) highlightASD52.current.remove();
+            highlightASD52.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD52", error);
+          }
         });
-      });
     } else if (highlightASD52.current) highlightASD52.current.remove();
 
     if (mapContext.currentHighlight.asd53 && asd53Layer) {
-      view.whenLayerView(asd53Layer).then(function (layerView) {
-        let asd53Query = asd53Layer.createQuery();
-        asd53Query.where = `PkId IN ('${mapContext.currentHighlight.asd53.join("', '")}')`;
-        asd53Layer.queryFeatures(asd53Query).then(function (result) {
-          if (highlightASD53.current) highlightASD53.current.remove();
-          highlightASD53.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd53Layer)
+        .then(function (layerView) {
+          let asd53Query = asd53Layer.createQuery();
+          asd53Query.where = `PkId IN ('${mapContext.currentHighlight.asd53.join("', '")}')`;
+          asd53Layer.queryFeatures(asd53Query).then(function (result) {
+            if (highlightASD53.current) highlightASD53.current.remove();
+            highlightASD53.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD53", error);
+          }
         });
-      });
     } else if (highlightASD53.current) highlightASD53.current.remove();
 
     if (mapContext.currentHighlight.asd61 && asd61Layer) {
-      view.whenLayerView(asd61Layer).then(function (layerView) {
-        let asd61Query = asd61Layer.createQuery();
-        asd61Query.where = `PkId IN ('${mapContext.currentHighlight.asd61.join("', '")}')`;
-        asd61Layer.queryFeatures(asd61Query).then(function (result) {
-          if (highlightASD61.current) highlightASD61.current.remove();
-          highlightASD61.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd61Layer)
+        .then(function (layerView) {
+          let asd61Query = asd61Layer.createQuery();
+          asd61Query.where = `PkId IN ('${mapContext.currentHighlight.asd61.join("', '")}')`;
+          asd61Layer.queryFeatures(asd61Query).then(function (result) {
+            if (highlightASD61.current) highlightASD61.current.remove();
+            highlightASD61.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD61", error);
+          }
         });
-      });
     } else if (highlightASD61.current) highlightASD61.current.remove();
 
     if (mapContext.currentHighlight.asd62 && asd62Layer) {
-      view.whenLayerView(asd62Layer).then(function (layerView) {
-        let asd62Query = asd62Layer.createQuery();
-        asd62Query.where = `PkId IN ('${mapContext.currentHighlight.asd62.join("', '")}')`;
-        asd62Layer.queryFeatures(asd62Query).then(function (result) {
-          if (highlightASD62.current) highlightASD62.current.remove();
-          highlightASD62.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd62Layer)
+        .then(function (layerView) {
+          let asd62Query = asd62Layer.createQuery();
+          asd62Query.where = `PkId IN ('${mapContext.currentHighlight.asd62.join("', '")}')`;
+          asd62Layer.queryFeatures(asd62Query).then(function (result) {
+            if (highlightASD62.current) highlightASD62.current.remove();
+            highlightASD62.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD62", error);
+          }
         });
-      });
     } else if (highlightASD62.current) highlightASD62.current.remove();
 
     if (mapContext.currentHighlight.asd63 && asd63Layer) {
-      view.whenLayerView(asd63Layer).then(function (layerView) {
-        let asd63Query = asd63Layer.createQuery();
-        asd63Query.where = `PkId IN ('${mapContext.currentHighlight.asd63.join("', '")}')`;
-        asd63Layer.queryFeatures(asd63Query).then(function (result) {
-          if (highlightASD63.current) highlightASD63.current.remove();
-          highlightASD63.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd63Layer)
+        .then(function (layerView) {
+          let asd63Query = asd63Layer.createQuery();
+          asd63Query.where = `PkId IN ('${mapContext.currentHighlight.asd63.join("', '")}')`;
+          asd63Layer.queryFeatures(asd63Query).then(function (result) {
+            if (highlightASD63.current) highlightASD63.current.remove();
+            highlightASD63.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD63", error);
+          }
         });
-      });
     } else if (highlightASD63.current) highlightASD63.current.remove();
 
     if (mapContext.currentHighlight.asd64 && asd64Layer) {
-      view.whenLayerView(asd64Layer).then(function (layerView) {
-        let asd64Query = asd64Layer.createQuery();
-        asd64Query.where = `PkId IN ('${mapContext.currentHighlight.asd64.join("', '")}')`;
-        asd64Layer.queryFeatures(asd64Query).then(function (result) {
-          if (highlightASD64.current) highlightASD64.current.remove();
-          highlightASD64.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd64Layer)
+        .then(function (layerView) {
+          let asd64Query = asd64Layer.createQuery();
+          asd64Query.where = `PkId IN ('${mapContext.currentHighlight.asd64.join("', '")}')`;
+          asd64Layer.queryFeatures(asd64Query).then(function (result) {
+            if (highlightASD64.current) highlightASD64.current.remove();
+            highlightASD64.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD64", error);
+          }
         });
-      });
     } else if (highlightASD64.current) highlightASD64.current.remove();
 
     if (mapContext.currentHighlight.asd66 && asd66Layer) {
-      view.whenLayerView(asd66Layer).then(function (layerView) {
-        let asd66Query = asd66Layer.createQuery();
-        asd66Query.where = `PkId IN ('${mapContext.currentHighlight.asd66.join("', '")}')`;
-        asd66Layer.queryFeatures(asd66Query).then(function (result) {
-          if (highlightASD66.current) highlightASD66.current.remove();
-          highlightASD66.current = layerView.highlight(result.features);
+      view
+        .whenLayerView(asd66Layer)
+        .then(function (layerView) {
+          let asd66Query = asd66Layer.createQuery();
+          asd66Query.where = `PkId IN ('${mapContext.currentHighlight.asd66.join("', '")}')`;
+          asd66Layer.queryFeatures(asd66Query).then(function (result) {
+            if (highlightASD66.current) highlightASD66.current.remove();
+            highlightASD66.current = layerView.highlight(result.features);
+          });
+        })
+        .catch((error) => {
+          if (error && userContext.current.currentUser.showMessages) {
+            console.error("Error highlighting ASD66", error);
+          }
         });
-      });
     } else if (highlightASD66.current) highlightASD66.current.remove();
 
     if (mapContext.currentHighlight.property) {
       if (propertyLayer) {
-        view.whenLayerView(propertyLayer).then(function (layerView) {
-          let propertyQuery = propertyLayer.createQuery();
-          propertyQuery.where = `uprn IN ('${mapContext.currentHighlight.property.join("', '")}')`;
-          propertyLayer.queryFeatures(propertyQuery).then(function (result) {
-            if (highlightProperty.current) highlightProperty.current.remove();
-            highlightProperty.current = layerView.highlight(result.features);
+        view
+          .whenLayerView(propertyLayer)
+          .then(function (layerView) {
+            let propertyQuery = propertyLayer.createQuery();
+            propertyQuery.where = `uprn IN ('${mapContext.currentHighlight.property.join("', '")}')`;
+            propertyLayer.queryFeatures(propertyQuery).then(function (result) {
+              if (highlightProperty.current) highlightProperty.current.remove();
+              highlightProperty.current = layerView.highlight(result.features);
+            });
+          })
+          .catch((error) => {
+            if (error && userContext.current.currentUser.showMessages) {
+              console.error("Error highlighting properties: ", error);
+            }
           });
-        });
       } else if (highlightProperty.current) highlightProperty.current.remove();
 
       if (extentLayer) {
-        view.whenLayerView(extentLayer).then(function (layerView) {
-          let extentQuery = extentLayer.createQuery();
-          extentQuery.where = `uprn IN ('${mapContext.currentHighlight.property.join("', '")}')`;
-          extentLayer.queryFeatures(extentQuery).then(function (result) {
-            if (highlightExtent.current) highlightExtent.current.remove();
-            highlightExtent.current = layerView.highlight(result.features);
+        view
+          .whenLayerView(extentLayer)
+          .then(function (layerView) {
+            let extentQuery = extentLayer.createQuery();
+            extentQuery.where = `uprn IN ('${mapContext.currentHighlight.property.join("', '")}')`;
+            extentLayer.queryFeatures(extentQuery).then(function (result) {
+              if (highlightExtent.current) highlightExtent.current.remove();
+              highlightExtent.current = layerView.highlight(result.features);
+            });
+          })
+          .catch((error) => {
+            if (error && userContext.current.currentUser.showMessages) {
+              console.error("Error highlighting extents: ", error);
+            }
           });
-        });
       } else if (highlightExtent.current) highlightExtent.current.remove();
     } else {
       if (highlightProperty.current) highlightProperty.current.remove();
@@ -9386,27 +9530,41 @@ function ADSEsriMap(startExtent) {
 
     if (mapContext.currentHighlight.selectProperties) {
       if (selectPropertyLayer) {
-        view.whenLayerView(selectPropertyLayer).then(function (layerView) {
-          let selectPropertyQuery = selectPropertyLayer.createQuery();
-          selectPropertyQuery.where = `uprn IN ('${mapContext.currentHighlight.selectProperties.join("', '")}')`;
-          selectPropertyLayer.queryFeatures(selectPropertyQuery).then(function (result) {
-            if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
-            highlightSelectProperty.current = layerView.highlight(result.features);
+        view
+          .whenLayerView(selectPropertyLayer)
+          .then(function (layerView) {
+            let selectPropertyQuery = selectPropertyLayer.createQuery();
+            selectPropertyQuery.where = `uprn IN ('${mapContext.currentHighlight.selectProperties.join("', '")}')`;
+            selectPropertyLayer.queryFeatures(selectPropertyQuery).then(function (result) {
+              if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
+              highlightSelectProperty.current = layerView.highlight(result.features);
+            });
+          })
+          .catch((error) => {
+            if (error && userContext.current.currentUser.showMessages) {
+              console.error("Error highlighting selected properties: ", error);
+            }
           });
-        });
       } else if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
     } else if (highlightSelectProperty.current) highlightSelectProperty.current.remove();
 
     if (mapContext.currentHighlight.extent) {
       if (extentLayer) {
-        view.whenLayerView(extentLayer).then(function (layerView) {
-          let extentQuery = extentLayer.createQuery();
-          extentQuery.where = `pkId IN ('${mapContext.currentHighlight.extent.join("', '")}')`;
-          extentLayer.queryFeatures(extentQuery).then(function (result) {
-            if (highlightExtent.current) highlightExtent.current.remove();
-            highlightExtent.current = layerView.highlight(result.features);
+        view
+          .whenLayerView(extentLayer)
+          .then(function (layerView) {
+            let extentQuery = extentLayer.createQuery();
+            extentQuery.where = `pkId IN ('${mapContext.currentHighlight.extent.join("', '")}')`;
+            extentLayer.queryFeatures(extentQuery).then(function (result) {
+              if (highlightExtent.current) highlightExtent.current.remove();
+              highlightExtent.current = layerView.highlight(result.features);
+            });
+          })
+          .catch((error) => {
+            if (error && userContext.current.currentUser.showMessages) {
+              console.error("Error highlighting extents: ", error);
+            }
           });
-        });
       } else if (highlightExtent.current) highlightExtent.current.remove();
     } else if (highlightExtent.current) highlightExtent.current.remove();
   }, [view, mapContext.currentHighlight]);
@@ -9660,12 +9818,19 @@ function ADSEsriMap(startExtent) {
           if (propertyLayer) propertyLayer.visible = false;
           if (selectPropertyLayer) selectPropertyLayer.visible = true;
 
-          viewRef.current.whenLayerView(editGraphicsLayer.current).then((editGraphicsLayerView) => {
-            editGraphicsLayerView.highlightOptions = {
-              haloOpacity: 0,
-              fillOpacity: 0,
-            };
-          });
+          viewRef.current
+            .whenLayerView(editGraphicsLayer.current)
+            .then((editGraphicsLayerView) => {
+              editGraphicsLayerView.highlightOptions = {
+                haloOpacity: 0,
+                fillOpacity: 0,
+              };
+            })
+            .catch((error) => {
+              if (error && userContext.current.currentUser.showMessages) {
+                console.error("Error setting highlight options", error);
+              }
+            });
 
           mapContext.currentBackgroundData.properties.forEach((property) => {
             editGraphicsLayer.current.graphics.add(

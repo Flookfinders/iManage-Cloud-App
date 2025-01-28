@@ -3,24 +3,27 @@
 //
 //  Description: Min max dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    004   10.01.24 Sean Flook                 Fix warnings.
-//    005   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    006   27.03.24 Sean Flook                 Added ADSDialogTitle.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    004   10.01.24 Sean Flook                  Fix warnings.
+//    005   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    006   27.03.24 Sean Flook                  Added ADSDialogTitle.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    007   08.10.24 Sean Flook       IMANN-986 Added new error parameter.
+//    007   08.10.24 Sean Flook        IMANN-986 Added new error parameter.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -28,7 +31,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogActions, DialogContent, Typography, Grid, TextField, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, Typography, Grid2, TextField, Button } from "@mui/material";
 import ADSDialogTitle from "../components/ADSDialogTitle";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -155,13 +158,13 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onN
         onClose={handleCancelClick}
       />
       <DialogContent sx={{ mt: theme.spacing(2) }}>
-        <Grid container alignItems="center" rowSpacing={2}>
-          <Grid item xs={4}>
+        <Grid2 container alignItems="center" rowSpacing={2}>
+          <Grid2 size={4}>
             <Typography variant="body1" align="right" gutterBottom>
               Minimum
             </Typography>
-          </Grid>
-          <Grid item xs={8}>
+          </Grid2>
+          <Grid2 size={8}>
             <TextField
               id={`${minMaxType.toLowerCase().replaceAll(" ", "-")}-min-control`}
               type="number"
@@ -170,7 +173,6 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onN
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ max: `${maximum}` }}
               value={newMin}
               sx={{
                 color: theme.palette.background.contrastText,
@@ -178,14 +180,17 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onN
                 pr: theme.spacing(1),
               }}
               onChange={onMinChangeEvent}
+              slotProps={{
+                htmlInput: { max: `${maximum}` },
+              }}
             />
-          </Grid>
-          <Grid item xs={4}>
+          </Grid2>
+          <Grid2 size={4}>
             <Typography variant="body1" align="right" gutterBottom>
               Maximum
             </Typography>
-          </Grid>
-          <Grid item xs={8}>
+          </Grid2>
+          <Grid2 size={8}>
             <TextField
               id={`${minMaxType.toLowerCase().replaceAll(" ", "-")}-max-control`}
               type="number"
@@ -194,7 +199,6 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onN
               variant="outlined"
               margin="dense"
               size="small"
-              inputProps={{ max: `${maximum}` }}
               value={newMax}
               sx={{
                 color: theme.palette.background.contrastText,
@@ -202,16 +206,19 @@ function MinMaxDialog({ variant, minValue, maxValue, maximum, error, isOpen, onN
                 pr: theme.spacing(1),
               }}
               onChange={onMaxChangeEvent}
+              slotProps={{
+                htmlInput: { max: `${maximum}` },
+              }}
             />
-          </Grid>
+          </Grid2>
           {error && (
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <Typography variant="body1" align="left" color="error" gutterBottom>
                 {error}
               </Typography>
-            </Grid>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "flex-start", mb: theme.spacing(1), ml: theme.spacing(3) }}>
         {variant !== "scale" && (

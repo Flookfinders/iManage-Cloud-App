@@ -3,30 +3,33 @@
 //
 //  Description: Date Time control
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    003   08.12.23 Sean Flook                 Migrated DatePicker to v6.
-//    004   18.12.23 Sean Flook                 Ensure tooltip is displayed
-//    005   20.12.23 Sean Flook       IMANN-201 Added the isDateRequired and isTimeRequired properties.
-//    006   03.01.24 Sean Flook                 Fixed warning.
-//    007   05.01.24 Sean Flook                 use CSS shortcuts.
-//    008   16.01.24 Sean Flook       IMANN-237 Added a clear button.
-//    009   19.01.24 Sean Flook       IMANN-243 Correctly update the time.
-//    010   16.02.24 Sean Flook       IMANN-243 Correctly handle the incoming time.
-//    011   28.08.24 Sean Flook       IMANN-961 Use a TextField when user is read only.
+//    001            Sean Flook                  Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    003   08.12.23 Sean Flook                  Migrated DatePicker to v6.
+//    004   18.12.23 Sean Flook                  Ensure tooltip is displayed
+//    005   20.12.23 Sean Flook        IMANN-201 Added the isDateRequired and isTimeRequired properties.
+//    006   03.01.24 Sean Flook                  Fixed warning.
+//    007   05.01.24 Sean Flook                  use CSS shortcuts.
+//    008   16.01.24 Sean Flook        IMANN-237 Added a clear button.
+//    009   19.01.24 Sean Flook        IMANN-243 Correctly update the time.
+//    010   16.02.24 Sean Flook        IMANN-243 Correctly handle the incoming time.
+//    011   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    012   10.10.24 Sean Flook      IMANN-1011 Changed display format to only show 3 characters for month.
-//    013   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    012   10.10.24 Sean Flook       IMANN-1011 Changed display format to only show 3 characters for month.
+//    013   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    014   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -40,7 +43,7 @@ import dateFormat from "dateformat";
 import { parseISO, parse } from "date-fns";
 import { isValidDate } from "../utils/HelperUtils";
 
-import { Grid, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
+import { Grid2, Typography, Tooltip, Skeleton, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
@@ -179,13 +182,13 @@ function ADSDateTimeControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasDateError.current || hasTimeError.current)}>
-      <Grid
+      <Grid2
         container
         justifyContent="flex-start"
         alignItems="center"
         sx={FormRowStyle(hasDateError.current || hasTimeError.current)}
       >
-        <Grid item xs={3}>
+        <Grid2 size={3}>
           <Typography
             variant="body2"
             align="left"
@@ -194,17 +197,17 @@ function ADSDateTimeControl({
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           {loading ? (
             <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
           ) : isEditable ? (
-            <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+            <Grid2 container justifyContent="flex-start" alignItems="center" spacing={1}>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{`Date${isDateRequired ? "*" : ""}`}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {dateHelperText && dateHelperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? dateHelperText + " This is a required field." : dateHelperText}
@@ -273,13 +276,13 @@ function ADSDateTimeControl({
                       aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-date-error`}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+                </Grid2>
+              </Grid2>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{`Time${isTimeRequired ? "*" : ""}`}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {timeHelperText && timeHelperText.length > 0 ? (
                     <Tooltip
                       title={isRequired ? timeHelperText + " This is a required field." : timeHelperText}
@@ -340,16 +343,16 @@ function ADSDateTimeControl({
                       aria-describedby={`${label.toLowerCase().replaceAll(" ", "-")}-time-error`}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
+                </Grid2>
+              </Grid2>
+            </Grid2>
           ) : (
-            <Grid container justifyContent="flex-start" alignItems="center">
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+            <Grid2 container justifyContent="flex-start" alignItems="center">
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{`Date${isDateRequired ? "*" : ""}`}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {selectedDate && selectedDate.toString() !== "0001-01-01T00:00:00" ? (
                     <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-date`}
@@ -379,13 +382,13 @@ function ADSDateTimeControl({
                       value={""}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item xs={6} container direction="column">
-                <Grid item>
+                </Grid2>
+              </Grid2>
+              <Grid2 container direction="column" size={6}>
+                <Grid2>
                   <Typography variant="body2">{`Time${isTimeRequired ? "*" : ""}`}</Typography>
-                </Grid>
-                <Grid item>
+                </Grid2>
+                <Grid2>
                   {selectedTime && selectedTime.toString() !== "0001-01-01T00:00:00" ? (
                     <TextField
                       id={`${label.toLowerCase().replaceAll(" ", "-")}-time`}
@@ -415,13 +418,13 @@ function ADSDateTimeControl({
                       value={""}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
+                </Grid2>
+              </Grid2>
+            </Grid2>
           )}
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-date-time-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

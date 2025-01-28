@@ -3,31 +3,34 @@
 //
 //  Description: Confirm delete dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40757 Added in deletion confirmation dialog.
-//    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    004   06.10.23 Sean Flook                 Use colour variables.
-//    005   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    006   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    007   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    008   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    009   10.01.24 Sean Flook                 Fix warnings.
-//    010   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    011   27.03.24 Sean Flook                 Further changes to fix warnings.
-//    012   20.05.24 Sean Flook       IMANN-445 Display API errors.
-//    013   04.06.24 Sean Flook       IMANN-445 Show save data.
-//    014   04.06.24 Sean Flook       IMANN-445 Only close the edit dialog if the save was successful.
-//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    016   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40757 Added in deletion confirmation dialog.
+//    003   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    004   06.10.23 Sean Flook                  Use colour variables.
+//    005   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    006   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    007   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    008   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    009   10.01.24 Sean Flook                  Fix warnings.
+//    010   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    011   27.03.24 Sean Flook                  Further changes to fix warnings.
+//    012   20.05.24 Sean Flook        IMANN-445 Display API errors.
+//    013   04.06.24 Sean Flook        IMANN-445 Show save data.
+//    014   04.06.24 Sean Flook        IMANN-445 Only close the edit dialog if the save was successful.
+//    015   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -341,6 +344,7 @@ function MapLayersTab(props) {
       headerClassName: "idox-data-grid-header",
       sortable: false,
       filterable: false,
+      display: "flex",
       flex: 70,
       renderCell: GetMapLayer,
     },
@@ -354,6 +358,7 @@ function MapLayersTab(props) {
       field: "actions",
       type: "actions",
       headerClassName: "idox-data-grid-header",
+      display: "flex",
       sortable: false,
       filterable: false,
       align: "left",

@@ -3,26 +3,29 @@
 //
 //  Description: Coordinate Control component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   07.07.21 Sean Flook                 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    003   10.01.24 Sean Flook                 Fix warnings.
-//    004   04.04.24 Sean Flook       IMANN-319 Do not allow coordinates to be changed outside the allowable limits.
-//    005   04.04.24 Sean Flook       IMANN-403 Removed above changes as preventing user from changing coordinates.
+//    001   07.07.21 Sean Flook                  Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    003   10.01.24 Sean Flook                  Fix warnings.
+//    004   04.04.24 Sean Flook        IMANN-319 Do not allow coordinates to be changed outside the allowable limits.
+//    005   04.04.24 Sean Flook        IMANN-403 Removed above changes as preventing user from changing coordinates.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    006   31.10.24 Sean Flook      IMANN-1012 Fix the height of the skeleton controls.
+//    006   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    007   12.11.24 Sean Flook                 Added ability to show that something has been changed.
+//    007   12.11.24 Sean Flook                  Added ability to show that something has been changed.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -32,7 +35,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Grid, TextField, Typography, Tooltip, Button, Skeleton, Badge } from "@mui/material";
+import { Grid2, TextField, Typography, Tooltip, Button, Skeleton, Badge } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
@@ -187,8 +190,8 @@ function ADSCoordinateControl({
 
   return (
     <Box sx={FormBoxRowStyle(hasCoordError.current)}>
-      <Grid container justifyContent="flex-start" alignItems={"baseline"} sx={FormRowStyle(hasCoordError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems={"baseline"} sx={FormRowStyle(hasCoordError.current)}>
+        <Grid2 size={3}>
           <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mr: "16px" }}>
             <Typography
               id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
@@ -200,12 +203,12 @@ function ADSCoordinateControl({
             </Typography>
             <Badge color="error" variant="dot" invisible={!indicateChange} />
           </Stack>
-        </Grid>
+        </Grid2>
         {displayButton ? (
-          <Grid item xs={9} container justifyContent="space-between" alignItems="baseline">
-            <Grid item xs={8} container direction="column" justifyContent="center" alignItems="flex-start">
-              <Grid item container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
-                <Grid item xs={3}>
+          <Grid2 container justifyContent="space-between" alignItems="baseline" size={9}>
+            <Grid2 container direction="column" justifyContent="center" alignItems="flex-start" size={8}>
+              <Grid2 container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
+                <Grid2 size={3}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-east-label`}
                     variant="body2"
@@ -214,8 +217,8 @@ function ADSCoordinateControl({
                   >
                     {eastLabel}
                   </Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   {loading ? (
                     <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
@@ -262,10 +265,10 @@ function ADSCoordinateControl({
                         .replaceAll(" ", "-")}-east-label`}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
-                <Grid item xs={3}>
+                </Grid2>
+              </Grid2>
+              <Grid2 container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
+                <Grid2 size={3}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-north-label`}
                     variant="body2"
@@ -274,8 +277,8 @@ function ADSCoordinateControl({
                   >
                     {northLabel}
                   </Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   {loading ? (
                     <Skeleton variant="rectangular" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
@@ -322,10 +325,10 @@ function ADSCoordinateControl({
                         .replaceAll(" ", "-")}-north-label`}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={4}>
+                </Grid2>
+              </Grid2>
+            </Grid2>
+            <Grid2 size={4}>
               <Button
                 id={`${buttonLabel.toLowerCase().replaceAll(" ", "-")}-select-button`}
                 sx={ActionIconStyle()}
@@ -335,13 +338,13 @@ function ADSCoordinateControl({
               >
                 {buttonLabel}
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         ) : (
-          <Grid item xs={9} container justifyContent="space-between" alignItems="baseline">
-            <Grid item xs={12} container direction="column" justifyContent="center" alignItems="flex-start">
-              <Grid item container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
-                <Grid item xs={3}>
+          <Grid2 container justifyContent="space-between" alignItems="baseline" size={9}>
+            <Grid2 container direction="column" justifyContent="center" alignItems="flex-start" size={12}>
+              <Grid2 container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
+                <Grid2 size={3}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-east-label`}
                     variant="body2"
@@ -350,8 +353,8 @@ function ADSCoordinateControl({
                   >
                     {eastLabel}
                   </Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   {loading ? (
                     <Skeleton variant="rectangular" animation="wave" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
@@ -398,10 +401,10 @@ function ADSCoordinateControl({
                         .replaceAll(" ", "-")}-east-label`}
                     />
                   )}
-                </Grid>
-              </Grid>
-              <Grid item container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
-                <Grid item xs={3}>
+                </Grid2>
+              </Grid2>
+              <Grid2 container justifyContent="flex-start" alignItems="center" columnSpacing={1}>
+                <Grid2 size={3}>
                   <Typography
                     id={`${label.toLowerCase().replaceAll(" ", "-")}-north-label`}
                     variant="body2"
@@ -410,8 +413,8 @@ function ADSCoordinateControl({
                   >
                     {northLabel}
                   </Typography>
-                </Grid>
-                <Grid item xs={9}>
+                </Grid2>
+                <Grid2 size={9}>
                   {loading ? (
                     <Skeleton variant="rectangular" height={`${skeletonHeight}px`} width="100%" />
                   ) : helperText && helperText.length > 0 ? (
@@ -458,13 +461,13 @@ function ADSCoordinateControl({
                         .replaceAll(" ", "-")}-north-label`}
                     />
                   )}
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
+                </Grid2>
+              </Grid2>
+            </Grid2>
+          </Grid2>
         )}
         <ADSErrorDisplay errorText={displayError} id={`${label.toLowerCase().replaceAll(" ", "-")}-coordinate-error`} />
-      </Grid>
+      </Grid2>
     </Box>
   );
 }

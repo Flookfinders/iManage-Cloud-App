@@ -3,33 +3,36 @@
 //
 //  Description: Lookup tables tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   03.11.23 Sean Flook                 Make labels the same within application.
-//    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
-//    004   30.11.23 Sean Flook                 Hide items if not required.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   01.02.24 Sean Flook                 Initial changes required for operational districts.
-//    007   05.02.24 Sean Flook                 Further changes required for operational districts.
-//    008   05.03.24 Joel Benford     IMANN-242 Stop hiding authorities tab outside debug mode.
-//    009   27.03.24 Sean Flook                 Further changes to fix warnings.
-//    010   27.03.24 Sean Flook                 Make districts visible to GeoPlace authorities.
-//    011   14.06.24 Joshua McCormick IMANN-555 Authorities in lookup table set to hidden
-//    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    013   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    014   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
-//    015   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   03.11.23 Sean Flook                  Make labels the same within application.
+//    003   24.11.23 Sean Flook                  Moved Stack to @mui/system.
+//    004   30.11.23 Sean Flook                  Hide items if not required.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   01.02.24 Sean Flook                  Initial changes required for operational districts.
+//    007   05.02.24 Sean Flook                  Further changes required for operational districts.
+//    008   05.03.24 Joel Benford      IMANN-242 Stop hiding authorities tab outside debug mode.
+//    009   27.03.24 Sean Flook                  Further changes to fix warnings.
+//    010   27.03.24 Sean Flook                  Make districts visible to GeoPlace authorities.
+//    011   14.06.24 Joshua McCormick  IMANN-555 Authorities in lookup table set to hidden
+//    012   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    014   02.07.24 Sean Flook        IMANN-666 Moved permit scheme id and out of hours arrangement.
+//    015   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.0.0 changes
-//    016   02.10.24 Sean Flook       IMANN-409 Set newDistrict flag for EditDistrictLookupDialog.
+//    016   02.10.24 Sean Flook        IMANN-409 Set newDistrict flag for EditDistrictLookupDialog.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -39,9 +42,9 @@ import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 import LookupContext from "../context/lookupContext";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 
 import LookupTablesDataForm from "../forms/LookupTablesDataForm";
 import DistrictLookupTab from "../tabs/DistrictLookupTab";
@@ -566,24 +569,23 @@ function LookupTablesTab() {
           onUpdateData={(updatedData) => handleDistrictUpdateData(updatedData)}
         />
       ) : (
-        <Grid container justifyContent="flex-start" spacing={0}>
-          <Grid item xs={12}>
-            <Grid container spacing={0} justifyContent="flex-start">
-              <Grid item xs={12} sm={2}>
+        <Grid2 container justifyContent="flex-start" spacing={0}>
+          <Grid2 size={12}>
+            <Grid2 container spacing={0} justifyContent="flex-start">
+              <Grid2 size={2}>
                 <Stack direction="column" spacing={2}>
                   <Typography sx={{ fontSize: 24, flexGrow: 1, pl: theme.spacing(3.5) }}>Lookup tables</Typography>
-                  <TreeView
+                  <SimpleTreeView
                     aria-label="settings navigator"
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                    defaultSelected={"POSTCODES"}
-                    selected={selectedNode}
+                    defaultSelectedItems={"POSTCODES"}
+                    selectedItems={selectedNode}
+                    slots={{ expandIcon: ChevronRightIcon, collapseIcon: ExpandMoreIcon }}
                     sx={{ overflowY: "auto" }}
-                    onNodeSelect={handleNodeSelect}
+                    onSelectedItemsChange={handleNodeSelect}
                   >
                     {hasProperty && (
                       <TreeItem
-                        nodeId="POSTCODES"
+                        itemId="POSTCODES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Postcodes
@@ -594,7 +596,7 @@ function LookupTablesTab() {
                     )}
                     {hasProperty && settingsContext.isScottish && (
                       <TreeItem
-                        nodeId="SUB_LOCALITIES"
+                        itemId="SUB_LOCALITIES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Sub-localities
@@ -605,7 +607,7 @@ function LookupTablesTab() {
                     )}
                     {hasProperty && (
                       <TreeItem
-                        nodeId="POST_TOWNS"
+                        itemId="POST_TOWNS"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Post towns
@@ -616,7 +618,7 @@ function LookupTablesTab() {
                     )}
                     {hasProperty && (
                       <TreeItem
-                        nodeId="CROSS_REFERENCES"
+                        itemId="CROSS_REFERENCES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Cross references
@@ -626,7 +628,7 @@ function LookupTablesTab() {
                       />
                     )}
                     <TreeItem
-                      nodeId="LOCALITIES"
+                      itemId="LOCALITIES"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Localities
@@ -635,7 +637,7 @@ function LookupTablesTab() {
                       sx={TreeItemStyle(selectedNode === "LOCALITIES")}
                     />
                     <TreeItem
-                      nodeId="TOWNS"
+                      itemId="TOWNS"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Towns
@@ -645,7 +647,7 @@ function LookupTablesTab() {
                     />
                     {settingsContext.isScottish && (
                       <TreeItem
-                        nodeId="ISLANDS"
+                        itemId="ISLANDS"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Islands
@@ -655,7 +657,7 @@ function LookupTablesTab() {
                       />
                     )}
                     <TreeItem
-                      nodeId="ADMINISTRATIVE_AREAS"
+                      itemId="ADMINISTRATIVE_AREAS"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Administrative areas
@@ -664,7 +666,7 @@ function LookupTablesTab() {
                       sx={TreeItemStyle(selectedNode === "ADMINISTRATIVE_AREAS")}
                     />
                     <TreeItem
-                      nodeId="AUTHORITIES"
+                      itemId="AUTHORITIES"
                       hidden
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
@@ -675,7 +677,7 @@ function LookupTablesTab() {
                     />
                     {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
-                        nodeId="WARDS"
+                        itemId="WARDS"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Wards
@@ -686,7 +688,7 @@ function LookupTablesTab() {
                     )}
                     {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
-                        nodeId="PARISHES"
+                        itemId="PARISHES"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Parishes
@@ -697,7 +699,7 @@ function LookupTablesTab() {
                     )}
                     {!settingsContext.isScottish && (
                       <TreeItem
-                        nodeId="OPERATIONAL_DISTRICTS"
+                        itemId="OPERATIONAL_DISTRICTS"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Districts
@@ -706,19 +708,19 @@ function LookupTablesTab() {
                         sx={TreeItemStyle(selectedNode === "OPERATIONAL_DISTRICTS")}
                       />
                     )}
-                  </TreeView>
+                  </SimpleTreeView>
                 </Stack>
-              </Grid>
-              <Grid item xs={12} sm={10}>
+              </Grid2>
+              <Grid2 size={10}>
                 <LookupTablesDataForm
                   nodeId={selectedNode}
                   onViewOperationalDistrict={handleViewOperationalDistrict}
                   onAddOperationalDistrict={handleAddOperationalDistrict}
                 />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Grid2>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       )}
       <EditDistrictLookupDialog
         isOpen={showEditDistrictDialog}

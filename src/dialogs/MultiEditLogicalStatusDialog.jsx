@@ -3,37 +3,40 @@
 //
 //  Description: Dialog used to multi-edit the logical status
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   17.10.23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
-//    003   30.11.23 Sean Flook                 Removed redundant code.
-//    004   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    005   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    006   11.01.24 Sean Flook                 Fix warnings.
-//    007   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    008   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle and renderErrors.
-//    009   11.03.24 Sean Flook           MUL13 Changed control alignment.
-//    010   11.03.24 Sean Flook           MUL11 Reset counts when closing dialog.
-//    011   12.03.24 Sean Flook           MUL10 Display errors in a list control.
-//    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    013   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
-//    014   22.05.24 Sean Flook       IMANN-473 Corrected label for Scottish authorities.
-//    015   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    016   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    017   08.07.24 Sean Flook       IMANN-715 Increase the failed count if failed to save property.
-//    018   03.09.24 Sean Flook       IMANN-969 Corrected field name and show state for Scottish authorities.
-//    019   05.09.24 Sean Flook       IMANN-978 Set the state if required for OneScotland authorities.
+//    001   17.10.23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
+//    003   30.11.23 Sean Flook                  Removed redundant code.
+//    004   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    005   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    006   11.01.24 Sean Flook                  Fix warnings.
+//    007   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    008   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle and renderErrors.
+//    009   11.03.24 Sean Flook            MUL13 Changed control alignment.
+//    010   11.03.24 Sean Flook            MUL11 Reset counts when closing dialog.
+//    011   12.03.24 Sean Flook            MUL10 Display errors in a list control.
+//    012   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    013   09.04.24 Sean Flook        IMANN-376 Allow lookups to be added on the fly.
+//    014   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
+//    015   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    016   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    017   08.07.24 Sean Flook        IMANN-715 Increase the failed count if failed to save property.
+//    018   03.09.24 Sean Flook        IMANN-969 Corrected field name and show state for Scottish authorities.
+//    019   05.09.24 Sean Flook        IMANN-978 Set the state if required for OneScotland authorities.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    020   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//    020   24.10.24 Sean Flook       IMANN-1033 Only sort and filter lookups when required.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    021   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -52,7 +55,7 @@ import {
   DialogContent,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   List,
@@ -957,14 +960,14 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
               <Typography variant="body1" gutterBottom sx={{ ml: theme.spacing(1.25) }}>
                 {`Set the selected properties to ${titleLogicalStatus} with the following settings`}
               </Typography>
-              <Grid container justifyContent="center" alignItems="center">
-                <Grid item xs={12}>
+              <Grid2 container justifyContent="center" alignItems="center">
+                <Grid2 size={12}>
                   <ADSReadOnlyControl label="BLPU logical status" value={blpuLogicalStatus} />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSReadOnlyControl label="LPI logical status" value={lpiLogicalStatus} />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="State"
                     isEditable
@@ -981,8 +984,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onChange={handleStateChangeEvent}
                     helperText="A code identifying the current state of a BLPU."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="RPC"
                     isEditable
@@ -999,8 +1002,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onChange={handleRpcChangeEvent}
                     helperText="Representative Point Code."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Official address"
                     isEditable
@@ -1016,8 +1019,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onChange={handleOfficialFlagChangeEvent}
                     helperText="Status of address."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label={`${settingsContext.isScottish ? "Postally addressable" : "Postal address"}`}
                     isEditable
@@ -1033,8 +1036,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onChange={handlePostalAddressChangeEvent}
                     helperText="Flag to show that BLPU receives a delivery from the Royal Mail or other postal delivery service."
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Post town"
                     isEditable
@@ -1051,9 +1054,9 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onAddLookup={handleAddPostTownEvent}
                     helperText="Allocated by the Royal Mail to assist in delivery of mail."
                   />
-                </Grid>
+                </Grid2>
                 {settingsContext.isScottish && (
-                  <Grid item xs={12}>
+                  <Grid2 size={12}>
                     <ADSSelectControl
                       label="Sub-locality"
                       isEditable
@@ -1070,9 +1073,9 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                       onAddLookup={handleAddSubLocalityEvent}
                       helperText="Third level of geographic area name. e.g. to record an island name or property group."
                     />
-                  </Grid>
+                  </Grid2>
                 )}
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <ADSSelectControl
                     label="Postcode"
                     isEditable
@@ -1090,9 +1093,9 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     onAddLookup={handleAddPostcodeEvent}
                     helperText="Allocated by the Royal Mail to assist in delivery of mail."
                   />
-                </Grid>
+                </Grid2>
                 {noteOpen && (
-                  <Grid item xs={12}>
+                  <Grid2 size={12}>
                     <ADSTextControl
                       isEditable
                       disabled={updating}
@@ -1103,9 +1106,9 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                       maxLines={10}
                       onChange={handleNoteChangeEvent}
                     />
-                  </Grid>
+                  </Grid2>
                 )}
-              </Grid>
+              </Grid2>
             </Fragment>
           ) : (
             <Fragment>

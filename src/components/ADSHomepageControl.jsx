@@ -3,24 +3,27 @@
 //
 //  Description: Homepage Control containing dashboard information
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.06.23 Joel Benford       WI40689 Initial Revision.
-//    002   07.09.23 Sean Flook                 Modified function name.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    006   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    007   25.01.24 Sean Flook                 Correctly handle status code 204.
-//    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    009   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   02.06.23 Joel Benford        WI40689 Initial Revision.
+//    002   07.09.23 Sean Flook                  Modified function name.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    005   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    007   25.01.24 Sean Flook                  Correctly handle status code 204.
+//    008   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    009   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    010   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -33,7 +36,7 @@ import { GetHomepageUrl } from "../configuration/ADSConfig";
 
 import { getMonthString } from "../utils/HelperUtils";
 
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import ADSHomepagePieChartsControl from "./ADSHomepagePieChartsControl";
 import ADSHomepageLatestEditsControl from "./ADSHomepageLatestEditsControl";
 
@@ -89,7 +92,7 @@ function ADSHomepageControl() {
   }, [apiData, loaded, userContext]);
 
   return (
-    <Grid
+    <Grid2
       container
       direction="column"
       justify="center"
@@ -97,13 +100,13 @@ function ADSHomepageControl() {
       spacing={4}
       sx={{ pt: "10px", backgroundColor: adsMidGreyA10 }}
     >
-      <Grid item>
+      <Grid2>
         <ADSHomepagePieChartsControl data={apiData.pieCharts} />
-      </Grid>
-      <Grid item alignItems="bottom">
+      </Grid2>
+      <Grid2 alignItems="bottom">
         <ADSHomepageLatestEditsControl data={apiData.latestStreetAndPropertyEdits} />
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }
 

@@ -3,26 +3,29 @@
 //
 //  Description: Add template dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    004   16.01.24 Joel Benford               OS/GP level split
-//    005   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    008   30.04.24 Sean Flook       IMANN-418 Corrected logic.
-//    009   18.07.24 Sean Flook       IMANN-571 Corrected bug.
-//    010   26.07.24 Sean Flook       IMANN-867 Pass the id into getData when using an existing template.
-//    011   22.08.24 Sean Flook       IMANN-945 Correctly store the id when selecting a template and then pass into getData.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    004   16.01.24 Joel Benford                OS/GP level split
+//    005   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    006   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    007   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    008   30.04.24 Sean Flook        IMANN-418 Corrected logic.
+//    009   18.07.24 Sean Flook        IMANN-571 Corrected bug.
+//    010   26.07.24 Sean Flook        IMANN-867 Pass the id into getData when using an existing template.
+//    011   22.08.24 Sean Flook        IMANN-945 Correctly store the id when selecting a template and then pass into getData.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -30,7 +33,16 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Dialog, DialogActions, DialogContent, Typography, Grid, Button, Autocomplete, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Typography,
+  Grid2,
+  Button,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSTextControl from "../components/ADSTextControl";
 import ADSDialogTitle from "../components/ADSDialogTitle";
@@ -285,13 +297,13 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
       <DialogContent sx={getDialogContentStyle()}>
         <Box sx={{ height: "230px", width: "380px" }}>
           {step === 1 && (
-            <Grid container columnSpacing={2} rowSpacing={3} alignItems="center">
-              <Grid item xs={4} alignItems="center">
+            <Grid2 container columnSpacing={2} rowSpacing={3} alignItems="center">
+              <Grid2 alignItems="center" size={4}>
                 <Typography variant="body2" align="right">
                   Type of template
                 </Typography>
-              </Grid>
-              <Grid item xs={8} alignItems="center">
+              </Grid2>
+              <Grid2 alignItems="center" size={8}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Button
                     variant={!templateType || templateType !== 1 ? "outlined" : "contained"}
@@ -310,16 +322,16 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
                     <Typography variant="caption">Property range template</Typography>
                   </Button>
                 </Stack>
-              </Grid>
+              </Grid2>
               {templateType && (
-                <Grid item xs={4}>
+                <Grid2 size={4}>
                   <Typography variant="body2" align="right" id="create-from-label">
                     Create from
                   </Typography>
-                </Grid>
+                </Grid2>
               )}
               {templateType && (
-                <Grid item xs={8}>
+                <Grid2 size={8}>
                   <Autocomplete
                     id="create-from-template-list"
                     sx={{
@@ -353,13 +365,13 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
                     )}
                     aria-labelledby="create-from-label"
                   />
-                </Grid>
+                </Grid2>
               )}
-            </Grid>
+            </Grid2>
           )}
           {step === 2 && (
             <Box sx={{ mt: theme.spacing(2), ml: theme.spacing(4) }}>
-              <Grid container columnSpacing={2} rowSpacing={3}>
+              <Grid2 container columnSpacing={2} rowSpacing={3}>
                 <ADSTextControl
                   label="Name"
                   isEditable
@@ -383,7 +395,7 @@ function AddTemplateDialog({ templates, duplicateId, isOpen, onDone, onClose }) 
                   errorText={descriptionError}
                   onChange={handleDescriptionChangeEvent}
                 />
-              </Grid>
+              </Grid2>
             </Box>
           )}
         </Box>

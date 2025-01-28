@@ -3,20 +3,23 @@
 //
 //  Description: Task Drawer component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   06.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    004   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    005   11.03.24 Sean Flook           GLB12 Correctly set width.
+//    001   06.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    004   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    005   11.03.24 Sean Flook            GLB12 Correctly set width.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -26,7 +29,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import ADSActionButton from "../components/ADSActionButton";
-import { Drawer, Typography, Grid } from "@mui/material";
+import { Drawer, Typography, Grid2 } from "@mui/material";
 import { Box } from "@mui/system";
 import { adsMidGreyB } from "../utils/ADSColours";
 import { drawerWidth } from "../utils/ADSStyles";
@@ -65,8 +68,8 @@ function ADSTaskDrawer(props) {
           justifyContent: "flex-start",
         }}
       >
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item>
+        <Grid2 container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid2>
             <Typography
               variant="h6"
               noWrap
@@ -76,16 +79,16 @@ function ADSTaskDrawer(props) {
             >
               Tasks
             </Typography>
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2>
             <ADSActionButton
               variant="close"
               tooltipTitle="Close tasks"
               tooltipPlacement="left"
               onClick={props.handleDrawerClose}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
     </Drawer>
   );

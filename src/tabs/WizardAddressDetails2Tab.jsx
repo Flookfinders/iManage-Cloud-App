@@ -3,34 +3,37 @@
 //
 //  Description: Wizard Address Details 2 (Range create)
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   23.03.23 Sean Flook         WI40607 Display an error for address list if we have one.
-//    003   24.03.23 Sean Flook         WI40608 Changes required to correctly handle changes to PAO details for child properties.
-//    004   27.03.23 Sean Flook         WI40609 Leave the range start and end number as text so that they can be set to null.
-//    005   05.04.23 Sean Flook         WI40669 Fixed warnings.
-//    006   25.04.23 Sean Flook         WI40703 Do not allow text with invalid characters to be pasted in and displayed.
-//    007   06.10.23 Sean Flook                 Use colour variables.
-//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    009   30.11.23 Sean Flook                 Changes required to handle Scottish authorities.
-//    010   23.02.24 Joel Benford     IMANN-287 Correct hover blue
-//    011   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
-//    012   19.04.24 Sean Flook       IMANN-137 For Welsh authority allow 2 characters for the suffix.
-//    013   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
-//    014   18.06.24 Sean Flook       IMANN-577 Use characterSetValidator.
-//    015   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    016   20.06.24 Sean Flook       IMANN-633 Enforce the maximum for the numbers.
+//    001            Sean Flook                  Initial Revision.
+//    002   23.03.23 Sean Flook          WI40607 Display an error for address list if we have one.
+//    003   24.03.23 Sean Flook          WI40608 Changes required to correctly handle changes to PAO details for child properties.
+//    004   27.03.23 Sean Flook          WI40609 Leave the range start and end number as text so that they can be set to null.
+//    005   05.04.23 Sean Flook          WI40669 Fixed warnings.
+//    006   25.04.23 Sean Flook          WI40703 Do not allow text with invalid characters to be pasted in and displayed.
+//    007   06.10.23 Sean Flook                  Use colour variables.
+//    008   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    009   30.11.23 Sean Flook                  Changes required to handle Scottish authorities.
+//    010   23.02.24 Joel Benford      IMANN-287 Correct hover blue
+//    011   09.04.24 Sean Flook        IMANN-376 Allow lookups to be added on the fly.
+//    012   19.04.24 Sean Flook        IMANN-137 For Welsh authority allow 2 characters for the suffix.
+//    013   14.06.24 Sean Flook        IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
+//    014   18.06.24 Sean Flook        IMANN-577 Use characterSetValidator.
+//    015   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    016   20.06.24 Sean Flook        IMANN-633 Enforce the maximum for the numbers.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    017   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
+//    017   24.10.24 Sean Flook       IMANN-1033 Only sort and filter lookups when required.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -43,7 +46,7 @@ import UserContext from "../context/userContext";
 import SettingsContext from "../context/settingsContext";
 
 import {
-  Grid,
+  Grid2,
   Typography,
   Button,
   TextField,
@@ -1705,18 +1708,18 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
     <>
       <Box id="wizard-address-settings-2-tab" sx={{ width: "100%" }}>
         <Box sx={FormBoxRowStyle(rangeTypeError && rangeTypeError.length > 0)}>
-          <Grid
+          <Grid2
             container
             justifyContent="flex-start"
             alignItems="center"
             sx={FormRowStyle(rangeTypeError && rangeTypeError.length > 0)}
           >
-            <Grid item xs={3}>
+            <Grid2 size={3}>
               <Typography id="create-range-using-label" variant="body2" align="left" sx={controlLabelStyle}>
                 Create range using
               </Typography>
-            </Grid>
-            <Grid item xs={9}>
+            </Grid2>
+            <Grid2 size={9}>
               <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                 <Button
                   id="number-suffix-button"
@@ -1751,22 +1754,22 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                   </Typography>
                 </Button>
               </Stack>
-            </Grid>
+            </Grid2>
             <ADSErrorDisplay errorText={rangeTypeError} id="create-range-using-label-error" />
-          </Grid>
+          </Grid2>
         </Box>
         {rangeType && rangeType === 1 && (
           <Box sx={FormBoxRowStyle(rangeType1HasErrors.current)}>
-            <Grid
+            <Grid2
               container
               justifyContent="flex-start"
               alignItems="center"
               sx={FormRowStyle(rangeType1HasErrors.current)}
             >
-              <Grid item xs={3} />
-              <Grid item xs={9}>
-                <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
-                  <Grid item xs={3}>
+              <Grid2 size={3} />
+              <Grid2 size={9}>
+                <Grid2 container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
+                  <Grid2 size={3}>
                     <Typography
                       id="range-start-number-label"
                       variant="body2"
@@ -1775,8 +1778,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Number
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography
                       id="range-start-suffix-label"
                       variant="body2"
@@ -1785,9 +1788,9 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Suffix
                     </Typography>
-                  </Grid>
-                  <Grid item xs={1} />
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={1} />
+                  <Grid2 size={3}>
                     <Typography
                       id="range-end-number-label"
                       variant="body2"
@@ -1796,8 +1799,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Number
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography
                       id="range-end-suffix-label"
                       variant="body2"
@@ -1806,10 +1809,10 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Suffix
                     </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={3}>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+              <Grid2 size={3}>
                 <Typography
                   id="range-label"
                   variant="body2"
@@ -1818,10 +1821,10 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                 >
                   Range*
                 </Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
-                  <Grid item xs={3}>
+              </Grid2>
+              <Grid2 size={9}>
+                <Grid2 container justifyContent="flex-start" alignItems="center" columns={13} columnSpacing={1}>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-start-number-control"
                       sx={FormInputStyle(rangeType1HasErrors.current)}
@@ -1831,14 +1834,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ min: 0, max: 9999 }}
                       placeholder="e.g. 1"
                       value={rangeStartNumber ? rangeStartNumber : ""}
                       onChange={handleRangeStartNumberChangeEvent}
                       aria-labelledby="range-start-number-label"
+                      slotProps={{
+                        htmlInput: { min: 0, max: 9999 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-start-suffix-control"
                       sx={FormInputStyle(rangeType1HasErrors.current)}
@@ -1847,13 +1852,15 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                       placeholder="e.g. A"
                       value={rangeStartSuffix ? rangeStartSuffix : ""}
                       onChange={handleRangeStartSuffixChangeEvent}
+                      slotProps={{
+                        htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     <Typography
                       id="range-to-label"
                       variant="body2"
@@ -1862,8 +1869,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       to
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-end-number-control"
                       sx={FormInputStyle(rangeType1HasErrors.current)}
@@ -1873,14 +1880,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ min: 0, max: 9999 }}
                       placeholder="e.g. 1"
                       value={rangeEndNumber ? rangeEndNumber : ""}
                       onChange={handleRangeEndNumberChangeEvent}
                       aria-labelledby="range-end-number-label"
+                      slotProps={{
+                        htmlInput: { min: 0, max: 9999 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-end-suffix-control"
                       sx={FormInputStyle(rangeType1HasErrors.current)}
@@ -1889,30 +1898,32 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: `${settingsContext.isWelsh ? 2 : 1}` }}
                       placeholder="e.g. A"
                       value={rangeEndSuffix ? rangeEndSuffix : ""}
                       onChange={handleRangeEndSuffixChangeEvent}
+                      slotProps={{
+                        htmlInput: { maxLength: `${settingsContext.isWelsh ? 2 : 1}` },
+                      }}
                     />
-                  </Grid>
-                </Grid>
-              </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
               <ADSErrorDisplay errorText={displayRange1Error} id="range-1-label-error" />
-            </Grid>
+            </Grid2>
           </Box>
         )}
         {rangeType && rangeType === 2 && (
           <Box sx={FormBoxRowStyle(rangeType2HasErrors.current)}>
-            <Grid
+            <Grid2
               container
               justifyContent="flex-start"
               alignItems="center"
               sx={FormRowStyle(rangeType2HasErrors.current)}
             >
-              <Grid item xs={3} />
-              <Grid item xs={9}>
-                <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
-                  <Grid item xs={4}>
+              <Grid2 size={3} />
+              <Grid2 size={9}>
+                <Grid2 container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
+                  <Grid2 size={4}>
                     <Typography
                       id="range-text-label"
                       variant="body2"
@@ -1921,8 +1932,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Text*
                     </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <Typography
                       id="range-start-prefix-label"
                       variant="body2"
@@ -1931,8 +1942,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Prefix
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography
                       id="range-start-number-label"
                       variant="body2"
@@ -1941,8 +1952,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Number
                     </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <Typography
                       id="range-start-suffix-label"
                       variant="body2"
@@ -1951,9 +1962,9 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Suffix
                     </Typography>
-                  </Grid>
-                  <Grid item xs={1} />
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={1} />
+                  <Grid2 size={2}>
                     <Typography
                       id="range-end-prefix-label"
                       variant="body2"
@@ -1962,8 +1973,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Prefix
                     </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <Typography
                       id="range-end-number-label"
                       variant="body2"
@@ -1972,8 +1983,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Number
                     </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <Typography
                       id="range-end-suffix-label"
                       variant="body2"
@@ -1982,10 +1993,10 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       Suffix
                     </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={3}>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+              <Grid2 size={3}>
                 <Typography
                   id="range-label"
                   variant="body2"
@@ -1994,10 +2005,10 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                 >
                   Range*
                 </Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
-                  <Grid item xs={4}>
+              </Grid2>
+              <Grid2 size={9}>
+                <Grid2 container justifyContent="flex-start" alignItems="center" columns={19} columnSpacing={1}>
+                  <Grid2 size={4}>
                     <TextField
                       id="range-text-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2006,13 +2017,15 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 80 }}
                       placeholder="e.g. Plot"
                       value={rangeText ? rangeText : ""}
                       onChange={handleRangeTextChangeEvent}
+                      slotProps={{
+                        htmlInput: { maxLength: 80 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <TextField
                       id="range-start-prefix-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2021,14 +2034,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
                       placeholder="e.g. A"
                       value={rangeStartPrefix ? rangeStartPrefix : ""}
                       onChange={handleRangeStartPrefixChangeEvent}
                       aria-labelledby="range-start-prefix-label"
+                      slotProps={{
+                        htmlInput: { maxLength: 1 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-start-number-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2038,14 +2053,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ min: 0, max: 9999 }}
                       placeholder="e.g. 1"
                       value={rangeStartNumber ? rangeStartNumber : ""}
                       onChange={handleRangeStartNumberChangeEvent}
                       aria-labelledby="range-start-number-label"
+                      slotProps={{
+                        htmlInput: { min: 0, max: 9999 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <TextField
                       id="range-start-suffix-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2054,14 +2071,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
                       placeholder="e.g. A"
                       value={rangeStartSuffix ? rangeStartSuffix : ""}
                       onChange={handleRangeStartSuffixChangeEvent}
                       aria-labelledby="range-start-suffix-label"
+                      slotProps={{
+                        htmlInput: { maxLength: 1 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={1}>
+                  </Grid2>
+                  <Grid2 size={1}>
                     <Typography
                       id="range-to-label"
                       variant="body2"
@@ -2070,8 +2089,8 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     >
                       to
                     </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <TextField
                       id="range-end-prefix-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2080,14 +2099,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
                       placeholder="e.g. A"
                       value={rangeEndPrefix ? rangeEndPrefix : ""}
                       onChange={handleRangeEndPrefixChangeEvent}
                       aria-labelledby="range-end-prefix-label"
+                      slotProps={{
+                        htmlInput: { maxLength: 1 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={3}>
+                  </Grid2>
+                  <Grid2 size={3}>
                     <TextField
                       id="range-end-number-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2097,14 +2118,16 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ min: 0, max: 9999 }}
                       placeholder="e.g. 1"
                       value={rangeEndNumber ? rangeEndNumber : ""}
                       onChange={handleRangeEndNumberChangeEvent}
                       aria-labelledby="range-end-number-label"
+                      slotProps={{
+                        htmlInput: { min: 0, max: 9999 },
+                      }}
                     />
-                  </Grid>
-                  <Grid item xs={2}>
+                  </Grid2>
+                  <Grid2 size={2}>
                     <TextField
                       id="range-end-suffix-control"
                       sx={FormInputStyle(rangeType2HasErrors.current)}
@@ -2113,17 +2136,19 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                       variant="outlined"
                       margin="dense"
                       size="small"
-                      inputProps={{ maxLength: 1 }}
                       placeholder="e.g. A"
                       value={rangeEndSuffix ? rangeEndSuffix : ""}
                       onChange={handleRangeEndSuffixChangeEvent}
                       aria-labelledby="range-end-suffix-label"
+                      slotProps={{
+                        htmlInput: { maxLength: 1 },
+                      }}
                     />
-                  </Grid>
-                </Grid>
-              </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
               <ADSErrorDisplay errorText={displayRange2Error} id="range-2-label-error" />
-            </Grid>
+            </Grid2>
           </Box>
         )}
         {rangeType && isChild && (
@@ -2208,18 +2233,18 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
         )}
         {rangeType && (
           <Box sx={FormBoxRowStyle(numberingError && numberingError.length > 0)}>
-            <Grid
+            <Grid2
               container
               justifyContent="flex-start"
               alignItems="center"
               sx={FormRowStyle(numberingError && numberingError.length > 0)}
             >
-              <Grid item xs={3}>
+              <Grid2 size={3}>
                 <Typography id="numbering-label" variant="body2" align="left" sx={controlLabelStyle}>
                   Numbering
                 </Typography>
-              </Grid>
-              <Grid item xs={9}>
+              </Grid2>
+              <Grid2 size={9}>
                 <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
                   <Button
                     id="odds-and-evens-button"
@@ -2270,9 +2295,9 @@ function WizardAddressDetails2Tab({ data, isChild, language, errors, onDataChang
                     </Typography>
                   </Button>
                 </Stack>
-              </Grid>
+              </Grid2>
               <ADSErrorDisplay errorText={displayNumberingError} id="numbering-label-error" />
-            </Grid>
+            </Grid2>
           </Box>
         )}
         {rangeType && addressList.length > 0 && (

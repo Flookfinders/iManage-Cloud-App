@@ -4,7 +4,7 @@
 FROM node:22-alpine
 
 LABEL description="iManage Cloud App."
-LABEL version="1.0.3.0"
+LABEL version="1.0.4.0"
 LABEL maintainer="Idox Software Ltd"
 
 WORKDIR /imanage-icloud-docker

@@ -3,25 +3,28 @@
 //
 //  Description: Settings page
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   03.11.23 Sean Flook                 Updated TreeView and TreeItem.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    005   30.11.23 Sean Flook                 Hide items that have not been developed yet.
-//    006   24.01.24 Joel Benford               Add scottish metadata to tree.
-//    007   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    008   18.04.24 Sean Flook       IMANN-351 Changes required to reload the contexts after a refresh.
-//    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    010   07.08.24 Sean Flook       IMANN-907 Reload the lookups context as well.
+//    001            Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   03.11.23 Sean Flook                  Updated TreeView and TreeItem.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    005   30.11.23 Sean Flook                  Hide items that have not been developed yet.
+//    006   24.01.24 Joel Benford                Add scottish metadata to tree.
+//    007   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    008   18.04.24 Sean Flook        IMANN-351 Changes required to reload the contexts after a refresh.
+//    009   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    010   07.08.24 Sean Flook        IMANN-907 Reload the lookups context as well.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -31,9 +34,9 @@ import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
 import LookupContext from "../context/lookupContext";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import SettingsDataForm from "../forms/SettingsDataForm";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -113,25 +116,24 @@ function SettingsPage() {
 
   return (
     <div>
-      <Grid container justifyContent="flex-start" spacing={0}>
-        <Grid item xs={12}>
-          <Grid container spacing={0} justifyContent="flex-start">
-            <Grid item xs={12} sm={2}>
+      <Grid2 container justifyContent="flex-start" spacing={0}>
+        <Grid2 size={12}>
+          <Grid2 container spacing={0} justifyContent="flex-start">
+            <Grid2 size={2}>
               <Box sx={dataFormStyle("SettingsPage")}>
-                <TreeView
+                <SimpleTreeView
                   aria-label="settings navigator"
-                  defaultCollapseIcon={<ExpandMoreIcon />}
-                  defaultExpandIcon={<ChevronRightIcon />}
-                  defaultExpanded={defaultExpandedNode}
-                  defaultSelected={defaultSelectedNode}
-                  expanded={expandedNodes}
-                  selected={selectedNode}
+                  defaultExpandedItems={defaultExpandedNode}
+                  defaultSelectedItems={defaultSelectedNode}
+                  expandedItems={expandedNodes}
+                  selectedItems={selectedNode}
+                  slots={{ expandIcon: ChevronRightIcon, collapseIcon: ExpandMoreIcon }}
                   sx={{ overflowY: "auto" }}
-                  onNodeSelect={handleNodeSelect}
-                  onNodeToggle={handleNodeToggle}
+                  onSelectedItemsChange={handleNodeSelect}
+                  onExpandedItemsChange={handleNodeToggle}
                 >
                   <TreeItem
-                    nodeId="1"
+                    itemId="1"
                     label={
                       <Stack direction="row" spacing={1}>
                         <SettingsOutlinedIcon sx={{ color: "inherit" }} />
@@ -143,7 +145,7 @@ function SettingsPage() {
                     sx={TreeItemStyle(false)}
                   >
                     <TreeItem
-                      nodeId="1.1"
+                      itemId="1.1"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Authority details
@@ -153,7 +155,7 @@ function SettingsPage() {
                     />
                     {!settingsContext.isScottish && hasProperty && (
                       <TreeItem
-                        nodeId="1.2"
+                        itemId="1.2"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Property metadata
@@ -164,7 +166,7 @@ function SettingsPage() {
                     )}
                     {!settingsContext.isScottish && (
                       <TreeItem
-                        nodeId="1.3"
+                        itemId="1.3"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Street metadata
@@ -175,7 +177,7 @@ function SettingsPage() {
                     )}
                     {!settingsContext.isScottish && hasASD && (
                       <TreeItem
-                        nodeId="1.4"
+                        itemId="1.4"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             ASD metadata
@@ -186,7 +188,7 @@ function SettingsPage() {
                     )}
                     {settingsContext.isScottish && (
                       <TreeItem
-                        nodeId="1.5"
+                        itemId="1.5"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Gazetteer metadata
@@ -197,7 +199,7 @@ function SettingsPage() {
                     )}
                   </TreeItem>
                   <TreeItem
-                    nodeId="2"
+                    itemId="2"
                     label={
                       <Stack direction="row" spacing={1}>
                         <BuildOutlinedIcon sx={{ color: "inherit" }} />
@@ -210,7 +212,7 @@ function SettingsPage() {
                   >
                     {hasProperty && (
                       <TreeItem
-                        nodeId="2.1"
+                        itemId="2.1"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Property templates
@@ -220,7 +222,7 @@ function SettingsPage() {
                       />
                     )}
                     <TreeItem
-                      nodeId="2.2"
+                      itemId="2.2"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Street template
@@ -230,7 +232,7 @@ function SettingsPage() {
                     />
                     {hasASD && (
                       <TreeItem
-                        nodeId="2.3"
+                        itemId="2.3"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             ASD template
@@ -240,7 +242,7 @@ function SettingsPage() {
                       />
                     )}
                     <TreeItem
-                      nodeId="2.4"
+                      itemId="2.4"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Lookup tables
@@ -249,7 +251,7 @@ function SettingsPage() {
                       sx={TreeItemStyle(selectedNode === "2.4")}
                     />
                     <TreeItem
-                      nodeId="2.5"
+                      itemId="2.5"
                       label={
                         <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                           Map layers
@@ -259,7 +261,7 @@ function SettingsPage() {
                     />
                     {process.env.NODE_ENV === "development" && (
                       <TreeItem
-                        nodeId="2.6"
+                        itemId="2.6"
                         label={
                           <Typography variant="body2" sx={{ fontWeight: "inherit", flexGrow: 1 }}>
                             Bookmarks
@@ -271,7 +273,7 @@ function SettingsPage() {
                   </TreeItem>
                   {process.env.NODE_ENV === "development" && (
                     <TreeItem
-                      nodeId="3.0"
+                      itemId="3.0"
                       label={
                         <Stack direction="row" spacing={1}>
                           <PeopleOutlineIcon sx={{ color: "inherit" }} />
@@ -283,15 +285,15 @@ function SettingsPage() {
                       sx={TreeItemStyle(selectedNode === "3.0")}
                     />
                   )}
-                </TreeView>
+                </SimpleTreeView>
               </Box>
-            </Grid>
-            <Grid item xs={12} sm={10}>
+            </Grid2>
+            <Grid2 size={10}>
               <SettingsDataForm nodeId={selectedNode} />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
+      </Grid2>
     </div>
   );
 }

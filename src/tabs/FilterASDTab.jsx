@@ -3,20 +3,23 @@
 //
 //  Description: Streets filter tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   15.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   05.01.24 Sean Flook                 Use CSS shortcuts.
+//    001   15.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   05.01.24 Sean Flook                  Use CSS shortcuts.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.2.0 changes
-//    003   12.11.24 Sean Flook                 Various changes to improve the look and functionality.
+//    003   12.11.24 Sean Flook                  Various changes to improve the look and functionality.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    004   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -30,7 +33,7 @@ import SettingsContext from "../context/settingsContext";
 
 import { filteredLookup, GetLookupLabel } from "../utils/HelperUtils";
 
-import { Box, Divider, Grid } from "@mui/material";
+import { Box, Divider, Grid2 } from "@mui/material";
 import ADSMultipleSelectControl from "../components/ADSMultipleSelectControl";
 import ADSFilterDateControl from "../components/ADSFilterDateControl";
 
@@ -360,13 +363,13 @@ function FilterASDTab({ changedFlags, selectedData, onChange }) {
         value={streetStatus}
         onChange={handleStreetStatusChange}
       />
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <Divider
           sx={{
             mt: theme.spacing(1),
           }}
         />
-      </Grid>
+      </Grid2>
       <ADSMultipleSelectControl
         label="Reinstatement type"
         isEditable
@@ -379,13 +382,13 @@ function FilterASDTab({ changedFlags, selectedData, onChange }) {
         value={reinstatementType}
         onChange={handleReinstatementTypeChange}
       />
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <Divider
           sx={{
             mt: theme.spacing(1),
           }}
         />
-      </Grid>
+      </Grid2>
       <ADSMultipleSelectControl
         label="Special designation type"
         isEditable
@@ -398,13 +401,13 @@ function FilterASDTab({ changedFlags, selectedData, onChange }) {
         value={specialDesignationType}
         onChange={handleSpecialDesignationTypeChange}
       />
-      <Grid item xs={12}>
+      <Grid2 size={12}>
         <Divider
           sx={{
             mt: theme.spacing(1),
           }}
         />
-      </Grid>
+      </Grid2>
       {!settingsContext.isScottish && (
         <ADSMultipleSelectControl
           label="Height, width & weight restrictions"
@@ -420,13 +423,13 @@ function FilterASDTab({ changedFlags, selectedData, onChange }) {
         />
       )}
       {!settingsContext.isScottish && (
-        <Grid item xs={12}>
+        <Grid2 size={12}>
           <Divider
             sx={{
               mt: theme.spacing(1),
             }}
           />
-        </Grid>
+        </Grid2>
       )}
       <ADSFilterDateControl
         label="Last updated"

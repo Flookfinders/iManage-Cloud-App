@@ -3,38 +3,41 @@
 //
 //  Description: Move BLPU seed point dialog
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   06/11/23 Sean Flook       IMANN-175 Initial Revision.
-//    002   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
-//    003   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    004   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    005   25.01.24 Sean Flook                 Changes required after UX review.
-//    006   20.02.24 Sean Flook            MUL6 Updated title.
-//    007   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    008   11.03.24 Sean Flook           GLB12 Removed bottom margin.
-//    009   12.03.24 Sean Flook            MUL7 Handle saving when X is clicked and user chooses to save changes.
-//    010   12.03.24 Sean Flook            MUL8 Display an alert if the save fails.
-//    011   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    012   11.04.24 Sean Flook       IMANN-384 Check we have a parent UPRN before changing it to a string.
-//    013   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    014   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    015   09.07.24 Sean Flook       IMANN-731 Corrected Scottish data.
-//    016   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   06/11/23 Sean Flook        IMANN-175 Initial Revision.
+//    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
+//    003   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    004   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    005   25.01.24 Sean Flook                  Changes required after UX review.
+//    006   20.02.24 Sean Flook             MUL6 Updated title.
+//    007   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    008   11.03.24 Sean Flook            GLB12 Removed bottom margin.
+//    009   12.03.24 Sean Flook             MUL7 Handle saving when X is clicked and user chooses to save changes.
+//    010   12.03.24 Sean Flook             MUL8 Display an alert if the save fails.
+//    011   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    012   11.04.24 Sean Flook        IMANN-384 Check we have a parent UPRN before changing it to a string.
+//    013   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    014   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    015   09.07.24 Sean Flook        IMANN-731 Corrected Scottish data.
+//    016   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    017   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    017   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    018   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
-//    019   21.11.24 Sean Flook      IMANN-1065 Correctly handle when the data is updated.
+//    018   18.11.24 Sean Flook       IMANN-1056 Use the new getPropertyListDetails method.
+//    019   21.11.24 Sean Flook       IMANN-1065 Correctly handle when the data is updated.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -67,7 +70,7 @@ import {
   Typography,
   Button,
   Divider,
-  Grid,
+  Grid2,
   Backdrop,
   CircularProgress,
   Tooltip,
@@ -707,10 +710,10 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
         </DialogTitle>
         <DialogContent sx={{ backgroundColor: adsOffWhite }}>
           <Box>
-            <Grid container justifyContent="flex-start" spacing={0}>
-              <Grid item xs={12}>
-                <Grid container spacing={0} justifyContent="flex-start">
-                  <Grid item xs={12} sm={4}>
+            <Grid2 container justifyContent="flex-start" spacing={0}>
+              <Grid2 size={12}>
+                <Grid2 container spacing={0} justifyContent="flex-start">
+                  <Grid2 size={4}>
                     <ADSWizardAddressList
                       data={data}
                       checked={checked}
@@ -721,13 +724,13 @@ function MoveBLPUDialog({ propertyUprns, isOpen, onClose }) {
                       onDataChanged={handleDataChanged}
                       onErrorChanged={handleErrorChanged}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={8}>
+                  </Grid2>
+                  <Grid2 size={8}>
                     <ADSWizardMap data={data} isRange moveBlpu />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+            </Grid2>
             {updating && (
               <Backdrop open={updating}>
                 <CircularProgress color="inherit" />

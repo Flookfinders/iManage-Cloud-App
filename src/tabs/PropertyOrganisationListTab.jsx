@@ -3,32 +3,35 @@
 //
 //  Description: Display the list of classifications for the property.
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   18.09.23 Sean Flook                 Initial Revision.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system and fixed a warning.
-//    005   08.12.23 Sean Flook                 Migrated DataGrid to v6.
-//    006   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    007   25.01.24 Sean Flook                 Changes required after UX review.
-//    008   16.02.24 Sean Flook        ESU16_GP If changing page etc ensure the information and selection controls are cleared.
-//    009   20.02.24 Sean Flook        ESU16_GP Undone above change as not required.
-//    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    011   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    012   18.03.24 Sean Flook      STRFRM3_OS Set the styling for the header row of the data grid.
-//    013   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    014   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
+//    001   18.09.23 Sean Flook                  Initial Revision.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and fixed a warning.
+//    005   08.12.23 Sean Flook                  Migrated DataGrid to v6.
+//    006   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    007   25.01.24 Sean Flook                  Changes required after UX review.
+//    008   16.02.24 Sean Flook         ESU16_GP If changing page etc ensure the information and selection controls are cleared.
+//    009   20.02.24 Sean Flook         ESU16_GP Undone above change as not required.
+//    010   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    011   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    012   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
+//    013   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    014   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    015   31.10.24 Sean Flook      IMANN-1012 Changed height of skeleton control.
+//    015   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -191,7 +194,7 @@ function PropertyOrganisationListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
-      valueGetter: (params) => new Date(params.value),
+      valueGetter: (value, row, column, apiRef) => new Date(value),
       renderCell: formatTableStartDate,
     },
     {
@@ -202,13 +205,14 @@ function PropertyOrganisationListTab({
       type: "date",
       align: "right",
       headerAlign: "right",
-      valueGetter: (params) => new Date(params.value),
+      valueGetter: (value, row, column, apiRef) => new Date(value),
       renderCell: formatTableEndDate,
     },
     { field: "lastUpdateDate" },
     {
       field: "",
       headerClassName: "idox-organisation-data-grid-header",
+      display: "flex",
       flex: 2,
       sortable: false,
       renderCell: displayActionButtons,

@@ -3,19 +3,22 @@
 //
 //  Description: PAO details component
 //
-//  Copyright:    © 2021 - 2023 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.06.23 Sean Flook         WI40729 Correctly handle if errorText is a string rather then an array.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -25,7 +28,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { Grid, Typography, Skeleton, Tooltip, IconButton } from "@mui/material";
+import { Grid2, Typography, Skeleton, Tooltip, IconButton } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import EditPaoDetailsDialog from "../dialogs/EditPaoDetailsDialog";
@@ -180,8 +183,8 @@ function ADSPaoDetailsControl({ loading, label, isRequired, data, errorText, onD
 
   return (
     <Box sx={FormBoxRowStyle(hasError.current)}>
-      <Grid container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
-        <Grid item xs={3}>
+      <Grid2 container justifyContent="flex-start" alignItems="center" sx={FormRowStyle(hasError.current)}>
+        <Grid2 size={3}>
           <Typography
             id={`${label.toLowerCase().replaceAll(" ", "-")}-label`}
             variant="body2"
@@ -191,8 +194,8 @@ function ADSPaoDetailsControl({ loading, label, isRequired, data, errorText, onD
           >
             {`${label}${isRequired ? "*" : ""}`}
           </Typography>
-        </Grid>
-        <Grid item xs={9}>
+        </Grid2>
+        <Grid2 size={9}>
           <Stack
             direction="row"
             alignItems="center"
@@ -219,9 +222,9 @@ function ADSPaoDetailsControl({ loading, label, isRequired, data, errorText, onD
               </Tooltip>
             )}
           </Stack>
-        </Grid>
+        </Grid2>
         <ADSErrorDisplay errorText={displayError} id={"pao-details-error"} />
-      </Grid>
+      </Grid2>
       <EditPaoDetailsDialog
         isOpen={showEditDialog}
         data={editData}
