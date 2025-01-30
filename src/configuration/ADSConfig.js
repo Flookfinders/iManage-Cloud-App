@@ -37,6 +37,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.4.0 changes
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    023   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -84,9 +85,9 @@ const getConfigInfo = () => {
 /**
  * Return the full URL for an end point that can be found in the main API.
  *
- * @param {string} baseType The base API type to use.
- * @param {string} urlController The specific text to be added to the base API URL.
- * @return {string} The API URL.
+ * @param {String} baseType The base API type to use.
+ * @param {String} urlController The specific text to be added to the base API URL.
+ * @return {String} The API URL.
  */
 function GetApiSite(baseType, urlController) {
   if (!currentConfig) getConfigInfo();
@@ -99,11 +100,11 @@ function GetApiSite(baseType, urlController) {
 /**
  * Get the URL object used when making calls to the various APIs
  *
- * @param {string} url The url string for the endpoint.
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | PATCH | DELETE ]
- * @param {string} contentType The content type to use [ application/json | text/plain ]
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} url The url string for the endpoint.
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | PATCH | DELETE ]
+ * @param {String} contentType The content type to use [ application/json | text/plain ]
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 const getUrl = (url, endPointType, contentType, currentUser) => {
   if (currentUser)
@@ -130,7 +131,7 @@ const getUrl = (url, endPointType, contentType, currentUser) => {
 /**
  * Get the URL used to log an user in to the system.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function PostUserLoginUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/Login`);
@@ -140,8 +141,8 @@ export function PostUserLoginUrl() {
 /**
  * Get the URL used to log an user out of the system.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function PostUserLogoffUrl(currentUser) {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/Logoff`);
@@ -151,7 +152,7 @@ export function PostUserLogoffUrl(currentUser) {
 /**
  * Get the URL used to authenticate an user in to the system.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetAuthenticateUserUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/Authenticate`);
@@ -161,7 +162,7 @@ export function GetAuthenticateUserUrl() {
 /**
  * Get the URL used to resent the authentication email.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetResendEmailUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/ResendEmail`);
@@ -171,7 +172,7 @@ export function GetResendEmailUrl() {
 /**
  * Get the URL used to send a reset password code.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPasswordResetCodeUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/SendPasswordResetCode`);
@@ -181,7 +182,7 @@ export function GetPasswordResetCodeUrl() {
 /**
  * Get the URL used to reset the users password.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetResetMyPasswordUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Authority/ResetMyPassword`);
@@ -191,7 +192,7 @@ export function GetResetMyPasswordUrl() {
 /**
  * Get the URL used to validate a new password.
  *
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPasswordValidateUrl() {
   const url = GetApiSite("security", `/api/${securityVersion}Password/Validate`);
@@ -201,10 +202,11 @@ export function GetPasswordValidateUrl() {
 /**
  * Get information about the currently logged in user.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetWhoAmIUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("security", `/api/${securityVersion}Authority/WhoAmI`);
   return getUrl(url, "GET", "application/json", currentUser);
 }
@@ -212,10 +214,11 @@ export function GetWhoAmIUrl(currentUser) {
 /**
  * Get the current user.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUserUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("security", `/api/${securityVersion}User`);
   return getUrl(url, "GET", "application/json", currentUser);
 }
@@ -223,10 +226,11 @@ export function GetUserUrl(currentUser) {
 /**
  * Get a list of users.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUsersUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("security", `/api/${securityVersion}User`);
   return getUrl(url, "GET", "application/json", currentUser);
 }
@@ -234,10 +238,11 @@ export function GetUsersUrl(currentUser) {
 /**
  * Get URL to allow a user to update their own password.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function UpdateMyPasswordUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("security", `/api/${securityVersion}Authority/UpdateMyPassword`);
   return getUrl(url, "PUT", "application/json", currentUser);
 }
@@ -245,10 +250,11 @@ export function UpdateMyPasswordUrl(currentUser) {
 /**
  * Get the URL to allow any users password to be updated.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function UpdateAnyUserPasswordUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("security", `/api/${securityVersion}Authority/UpdateAnyUserPassword`);
   return getUrl(url, "PUT", "application/json", currentUser);
 }
@@ -256,10 +262,11 @@ export function UpdateAnyUserPasswordUrl(currentUser) {
 /**
  * Get the URL to get the cluster of APIs the user is using.
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetOrganisationClusterUrl(currentUser) {
+  if (!currentUser) return null;
   const url = GetApiSite("user", `/api/UserApis/OrganisationCluster`);
   return getUrl(url, "GET", "application/json", currentUser);
 }
@@ -267,10 +274,11 @@ export function GetOrganisationClusterUrl(currentUser) {
 /**
  * Get the URL used for searching within the application.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetSearchURL(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Search/MultiSearchProperty`);
   return getUrl(url, "GET", "text/plain", currentUser.token);
 }
@@ -278,10 +286,11 @@ export function GetSearchURL(currentUser) {
 /**
  * Get the URL used for multi-edit searching within the application.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetMultiEditSearchUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Search/MultiSearchPropertyList`);
   return getUrl(url, "GET", "text/plain", currentUser.token);
 }
@@ -291,9 +300,10 @@ export function GetMultiEditSearchUrl(currentUser) {
  *
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {Boolean} hasAsd Can the user see ASD data.
- * @return {Object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetCreateStreetUrl(currentUser, hasAsd) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "POST", "application/json", currentUser);
 }
@@ -303,9 +313,10 @@ export function GetCreateStreetUrl(currentUser, hasAsd) {
  *
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {Boolean} hasAsd Can the user see ASD data.
- * @return {Object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetStreetByUSRNUrl(currentUser, hasAsd) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -314,9 +325,10 @@ export function GetStreetByUSRNUrl(currentUser, hasAsd) {
  * Get the URL used to return the ESU from a given id.
  *
  * @param {String} currentUser The current user who is calling the endpoint
- * @return {Object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetEsuByIdUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetEsu`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -324,10 +336,11 @@ export function GetEsuByIdUrl(currentUser) {
 /**
  * Get the URL used to return the list of ESUs from a list of ESU ids.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetMultipleEsusByIdUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetMultipleEsusById`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -335,10 +348,11 @@ export function GetMultipleEsusByIdUrl(currentUser) {
 /**
  * Get the URL used to return the related properties from a given USRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedPropertyByUSRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedPropertyByUsrn`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -346,10 +360,11 @@ export function GetRelatedPropertyByUSRNUrl(currentUser) {
 /**
  * Get the URL used to return the related properties from a given UPRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedPropertyByUPRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedPropertyByUPRN`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -357,10 +372,11 @@ export function GetRelatedPropertyByUPRNUrl(currentUser) {
 /**
  * Get the URL used to return the related streets from a given USRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetByUSRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedStreetByUSRN`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -368,10 +384,11 @@ export function GetRelatedStreetByUSRNUrl(currentUser) {
 /**
  * Get the URL used to return the related streets from a given UPRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetByUPRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedStreetByUPRN`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -379,10 +396,11 @@ export function GetRelatedStreetByUPRNUrl(currentUser) {
 /**
  * Get the URL used to return the related streets, with ASD data, from a given USRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetWithASDByUSRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedStreetWithASDByUSRN`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -390,10 +408,11 @@ export function GetRelatedStreetWithASDByUSRNUrl(currentUser) {
 /**
  * Get the URL used to return the related streets, with ASD data, from a given UPRN.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetRelatedStreetWithASDByUPRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Related/GetRelatedStreetWithASDByUPRN`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -401,10 +420,11 @@ export function GetRelatedStreetWithASDByUPRNUrl(currentUser) {
 /**
  * Get the URL used to return the history of a given property.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPropertyHistoryByUPRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}History/PropertySummaryGroup`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -412,10 +432,11 @@ export function GetPropertyHistoryByUPRNUrl(currentUser) {
 /**
  * Get the URL used to return the history of a given street.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetStreetHistoryByUSRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}History/StreetSummaryGroup`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -423,10 +444,11 @@ export function GetStreetHistoryByUSRNUrl(currentUser) {
 /**
  * Get the URL used to return the home page data
  *
- * @param {string} currentUser The token for the user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The token for the user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetHomepageUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Homepage`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -436,9 +458,10 @@ export function GetHomepageUrl(currentUser) {
  *
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {Boolean} hasAsd Can the user see ASD data.
- * @return {Object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUpdateStreetUrl(currentUser, hasAsd) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "PUT", "application/json", currentUser.token);
 }
@@ -448,9 +471,10 @@ export function GetUpdateStreetUrl(currentUser, hasAsd) {
  *
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {Boolean} hasAsd Can the user see ASD data.
- * @return {Object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetDeleteStreetUrl(currentUser, hasAsd) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
   return getUrl(url, "DELETE", "application/json", currentUser.token);
 }
@@ -458,10 +482,11 @@ export function GetDeleteStreetUrl(currentUser, hasAsd) {
 /**
  * Get the URL used to return all the streets within a bounding box.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetBackgroundStreetsUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetStreets`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -469,10 +494,11 @@ export function GetBackgroundStreetsUrl(currentUser) {
 /**
  * Get the URL used to return all the unassigned ESUs within a bounding box.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUnassignedEsusUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetUnassignedEsus`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -480,10 +506,11 @@ export function GetUnassignedEsusUrl(currentUser) {
 /**
  * Get the URL used to return all the properties within a bounding box.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetBackgroundPropertiesUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetProperties`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -491,10 +518,11 @@ export function GetBackgroundPropertiesUrl(currentUser) {
 /**
  * Get the URL used to return all the provenances within a bounding box.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetBackgroundProvenancesUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}MappableData/GetBlpuProvenances`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -502,10 +530,11 @@ export function GetBackgroundProvenancesUrl(currentUser) {
 /**
  * Get the URL used to create a new property.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetCreatePropertyUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property`);
   return getUrl(url, "POST", "application/json", currentUser.token);
 }
@@ -513,10 +542,11 @@ export function GetCreatePropertyUrl(currentUser) {
 /**
  * Get the URL used to return a given property object.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPropertyFromUPRNUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -524,10 +554,11 @@ export function GetPropertyFromUPRNUrl(currentUser) {
 /**
  * Get the URL used to update a given property.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUpdatePropertyUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property`);
   return getUrl(url, "PUT", "application/json", currentUser.token);
 }
@@ -535,10 +566,11 @@ export function GetUpdatePropertyUrl(currentUser) {
 /**
  * Get the URL used to delete a given property object.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetDeletePropertyUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property`);
   return getUrl(url, "DELETE", "application/json", currentUser.token);
 }
@@ -546,10 +578,11 @@ export function GetDeletePropertyUrl(currentUser) {
 /**
  * Get the URL used to return an array of new UPRNs to be used when creating new properties.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetListOfUprnsUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property/GetListOfUprns`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -557,10 +590,11 @@ export function GetListOfUprnsUrl(currentUser) {
 /**
  * Get the URL used to return an array of new UPRNs to be used when creating new properties.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetAddUprnsBackUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Property/AddUprnsBackToAvailableUprns`);
   return getUrl(url, "POST", "application/json", currentUser.token);
 }
@@ -568,10 +602,11 @@ export function GetAddUprnsBackUrl(currentUser) {
 /**
  * Get the URL used to get all the validation messages.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetValidationMessagesUrl(currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Admin`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -580,10 +615,11 @@ export function GetValidationMessagesUrl(currentUser) {
  * Get the URL used to return the current list of application cross reference sources
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetAppCrossRefUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}AppCrossRef`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -592,10 +628,11 @@ export function GetAppCrossRefUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available streets.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetStreetDescriptorUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}StreetDescriptor`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -604,10 +641,11 @@ export function GetStreetDescriptorUrl(endPointType, currentUser) {
  * Get the URL used to get the list of available postcodes.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPostcodeUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Postcode`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -616,10 +654,11 @@ export function GetPostcodeUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available post towns.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPostTownUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Posttown`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -628,10 +667,11 @@ export function GetPostTownUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available sub-localities.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetSubLocalityUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}SubLocality`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -639,10 +679,11 @@ export function GetSubLocalityUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the count of properties with incorrect wards or parishes.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetIncorrectBoundariesCountUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Boundary/IncorrectBoundariesCount`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -650,10 +691,11 @@ export function GetIncorrectBoundariesCountUrl(currentUser) {
 /**
  * Get the URL used to update the ward and parish codes from the spatial data.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUpdateBlpuBoundaryCodesUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Boundary/UpdateBLPUBoundaryCodes`);
   return getUrl(url, "PUT", "application/json", currentUser.token);
 }
@@ -662,11 +704,12 @@ export function GetUpdateBlpuBoundaryCodesUrl(currentUser) {
  * Get the URL used to return the list of available parishes for a given authority.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
+ * @param {String} currentUser The current user who is calling the endpoint
  * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetParishesUrl(endPointType, currentUser, authorityCode) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url =
     endPointType === "GET"
       ? GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Parish/${authorityCode}`)
@@ -678,11 +721,12 @@ export function GetParishesUrl(endPointType, currentUser, authorityCode) {
  * Get the URL used to return the list of available wards for a given authority.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
+ * @param {String} currentUser The current user who is calling the endpoint
  * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetWardsUrl(endPointType, currentUser, authorityCode) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url =
     endPointType === "GET"
       ? GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Ward/${authorityCode}`)
@@ -694,10 +738,11 @@ export function GetWardsUrl(endPointType, currentUser, authorityCode) {
  * Get the URL used to return the list of available localities.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetLocalityUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Locality`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -706,10 +751,11 @@ export function GetLocalityUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available DbAuthorities.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetDbAuthorityUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}DbAuthority`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -718,10 +764,11 @@ export function GetDbAuthorityUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available islands.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetIslandUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Island`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -730,10 +777,11 @@ export function GetIslandUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available towns.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetTownUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Town`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -742,10 +790,11 @@ export function GetTownUrl(endPointType, currentUser) {
  * Get the URL used to return the list of available administrative areas.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetAdministrativeAreaUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}AdministrativeArea`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -754,10 +803,11 @@ export function GetAdministrativeAreaUrl(endPointType, currentUser) {
  * Get the URL used to return the list of operational districts.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetOperationalDistrictUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}OperationalDistrict`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -765,10 +815,11 @@ export function GetOperationalDistrictUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return a temporary address before the LPI has been created.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetTempAddressUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}TempAddress`);
   return getUrl(url, "POST", "application/json", currentUser.token);
 }
@@ -776,10 +827,11 @@ export function GetTempAddressUrl(currentUser) {
 /**
  * Get the URL used to return the metadata for the main API.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetApiMetadataUrl(currentUser) {
+  if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Version`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -787,10 +839,11 @@ export function GetApiMetadataUrl(currentUser) {
 /**
  * Get the URL used to return the metadata for the lookup API.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetLookupMetadataUrl(currentUser) {
+  if (!currentUser || !currentUser.lookupsApi) return null;
   const url = GetApiSite(currentUser.lookupsApi, `/api/${lookupVersion}Version`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -798,10 +851,11 @@ export function GetLookupMetadataUrl(currentUser) {
 /**
  * Get the URL used to return the metadata for the settings API.
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetSettingsMetadataUrl(currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}Version`);
   return getUrl(url, "GET", "application/json", currentUser.token);
 }
@@ -810,10 +864,11 @@ export function GetSettingsMetadataUrl(currentUser) {
  * Get the URLs used to maintain the authority details in the settings.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetAuthorityDetailsUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}AuthorityDetail`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -822,10 +877,11 @@ export function GetAuthorityDetailsUrl(endPointType, currentUser) {
  * Get the URLs used to maintain the LSG metadata settings data.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetLSGMetadataUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}LSGMetadata`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -834,10 +890,11 @@ export function GetLSGMetadataUrl(endPointType, currentUser) {
  * Get the URLs used to maintain the ASD metadata settings data.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetASDMetadataUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}ASDMetadata`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -846,11 +903,12 @@ export function GetASDMetadataUrl(endPointType, currentUser) {
  * Get the URLs used to maintain the LLPG metadata settings data.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
+ * @param {String} currentUser The current user who is calling the endpoint
  * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetLLPGMetadataUrl(endPointType, currentUser, isScottish) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(
     currentUser.settingsApi,
     `/api/${settingsVersion}${isScottish ? "OSGazetteerMetadata" : "GPLLPGMetadata"}`
@@ -862,10 +920,11 @@ export function GetLLPGMetadataUrl(endPointType, currentUser, isScottish) {
  * Get the URLs used to maintain the property templates
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetPropertyTemplatesUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}PropertyTemplate`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -874,10 +933,11 @@ export function GetPropertyTemplatesUrl(endPointType, currentUser) {
  * Get the URLs used to maintain the street template.
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetStreetTemplateUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}StreetTemplate`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -886,10 +946,11 @@ export function GetStreetTemplateUrl(endPointType, currentUser) {
  * Get the URLs used to maintain the map layers
  *
  * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | PATCH | DELETE ]
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetMapLayersUrl(endPointType, currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}MapLayer`);
   return getUrl(url, endPointType, "application/json", currentUser.token);
 }
@@ -897,11 +958,12 @@ export function GetMapLayersUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the USRN Range
  *
- * @param {string} currentUser The current user who is calling the endpoint
+ * @param {String} currentUser The current user who is calling the endpoint
  * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUsrnRangeUrl(currentUser, isScottish) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(
     currentUser.settingsApi,
     `/api/${settingsVersion}${isScottish ? "OSRanges" : "GPRanges"}/UsrnRange`
@@ -912,11 +974,12 @@ export function GetUsrnRangeUrl(currentUser, isScottish) {
 /**
  * Get the URLs used to maintain the UPRN Range
  *
- * @param {string} currentUser The current user who is calling the endpoint
+ * @param {String} currentUser The current user who is calling the endpoint
  * @param {boolean} isScottish Is the authority a Scottish authority.
- * @return {object} The URL object used in FETCH calls.
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUprnRangeUrl(currentUser, isScottish) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(
     currentUser.settingsApi,
     `/api/${settingsVersion}${isScottish ? "OSRanges" : "GPRanges"}/UprnRange`
@@ -927,10 +990,11 @@ export function GetUprnRangeUrl(currentUser, isScottish) {
 /**
  * Get the URLs used to maintain the ESU Id Range
  *
- * @param {string} currentUser The current user who is calling the endpoint
- * @return {object} The URL object used in FETCH calls.
+ * @param {String} currentUser The current user who is calling the endpoint
+ * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetEsuIdRangeUrl(currentUser) {
+  if (!currentUser || !currentUser.settingsApi) return null;
   const url = GetApiSite(currentUser.settingsApi, `/api/${settingsVersion}OSRanges/EsuIdRange`);
   return getUrl(url, "POST", "application/json", currentUser.token);
 }

@@ -31,6 +31,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.4.0 changes
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -130,8 +131,6 @@ const HomePage = () => {
    * @param {object} userContext The userContext object.
    */
   const fetchData = async (lookup, userContext) => {
-    const url = lookup.url.url;
-
     const setData = (id, result) => {
       switch (id) {
         case "lookupValidationMessages":
@@ -244,63 +243,68 @@ const HomePage = () => {
       }
     };
 
-    await fetch(url, {
-      headers: lookup.url.headers,
-      crossDomain: true,
-      method: "GET",
-    })
-      .then((response) => {
-        if (response) {
-          switch (response.status) {
-            case 200:
-              return response.json();
-
-            case 204:
-              return [];
-
-            case 401:
-              userContext.onExpired();
-              setData(lookup.id, lookup.noRecords);
-              break;
-
-            case 500:
-              if (userContext.currentUser.showMessages)
-                console.error("[500 ERROR] Fetching data", {
-                  lookup: lookup.id,
-                  errorText: response.statusText,
-                  response: response,
-                });
-              setData(lookup.id, lookup.noRecords);
-              setOpenMessageDialog(true);
-              break;
-
-            default:
-              if (userContext.currentUser.showMessages)
-                console.error(`[${response.status} ERROR] Fetching data`, {
-                  lookup: lookup.id,
-                  errorText: response.statusText,
-                  response: response,
-                });
-              setData(lookup.id, lookup.noRecords);
-              setOpenMessageDialog(true);
-              break;
-          }
-        } else return response.json();
+    if (lookup.url && lookup.url.url) {
+      await fetch(lookup.url.url, {
+        headers: lookup.url.headers,
+        crossDomain: true,
+        method: "GET",
       })
-      .then((result) => {
-        setData(lookup.id, result);
-      })
-      .catch((e) => {
-        // Ignore lookups that do not exist
-        if (e.message !== "Unexpected end of JSON input")
-          if (userContext.currentUser.showMessages)
-            console.error("[ERROR] Fetching data", {
-              lookup: lookup.id,
-              error: e,
-            });
-        setData(lookup.id, lookup.noRecords);
-        setOpenMessageDialog(true);
-      });
+        .then((response) => {
+          if (response) {
+            switch (response.status) {
+              case 200:
+                return response.json();
+
+              case 204:
+                return [];
+
+              case 401:
+                userContext.onExpired();
+                setData(lookup.id, lookup.noRecords);
+                break;
+
+              case 500:
+                if (userContext.currentUser.showMessages)
+                  console.error("[500 ERROR] Fetching data", {
+                    lookup: lookup.id,
+                    errorText: response.statusText,
+                    response: response,
+                  });
+                setData(lookup.id, lookup.noRecords);
+                setOpenMessageDialog(true);
+                break;
+
+              default:
+                if (userContext.currentUser.showMessages)
+                  console.error(`[${response.status} ERROR] Fetching data`, {
+                    lookup: lookup.id,
+                    errorText: response.statusText,
+                    response: response,
+                  });
+                setData(lookup.id, lookup.noRecords);
+                setOpenMessageDialog(true);
+                break;
+            }
+          } else return response.json();
+        })
+        .then((result) => {
+          setData(lookup.id, result);
+        })
+        .catch((e) => {
+          // Ignore lookups that do not exist
+          if (e.message !== "Unexpected end of JSON input")
+            if (userContext.currentUser.showMessages)
+              console.error("[ERROR] Fetching data", {
+                lookup: lookup.id,
+                error: e,
+              });
+          setData(lookup.id, lookup.noRecords);
+          setOpenMessageDialog(true);
+        });
+    } else {
+      userContext.onExpired();
+      setData(lookup.id, lookup.noRecords);
+    }
   };
 
   /**
@@ -528,11 +532,13 @@ const HomePage = () => {
       });
     };
 
-    if (!isLoaded) {
+    if (!isLoaded && userContext.currentUser) {
       LoadLookups();
 
       // We can only load the ward and parish lookups once we have the authority code
       if (authorityDetailsLoaded.current) LoadWardParishLookups();
+    } else if (!isLoaded && !userContext.currentUser) {
+      userContext.onExpired();
     }
 
     const lookupsAreLoaded =
