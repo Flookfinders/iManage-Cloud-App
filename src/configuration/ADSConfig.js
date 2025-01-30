@@ -703,7 +703,7 @@ export function GetUpdateBlpuBoundaryCodesUrl(currentUser) {
 /**
  * Get the URL used to return the list of available parishes for a given authority.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
  * @return {Object|null} The URL object used in FETCH calls.
@@ -720,7 +720,7 @@ export function GetParishesUrl(endPointType, currentUser, authorityCode) {
 /**
  * Get the URL used to return the list of available wards for a given authority.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @param {*} authorityCode The DETR code for the authority running the application, only used on GET.
  * @return {Object|null} The URL object used in FETCH calls.
@@ -737,7 +737,7 @@ export function GetWardsUrl(endPointType, currentUser, authorityCode) {
 /**
  * Get the URL used to return the list of available localities.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -750,7 +750,7 @@ export function GetLocalityUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the list of available DbAuthorities.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -763,7 +763,7 @@ export function GetDbAuthorityUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the list of available islands.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -776,7 +776,7 @@ export function GetIslandUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the list of available towns.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -789,7 +789,7 @@ export function GetTownUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the list of available administrative areas.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -802,7 +802,7 @@ export function GetAdministrativeAreaUrl(endPointType, currentUser) {
 /**
  * Get the URL used to return the list of operational districts.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -863,7 +863,7 @@ export function GetSettingsMetadataUrl(currentUser) {
 /**
  * Get the URLs used to maintain the authority details in the settings.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -876,7 +876,7 @@ export function GetAuthorityDetailsUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the LSG metadata settings data.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -889,7 +889,7 @@ export function GetLSGMetadataUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the ASD metadata settings data.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -902,9 +902,9 @@ export function GetASDMetadataUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the LLPG metadata settings data.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
- * @param {boolean} isScottish Is the authority a Scottish authority.
+ * @param {Boolean} isScottish Is the authority a Scottish authority.
  * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetLLPGMetadataUrl(endPointType, currentUser, isScottish) {
@@ -919,7 +919,7 @@ export function GetLLPGMetadataUrl(endPointType, currentUser, isScottish) {
 /**
  * Get the URLs used to maintain the property templates
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -932,7 +932,7 @@ export function GetPropertyTemplatesUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the street template.
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -945,7 +945,7 @@ export function GetStreetTemplateUrl(endPointType, currentUser) {
 /**
  * Get the URLs used to maintain the map layers
  *
- * @param {string} endPointType The type of endpoint being called [ GET | POST | PUT | PATCH | DELETE ]
+ * @param {String} endPointType The type of endpoint being called [ GET | POST | PUT | PATCH | DELETE ]
  * @param {String} currentUser The current user who is calling the endpoint
  * @return {Object|null} The URL object used in FETCH calls.
  */
@@ -975,7 +975,7 @@ export function GetUsrnRangeUrl(currentUser, isScottish) {
  * Get the URLs used to maintain the UPRN Range
  *
  * @param {String} currentUser The current user who is calling the endpoint
- * @param {boolean} isScottish Is the authority a Scottish authority.
+ * @param {Boolean} isScottish Is the authority a Scottish authority.
  * @return {Object|null} The URL object used in FETCH calls.
  */
 export function GetUprnRangeUrl(currentUser, isScottish) {
