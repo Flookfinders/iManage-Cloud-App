@@ -3,72 +3,75 @@
 //
 //  Description: Property utilities
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   16.08.22 Sean Flook         WI39??? Initial Revision.
-//    002   16.03.23 Sean Flook         WI40583 Modified SavePropertyAndUpdate to correctly return the result of the save.
-//    003   23.03.23 Sean Flook         WI40603 Include parentUprn in GetNewPropertyData.
-//    004   31.03.23 Sean Flook         WI40652 For template and wizard do not include Historic or Rejected logical status.
-//    005   06.04.23 Sean Flook         WI40675 Corrected logic in FilteredLPILogicalStatus.
-//    006   21.04.23 Sean Flook         WI40693 Do not format search default "addresses".
-//    007   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    008   28.06.23 Sean Flook         WI40730 Modified GetTempAddress to work with the updated endpoint.
-//    009   30.06.23 Sean Flook         WI40770 Set suffix letters to uppercase.
-//    010   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    011   20.09.23 Sean Flook                 Added OneScotland specific record types.
-//    012   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    013   27.10.23 Sean Flook                 Changes required to handle Scottish data.
-//    014   24.11.23 Sean Flook                 Further changes required for Scottish authorities.
-//    015   24.11.23 Joel Benford               Add Scottish option for getting official/postal text.
-//    016   30.11.23 Sean Flook                 Use constant for default classification scheme.
-//    017   14.12.23 Sean Flook                 Removed redundant fields.
-//    018   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    019   08.01.24 Joel Benford               Add getLpiSubLocality
-//    020   12.01.24 Sean Flook       IMANN-163 Do not bother to get property map data if we do not have a UPRN.
-//    021   12.01.24 Sean Flook       IMANN-163 Handle when we have no search results.
-//    022   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    023   25.01.24 Sean Flook                 Bug fix.
-//    024   01.03.24 Sean Flook           MUL16 Added some error trapping.
-//    025   04.03.24 Sean Flook           MUL16 Try and ensure we get a new temp address when required.
-//    026   07.03.24 Sean Flook       IMANN-348 Added hasPropertyChanged.
-//    027   12.03.24 Sean Flook                 Improved error handling when deleting.
-//    028   13.03.24 Sean Flook            MUL9 Changes required to refresh the related tab if required.
-//    029   22.03.24 Sean Flook           MUL16 Added GetParentHierarchy.
-//    030   04.04.24 Sean Flook                 Various changes for deleting and adding new properties.
-//    031   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
-//    032   24.04.24 Sean Flook       IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
-//    033   25.04.24 Sean Flook       IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
-//    034   26.04.24 Sean Flook       IMANN-166 Refresh related after doing the save.
-//    035   08.05.24 Sean Flook       IMANN-447 Return empty string when the sub-locality is null.
-//    036   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
-//    037   20.05.24 Sean Flook       IMANN-444 Prevent exceptions from occurring.
-//    038   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    039   12.06.24 Sean Flook       IMANN-553 Added filter for blpu state for Scottish authorities.
-//    040   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    041   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
-//    042   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    043   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
-//    044   05.07.24 Sean Flook       IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
-//    045   18.07.24 Sean Flook       IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
-//    046   16.08.24 Sean Flook       IMANN-861 Added new key from API for successor errors.
-//    047   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
-//    048   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   16.08.22 Sean Flook          WI39??? Initial Revision.
+//    002   16.03.23 Sean Flook          WI40583 Modified SavePropertyAndUpdate to correctly return the result of the save.
+//    003   23.03.23 Sean Flook          WI40603 Include parentUprn in GetNewPropertyData.
+//    004   31.03.23 Sean Flook          WI40652 For template and wizard do not include Historic or Rejected logical status.
+//    005   06.04.23 Sean Flook          WI40675 Corrected logic in FilteredLPILogicalStatus.
+//    006   21.04.23 Sean Flook          WI40693 Do not format search default "addresses".
+//    007   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    008   28.06.23 Sean Flook          WI40730 Modified GetTempAddress to work with the updated endpoint.
+//    009   30.06.23 Sean Flook          WI40770 Set suffix letters to uppercase.
+//    010   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    011   20.09.23 Sean Flook                  Added OneScotland specific record types.
+//    012   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    013   27.10.23 Sean Flook                  Changes required to handle Scottish data.
+//    014   24.11.23 Sean Flook                  Further changes required for Scottish authorities.
+//    015   24.11.23 Joel Benford                Add Scottish option for getting official/postal text.
+//    016   30.11.23 Sean Flook                  Use constant for default classification scheme.
+//    017   14.12.23 Sean Flook                  Removed redundant fields.
+//    018   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    019   08.01.24 Joel Benford                Add getLpiSubLocality
+//    020   12.01.24 Sean Flook        IMANN-163 Do not bother to get property map data if we do not have a UPRN.
+//    021   12.01.24 Sean Flook        IMANN-163 Handle when we have no search results.
+//    022   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    023   25.01.24 Sean Flook                  Bug fix.
+//    024   01.03.24 Sean Flook            MUL16 Added some error trapping.
+//    025   04.03.24 Sean Flook            MUL16 Try and ensure we get a new temp address when required.
+//    026   07.03.24 Sean Flook        IMANN-348 Added hasPropertyChanged.
+//    027   12.03.24 Sean Flook                  Improved error handling when deleting.
+//    028   13.03.24 Sean Flook             MUL9 Changes required to refresh the related tab if required.
+//    029   22.03.24 Sean Flook            MUL16 Added GetParentHierarchy.
+//    030   04.04.24 Sean Flook                  Various changes for deleting and adding new properties.
+//    031   05.04.24 Sean Flook                  Correctly handle errors when creating, updating and deleting.
+//    032   24.04.24 Sean Flook        IMANN-390 When creating a new property if the UPRN is already set use that; otherwise use 0.
+//    033   25.04.24 Sean Flook        IMANN-390 Added returnFailedUprns method to return failed UPRNs back to the database.
+//    034   26.04.24 Sean Flook        IMANN-166 Refresh related after doing the save.
+//    035   08.05.24 Sean Flook        IMANN-447 Return empty string when the sub-locality is null.
+//    036   15.05.24 Sean Flook        IMANN-131 Ensure NeverExport is always set.
+//    037   20.05.24 Sean Flook        IMANN-444 Prevent exceptions from occurring.
+//    038   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    039   12.06.24 Sean Flook        IMANN-553 Added filter for blpu state for Scottish authorities.
+//    040   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    041   21.06.24 Sean Flook        IMANN-614 After saving changes update the source data in the sandbox.
+//    042   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    043   03.07.24 Sean Flook        IMANN-697 Also check the single form of the key when handling errors.
+//    044   05.07.24 Sean Flook        IMANN-692 Do not reset the sandbox if call to UpdateRangeAfterSave is from ADSSelectionControl.
+//    045   18.07.24 Sean Flook        IMANN-775 For Scottish authorities when filtering BLPUState use the string of the index to handle the 0 state.
+//    046   16.08.24 Sean Flook        IMANN-861 Added new key from API for successor errors.
+//    047   02.09.24 Sean Flook        IMANN-976 Handle "Unassigned" in lookups.
+//    048   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    049   01.10.24 Sean Flook       IMANN-899 Use the correct field for BLPU App Cross Reference.
-//    050   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    051   31.10.24 Sean Flook      IMANN-1012 Various changes required for plot to postal wizard.
+//    049   01.10.24 Sean Flook        IMANN-899 Use the correct field for BLPU App Cross Reference.
+//    050   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    051   31.10.24 Sean Flook       IMANN-1012 Various changes required for plot to postal wizard.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    052   18.11.24 Sean Flook      IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
-//    053   18.11.24 Sean Flook      IMANN-1056 Added getPropertyListDetails.
+//    052   18.11.24 Sean Flook       IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
+//    053   18.11.24 Sean Flook       IMANN-1056 Added getPropertyListDetails.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    054   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -341,7 +344,7 @@ export async function GetTempAddress(lpiRecord, organisation, lookupContext, use
         postallyAddressable: lpiRecord.postalAddress,
       };
 
-  const tempAddressUrl = GetTempAddressUrl(userContext.currentUser.token);
+  const tempAddressUrl = GetTempAddressUrl(userContext.currentUser);
 
   if (userContext.currentUser.showMessages)
     console.log("[DEBUG] GetTempAddress", tempAddressUrl, JSON.stringify(addressData));
@@ -809,7 +812,7 @@ export function GetNewProperty(isWelsh, isScottish, authorityCode, usrn, parent,
  * @return {Boolean} True if the property was deleted successfully; otherwise false.
  */
 export async function PropertyDelete(uprn, deleteChildProperties, userContext, propertyContext) {
-  const deleteUrl = GetDeletePropertyUrl(userContext.currentUser.token);
+  const deleteUrl = GetDeletePropertyUrl(userContext.currentUser);
 
   if (deleteUrl) {
     return await fetch(`${deleteUrl.url}/${uprn}/${deleteChildProperties ? "true" : "false"}`, {
@@ -1797,7 +1800,7 @@ export function GetPropertyValidationErrors(body, newProperty, showMessages) {
  * @return {Object} The property map object.
  */
 export async function GetPropertyMapData(uprn, userContext) {
-  const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser.token);
+  const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser);
 
   if (propertyUrl && uprn) {
     const returnValue = await fetch(`${propertyUrl.url}/${uprn}`, {
@@ -1893,8 +1896,8 @@ export async function SaveProperty(
   propertyContext.resetPropertyErrors();
 
   const saveUrl = newProperty
-    ? GetCreatePropertyUrl(userContext.currentUser.token)
-    : GetUpdatePropertyUrl(userContext.currentUser.token);
+    ? GetCreatePropertyUrl(userContext.currentUser)
+    : GetUpdatePropertyUrl(userContext.currentUser);
   const saveData = newProperty
     ? GetPropertyCreateData(currentProperty, isScottish)
     : GetPropertyUpdateData(currentProperty, isScottish, cascadeParentPaoChanges);
@@ -2725,7 +2728,7 @@ export const getWizardParentDetails = (propertyData, postcodes) => {
 export const returnFailedUprns = async (uprns, userContext) => {
   if (!Array.isArray(uprns) || uprns.length === 0) return;
 
-  const returnUrl = GetAddUprnsBackUrl(userContext.currentUser.token);
+  const returnUrl = GetAddUprnsBackUrl(userContext.currentUser);
 
   if (userContext.currentUser.showMessages) console.log("[DEBUG] returnFailedUprns", returnUrl, JSON.stringify(uprns));
 
@@ -2845,7 +2848,7 @@ export const hasParentPaoChanged = (childCount, sourceProperty, currentProperty)
  * @returns {Array|null} The array of search objects for the list of UPRNs.
  */
 export const getPropertyListDetails = async (propertyUprns, userContext) => {
-  const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser.token);
+  const searchMultiEditUrl = GetMultiEditSearchUrl(userContext.currentUser);
 
   if (searchMultiEditUrl) {
     const newSearchData = await fetch(`${searchMultiEditUrl.url}/${propertyUprns.join()}`, {

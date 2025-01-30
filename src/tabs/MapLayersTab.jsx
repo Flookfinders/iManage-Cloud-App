@@ -30,6 +30,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -120,7 +121,7 @@ function MapLayersTab(props) {
    */
   const displayActionButtons = (params) => {
     const moveLayer = async (currentLayerPosition, newLayerPosition) => {
-      const mapLayerApiUrl = GetMapLayersUrl("PATCH", userContext.currentUser.token);
+      const mapLayerApiUrl = GetMapLayersUrl("PATCH", userContext.currentUser);
 
       if (mapLayerApiUrl) {
         const isNewLayer = newLayer.current;
@@ -460,7 +461,7 @@ function MapLayersTab(props) {
     setOpenDeleteConfirmation(false);
 
     if (deleteConfirmed && deletePkId.current) {
-      const mapLayerApiUrl = await GetMapLayersUrl("DELETE", userContext.currentUser.token);
+      const mapLayerApiUrl = await GetMapLayersUrl("DELETE", userContext.currentUser);
 
       if (mapLayerApiUrl) {
         return await fetch(`${mapLayerApiUrl.url}/${deletePkId.current}`, {
@@ -583,7 +584,7 @@ function MapLayersTab(props) {
    * @param {object} updatedData The data that has been changed.
    */
   const handleDoneEditLayer = async (updatedData) => {
-    const mapLayerApiUrl = await GetMapLayersUrl(newLayer.current ? "POST" : "PUT", userContext.currentUser.token);
+    const mapLayerApiUrl = await GetMapLayersUrl(newLayer.current ? "POST" : "PUT", userContext.currentUser);
     const saveData = getMapLayerSaveData(updatedData);
     const isNewLayer = newLayer.current;
 

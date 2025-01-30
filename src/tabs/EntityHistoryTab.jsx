@@ -3,29 +3,32 @@
 //
 //  Description: ESU Data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   07.09.23 Sean Flook                 Cleaned the code.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    005   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    007   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    008   25.01.24 Sean Flook                 Correctly handle status code 204.
-//    009   08.03.24 Joshua McCormick IMANN-280 Adding Padding bottom to match padding top in the stack/chips
-//    010   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    011   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between updates and edits.
-//    012   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    013   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    014   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   07.09.23 Sean Flook                  Cleaned the code.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    005   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    006   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    007   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    008   25.01.24 Sean Flook                  Correctly handle status code 204.
+//    009   08.03.24 Joshua McCormick  IMANN-280 Adding Padding bottom to match padding top in the stack/chips
+//    010   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    011   15.03.24 Sean Flook             GLB6 Use individual buttons to toggle between updates and edits.
+//    012   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    013   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    014   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    015   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -134,9 +137,9 @@ function EntityHistoryTab({ variant }) {
 
     if (!apiUrl) {
       if (variant === "street") {
-        setApiUrl(GetStreetHistoryByUSRNUrl(userContext.currentUser.token));
+        setApiUrl(GetStreetHistoryByUSRNUrl(userContext.currentUser));
       } else {
-        setApiUrl(GetPropertyHistoryByUPRNUrl(userContext.currentUser.token));
+        setApiUrl(GetPropertyHistoryByUPRNUrl(userContext.currentUser));
       }
     }
 

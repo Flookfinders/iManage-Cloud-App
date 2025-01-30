@@ -35,6 +35,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.4.0 changes
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    021   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -431,7 +432,7 @@ function StreetTemplateTab() {
    */
   const handleDoneEditTemplate = async (updatedData) => {
     if (updatedData) {
-      const saveUrl = GetStreetTemplateUrl("PUT", userContext.currentUser.token);
+      const saveUrl = GetStreetTemplateUrl("PUT", userContext.currentUser);
 
       if (saveUrl) {
         const saveData = {

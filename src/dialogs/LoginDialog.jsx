@@ -3,32 +3,35 @@
 //
 //  Description: Navigation Bar component
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   17.08.23 Sean Flook       IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
-//    003   07.09.23 Sean Flook                 Changed function name and cleaned the code.
-//    004   06.10.23 Sean Flook                 Use colour variables.
-//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    006   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    007   09.04.24 Sean Flook                 Changed to use auditname for new security.
-//    008   23.04.24 Sean Flook       IMANN-366 If we are running on an Edge Chromium browser do not display our show password icon button.
-//    009   01.05.24 Sean Flook       IMANN-142 Removed the cancel button.
-//    010   10.06.24 Sean Flook       IMANN-509 Changes required for v2 of the security API and the multi-factor authentication.
-//    011   18.06.24 Sean Flook       IMANN-601 Display message when authentication code does not match.
-//    012   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    013   19.06.24 Joshua McCormick IMANN-630 Cleared resend authentication code email errors
-//    014   21.06.24 Sean Flook       IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
-//    015   02.07.24 Sean Flook       IMANN-642 If unauthorised set the step to 0.
-//    016   09.07.24 Joshua McCormick IMANN-644 Change password error message handling shows errors.Password[0] instead of whole response
-//    017   10.09.24 Sean Flook       IMANN-980 Removed unnecessary console messages.
+//    001            Sean Flook                  Initial Revision.
+//    002   17.08.23 Sean Flook        IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
+//    003   07.09.23 Sean Flook                  Changed function name and cleaned the code.
+//    004   06.10.23 Sean Flook                  Use colour variables.
+//    005   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    007   09.04.24 Sean Flook                  Changed to use auditname for new security.
+//    008   23.04.24 Sean Flook        IMANN-366 If we are running on an Edge Chromium browser do not display our show password icon button.
+//    009   01.05.24 Sean Flook        IMANN-142 Removed the cancel button.
+//    010   10.06.24 Sean Flook        IMANN-509 Changes required for v2 of the security API and the multi-factor authentication.
+//    011   18.06.24 Sean Flook        IMANN-601 Display message when authentication code does not match.
+//    012   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    013   19.06.24 Joshua McCormick  IMANN-630 Cleared resend authentication code email errors
+//    014   21.06.24 Sean Flook        IMANN-642 Changes required to redisplay the change password dialog after previously cancelling out.
+//    015   02.07.24 Sean Flook        IMANN-642 If unauthorised set the step to 0.
+//    016   09.07.24 Joshua McCormick  IMANN-644 Change password error message handling shows errors.Password[0] instead of whole response
+//    017   10.09.24 Sean Flook        IMANN-980 Removed unnecessary console messages.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -45,6 +48,7 @@ import {
   GetResetMyPasswordUrl,
   UpdateMyPasswordUrl,
   GetResendEmailUrl,
+  GetOrganisationClusterUrl,
 } from "../configuration/ADSConfig";
 
 import {
@@ -106,7 +110,7 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
   /**
    * Method to get the users information for the currently logged in user.
    *
-   * @param {String} token The user token to use when calling the API.
+   * @param {String} token The user token to use when calling the APIs.
    * @param {String} expiry The expiration date and time for the users token.
    */
   const getUsersInfo = async (token, expiry) => {
@@ -132,12 +136,44 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
 
       if (userInfo) {
         if (userInfo.active && !userInfo.isDeleted) {
-          const loggedInUser = {
-            token: token,
-            expiry: expiry,
-            ...userInfo,
-          };
-          userContext.onUserChange(loggedInUser);
+          const userSettingsUrl = GetOrganisationClusterUrl(token);
+
+          if (userSettingsUrl) {
+            const clusterInfo = await fetch(`${userSettingsUrl.url}`, {
+              headers: userSettingsUrl.headers,
+              crossDomain: true,
+              method: "GET",
+            })
+              .then((res) => (res.ok ? res : Promise.reject(res)))
+              .then((res) => res.json())
+              .then(
+                (result) => {
+                  return result;
+                },
+                (error) => {
+                  console.error("[ERROR] Get user cluster information", error);
+                  return null;
+                }
+              );
+
+            if (clusterInfo) {
+              const loggedInUser = {
+                token: token,
+                expiry: expiry,
+                mainApi: clusterInfo.iManage,
+                settingsApi: clusterInfo.Settings,
+                lookupsApi: clusterInfo.Lookups,
+                ...userInfo,
+              };
+              userContext.onUserChange(loggedInUser);
+            } else {
+              userContext.onUserChange(null);
+              setLoginError(["Unable to get user cluster information."]);
+            }
+          } else {
+            userContext.onUserChange(null);
+            setLoginError(["Unable to get user cluster URL."]);
+          }
         } else {
           userContext.onUserChange(null);
           if (!userInfo.active) setLoginError(["You are not an active user on this system."]);
@@ -690,6 +726,11 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
               maxLength={10}
               onChange={handleAuthenticationCodeChangeEvent}
             />
+            {loginError && (
+              <Typography variant="body1" color="error">
+                {loginError}
+              </Typography>
+            )}
           </>
         );
 

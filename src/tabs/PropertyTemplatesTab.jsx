@@ -33,6 +33,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    021   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -105,7 +106,7 @@ function PropertyTemplatesTab() {
     setDuplicateId(null);
     setShowAddDialog(false);
     if (newRecord) {
-      const saveUrl = GetPropertyTemplatesUrl("POST", userContext.currentUser.token);
+      const saveUrl = GetPropertyTemplatesUrl("POST", userContext.currentUser);
 
       const saveData = {
         templateName: newRecord.templateName,
@@ -214,7 +215,7 @@ function PropertyTemplatesTab() {
     setUpdateError(null);
 
     if (updatedData) {
-      const saveUrl = GetPropertyTemplatesUrl("PUT", userContext.currentUser.token);
+      const saveUrl = GetPropertyTemplatesUrl("PUT", userContext.currentUser);
 
       if (saveUrl) {
         const saveData = {
@@ -329,7 +330,7 @@ function PropertyTemplatesTab() {
   const handleCloseDeleteConfirmation = async (deleteConfirmed) => {
     setOpenDeleteConfirmation(false);
     if (deleteConfirmed && deletePkId.current) {
-      const deleteUrl = GetPropertyTemplatesUrl("DELETE", userContext.currentUser.token);
+      const deleteUrl = GetPropertyTemplatesUrl("DELETE", userContext.currentUser);
       if (deleteUrl) {
         await fetch(`${deleteUrl.url}/${deletePkId.current}`, {
           headers: deleteUrl.headers,

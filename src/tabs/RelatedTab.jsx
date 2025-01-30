@@ -3,58 +3,61 @@
 //
 //  Description: Related tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   23.03.23 Sean Flook         WI40604 Call reset when opening a new record.
-//    003   05.04.23 Sean Flook         WI40596 If opening an historic property display the warning dialog.
-//    004   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    005   07.09.23 Sean Flook                 Cleaned the code.
-//    006   06.10.23 Sean Flook                 Added some error trapping.
-//    006   10.10.23 Sean Flook       IMANN-163 Changes required for opening tab after property wizard.
-//    006   27.10.23 Sean Flook                 Use new dataFormStyle and updated call to SavePropertyAndUpdate..
-//    007   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    008   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    009   30.11.23 Sean Flook                 Renamed variable to avoid confusion.
-//    010   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    011   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    012   10.01.24 Sean Flook                 Fix warnings.
-//    013   11.01.24 Sean Flook                 Fix warnings.
-//    014   12.01.24 Sean Flook       IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
-//    015   25.01.24 Sean Flook                 Changes required after UX review.
-//    016   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    017   09.02.24 Sean Flook                 Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
-//    018   13.02.24 Joel Benford               Provide hww.usrn to map context when changing street
-//    019   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    020   08.03.24 Sean Flook       IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
-//    021   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    022   13.03.24 Sean Flook            MUL9 Changes required to facilitate refreshing the data.
-//    023   15.03.24 Sean Flook            GLB6 Use individual buttons to toggle between properties and streets.
-//    024   15.03.24 Sean Flook       PRFRM1_GP If a property is selected always open it.
-//    025   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    026   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    027   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    028   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    029   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    030   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//    031   08.07.24 Sean Flook       IMANN-728 Hide the property tab if the user does not have the right to see properties.
-//    032   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    033   07.08.24 Sean Flook       IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
-//    034   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
-//    035   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   23.03.23 Sean Flook          WI40604 Call reset when opening a new record.
+//    003   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
+//    004   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    005   07.09.23 Sean Flook                  Cleaned the code.
+//    006   06.10.23 Sean Flook                  Added some error trapping.
+//    006   10.10.23 Sean Flook        IMANN-163 Changes required for opening tab after property wizard.
+//    006   27.10.23 Sean Flook                  Use new dataFormStyle and updated call to SavePropertyAndUpdate..
+//    007   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    008   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    009   30.11.23 Sean Flook                  Renamed variable to avoid confusion.
+//    010   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    011   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    012   10.01.24 Sean Flook                  Fix warnings.
+//    013   11.01.24 Sean Flook                  Fix warnings.
+//    014   12.01.24 Sean Flook        IMANN-163 Do not try and get the data if we do not have the USRN/UPRN.
+//    015   25.01.24 Sean Flook                  Changes required after UX review.
+//    016   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    017   09.02.24 Sean Flook                  Modified handleHistoricPropertyClose to handle returning an action from the historic property warning dialog.
+//    018   13.02.24 Joel Benford                Provide hww.usrn to map context when changing street
+//    019   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    020   08.03.24 Sean Flook        IMANN-348 Use the new hasStreetChanged and hasPropertyChanged methods as well as updated calls to ResetContexts.
+//    021   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    022   13.03.24 Sean Flook             MUL9 Changes required to facilitate refreshing the data.
+//    023   15.03.24 Sean Flook             GLB6 Use individual buttons to toggle between properties and streets.
+//    024   15.03.24 Sean Flook        PRFRM1_GP If a property is selected always open it.
+//    025   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    026   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    027   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    028   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    029   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    030   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
+//    031   08.07.24 Sean Flook        IMANN-728 Hide the property tab if the user does not have the right to see properties.
+//    032   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    033   07.08.24 Sean Flook        IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
+//    034   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
+//    035   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    036   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
+//    036   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    037   14.10.24 Sean Flook      IMANN-1100 Call onEditMapObject when opening a property.
+//    037   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -925,12 +928,12 @@ function RelatedTab({ variant, propertyCount, streetCount, onSetCopyOpen, onProp
     }
 
     if (!apiUrl) {
-      const relatedPropertyUsrnUrl = GetRelatedPropertyByUSRNUrl(userContext.currentUser.token);
-      const relatedPropertyUprnUrl = GetRelatedPropertyByUPRNUrl(userContext.currentUser.token);
-      const relatedStreetUsrnUrl = GetRelatedStreetByUSRNUrl(userContext.currentUser.token);
-      const relatedStreetUprnUrl = GetRelatedStreetByUPRNUrl(userContext.currentUser.token);
-      const relatedStreetWithASDUsrnUrl = GetRelatedStreetWithASDByUSRNUrl(userContext.currentUser.token);
-      const relatedStreetWithASDUprnUrl = GetRelatedStreetWithASDByUPRNUrl(userContext.currentUser.token);
+      const relatedPropertyUsrnUrl = GetRelatedPropertyByUSRNUrl(userContext.currentUser);
+      const relatedPropertyUprnUrl = GetRelatedPropertyByUPRNUrl(userContext.currentUser);
+      const relatedStreetUsrnUrl = GetRelatedStreetByUSRNUrl(userContext.currentUser);
+      const relatedStreetUprnUrl = GetRelatedStreetByUPRNUrl(userContext.currentUser);
+      const relatedStreetWithASDUsrnUrl = GetRelatedStreetWithASDByUSRNUrl(userContext.currentUser);
+      const relatedStreetWithASDUprnUrl = GetRelatedStreetWithASDByUPRNUrl(userContext.currentUser);
       setApiUrl({
         propertyUsrn: relatedPropertyUsrnUrl,
         propertyUprn: relatedPropertyUprnUrl,

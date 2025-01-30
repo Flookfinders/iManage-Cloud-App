@@ -3,42 +3,45 @@
 //
 //  Description: Dialog used to edit an existing lookup
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   29.06.23 Sean Flook                 Added ability to set enabled flag for cross reference records.
-//    003   07.09.23 Sean Flook                 Removed unnecessary awaits.
-//    004   24.11.23 Sean Flook                 Moved Box to @mui/system.
-//    005   01.12.23 Sean Flook       IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
-//    006   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    007   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    008   10.01.24 Sean Flook                 Fix warnings.
-//    009   25.01.24 Sean Flook       IMANN-253 Include historic when checking for changes.
-//    010   01.02.24 Sean Flook                 Initial changes required for operational districts.
-//    011   05.02.24 Sean Flook                 Further changes required for operational districts.
-//    012   29.02.24 Joel Benford     IMANN-242 Add DbAuthority.
-//    013   27.03.24 Sean Flook                 Further changes to fix warnings.
-//    014   09.04.24 Sean Flook       IMANN-376 Changes required to allow lookups to be added on the fly.
-//    015   26.04.24 Sean Flook       IMANN-413 Removed Gaelic option.
-//    016   09.02.24 Joel Benford    IM-227/228 Fix ward/parish URL calls
-//    017   17.05.24 Sean Flook       IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
-//    018   09.02.24 Joel Benford    IM-227/228 Fix ward/parish update, and various array pushes
-//    019   06.06.24 Joel Benford     IMANN-497 Interim check-in
-//    020   13.06.24 Joel Benford     IMANN-497 Various fixes mostly on making historic
-//    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   29.06.23 Sean Flook                  Added ability to set enabled flag for cross reference records.
+//    003   07.09.23 Sean Flook                  Removed unnecessary awaits.
+//    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
+//    005   01.12.23 Sean Flook        IMANN-194 Modified UpdateLookups to use the new LookupContext.onUpdateLookup event.
+//    006   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    007   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    008   10.01.24 Sean Flook                  Fix warnings.
+//    009   25.01.24 Sean Flook        IMANN-253 Include historic when checking for changes.
+//    010   01.02.24 Sean Flook                  Initial changes required for operational districts.
+//    011   05.02.24 Sean Flook                  Further changes required for operational districts.
+//    012   29.02.24 Joel Benford      IMANN-242 Add DbAuthority.
+//    013   27.03.24 Sean Flook                  Further changes to fix warnings.
+//    014   09.04.24 Sean Flook        IMANN-376 Changes required to allow lookups to be added on the fly.
+//    015   26.04.24 Sean Flook        IMANN-413 Removed Gaelic option.
+//    016   09.02.24 Joel Benford     IM-227/228 Fix ward/parish URL calls
+//    017   17.05.24 Sean Flook        IMANN-176 Display dialog to allow for spatially updating BLPU ward and parish codes.
+//    018   09.02.24 Joel Benford     IM-227/228 Fix ward/parish update, and various array pushes
+//    019   06.06.24 Joel Benford      IMANN-497 Interim check-in
+//    020   13.06.24 Joel Benford      IMANN-497 Various fixes mostly on making historic
+//    021   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    022   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    023   01.10.24 Sean Flook       IMANN-431 Change the default returned in GetLinkedRef to -1.
-//    024   02.10.24 Sean Flook       IMANN-994 Include the PKId in the update data for App Cross References.
-//    025   07.10.24 Sean Flook       IMANN-995 Corrected check for linked records when refreshing data after a delete.
+//    023   01.10.24 Sean Flook        IMANN-431 Change the default returned in GetLinkedRef to -1.
+//    024   02.10.24 Sean Flook        IMANN-994 Include the PKId in the update data for App Cross References.
+//    025   07.10.24 Sean Flook        IMANN-995 Corrected check for linked records when refreshing data after a delete.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -561,7 +564,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
   };
 
   const isLookupInUse = async (variant, id) => {
-    const lookupUrl = GetLookupUrl(variant, "GET", userContext.currentUser.token, settingsContext.authorityCode);
+    const lookupUrl = GetLookupUrl(variant, "GET", userContext.currentUser, settingsContext.authorityCode);
 
     if (lookupUrl) {
       let lookupRecord = null;
@@ -1643,7 +1646,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleDoneEditLookup = async (data) => {
     const linkedRef = GetLinkedRef(data.variant, data.lookupData.lookupId);
-    const lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser.token, settingsContext.authorityCode);
+    const lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser, settingsContext.authorityCode);
     let lookupEdited = false;
 
     currentVariant.current = getLookupVariantString(data.variant);
@@ -2194,7 +2197,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleDeleteLookup = async (variant, lookupId) => {
     const linkedRef = GetLinkedRef(variant, lookupId);
-    const lookupUrl = GetLookupUrl(variant, "DELETE", userContext.currentUser.token, settingsContext.authorityCode);
+    const lookupUrl = GetLookupUrl(variant, "DELETE", userContext.currentUser, settingsContext.authorityCode);
     let lookupDeleted = false;
 
     currentVariant.current = getLookupVariantString(variant);
@@ -2404,7 +2407,7 @@ function LookupTablesDataForm({ nodeId, onViewOperationalDistrict, onAddOperatio
 
   const handleHistoricLookup = async (variant, lookupId) => {
     const linkedRef = GetLinkedRef(variant, lookupId);
-    const lookupUrl = GetLookupUrl(variant, "PUT", userContext.currentUser.token, settingsContext.authorityCode);
+    const lookupUrl = GetLookupUrl(variant, "PUT", userContext.currentUser, settingsContext.authorityCode);
     let lookupEdited = false;
 
     currentVariant.current = getLookupVariantString(variant);

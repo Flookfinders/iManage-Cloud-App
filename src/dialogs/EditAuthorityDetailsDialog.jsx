@@ -29,6 +29,7 @@
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.4.0 changes
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -263,7 +264,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
               setMaxUsrn(data.max);
             }
           }
-          updateRangeUrl = GetUsrnRangeUrl(userContext.currentUser.token, settingsContext.isScottish);
+          updateRangeUrl = GetUsrnRangeUrl(userContext.currentUser, settingsContext.isScottish);
           if (updateRangeUrl) {
             fetchUrl = `${updateRangeUrl.url}?firstUsrn=${data.min}&lastUsrn=${data.max}&authorityRef=${
               settingsContext.authorityCode
@@ -284,7 +285,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
               setMaxUprn(data.max);
             }
           }
-          updateRangeUrl = GetUprnRangeUrl(userContext.currentUser.token, settingsContext.isScottish);
+          updateRangeUrl = GetUprnRangeUrl(userContext.currentUser, settingsContext.isScottish);
           if (updateRangeUrl) {
             fetchUrl = `${updateRangeUrl.url}?firstUprn=${data.min}&lastUprn=${data.max}&fullRange=${
               data.type === "full" ? true : false
@@ -305,7 +306,7 @@ function EditAuthorityDetailsDialog({ isOpen, data, onDone, onClose }) {
               setMaxEsu(data.max);
             }
           }
-          updateRangeUrl = GetEsuIdRangeUrl(userContext.currentUser.token);
+          updateRangeUrl = GetEsuIdRangeUrl(userContext.currentUser);
           if (updateRangeUrl) {
             fetchUrl = `${updateRangeUrl.url}?firstEsuId=${data.min}&lastEsuId=${data.max}&authorityRef=${
               settingsContext.authorityCode

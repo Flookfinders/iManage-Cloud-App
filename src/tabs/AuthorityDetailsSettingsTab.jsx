@@ -32,6 +32,7 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.4.0 changes
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -116,7 +117,7 @@ function AuthorityDetailsSettingsTab() {
    */
   const handleDoneEditAuthority = async (updatedData) => {
     const newRecord = !settingsContext.authorityDetails;
-    const authorityApiUrl = GetAuthorityDetailsUrl(newRecord ? "POST" : "PUT", userContext.currentUser.token);
+    const authorityApiUrl = GetAuthorityDetailsUrl(newRecord ? "POST" : "PUT", userContext.currentUser);
 
     if (authorityApiUrl && updatedData) {
       if (userContext.currentUser.showMessages)

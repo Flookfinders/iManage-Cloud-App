@@ -27,6 +27,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    014   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    015   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -293,7 +294,7 @@ function PropertyPage() {
     }
 
     if (!apiUrl) {
-      const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser.token);
+      const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser);
       setApiUrl(propertyUrl);
     }
 

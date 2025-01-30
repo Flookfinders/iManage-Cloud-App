@@ -32,6 +32,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -117,7 +118,7 @@ function LookupTablesTab() {
    */
   const handleDistrictUpdateData = async (updatedData) => {
     if (updatedData) {
-      const saveUrl = GetOperationalDistrictUrl("PUT", userContext.currentUser.token);
+      const saveUrl = GetOperationalDistrictUrl("PUT", userContext.currentUser);
 
       if (saveUrl) {
         const saveData = {
@@ -389,7 +390,7 @@ function LookupTablesTab() {
     setShowEditDistrictDialog(false);
 
     if (updatedData) {
-      const saveUrl = GetOperationalDistrictUrl("POST", userContext.currentUser.token);
+      const saveUrl = GetOperationalDistrictUrl("POST", userContext.currentUser);
 
       if (saveUrl) {
         const saveData = {

@@ -3,19 +3,22 @@
 //
 //  Description: Dialog used to step through the spatially update BLPU ward and parish codes.
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   17.05.24 Sean Flook       IMANN-176 Initial version.
-//    002   20.05.24 Sean Flook       IMANN-176 Handle when there are no invalid codes found.
-//    003   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    004   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   17.05.24 Sean Flook        IMANN-176 Initial version.
+//    002   20.05.24 Sean Flook        IMANN-176 Handle when there are no invalid codes found.
+//    003   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    004   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    005   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -63,7 +66,7 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
       case 0:
         setCount(0);
         setProcessing(true);
-        const countUrl = GetIncorrectBoundariesCountUrl(userContext.currentUser.token);
+        const countUrl = GetIncorrectBoundariesCountUrl(userContext.currentUser);
 
         if (countUrl) {
           if (userContext.currentUser.showMessages)
@@ -181,7 +184,7 @@ function UpdateWardParishBoundariesDialog({ isOpen, variant, onClose }) {
       case 1:
         setProcessing(true);
 
-        const updateUrl = GetUpdateBlpuBoundaryCodesUrl(userContext.currentUser.token);
+        const updateUrl = GetUpdateBlpuBoundaryCodesUrl(userContext.currentUser);
 
         if (updateUrl) {
           if (userContext.currentUser.showMessages)

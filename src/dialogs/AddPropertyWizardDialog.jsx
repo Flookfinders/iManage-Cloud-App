@@ -3,48 +3,51 @@
 //
 //  Description: Add Property Wizard Dialog
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   27.03.23 Sean Flook         WI40609 Treat 0 as null for numbers.
-//    003   28.03.23 Sean Flook         WI40631 Always set the addressPoints when leaving the property details page.
-//    004   05.04.23 Sean Flook         WI40669 Changes required for cross references.
-//    005   13.04.23 Sean Flook         WI40681 If template has cross reference add a record.
-//    006   13.04.23 Sean Flook         WI40681 Added validation of cross references.
-//    007   07.09.23 Sean Flook                 Changed function name.
-//    008   06.10.23 Sean Flook                 Use colour variables.
-//    009   27.10.23 Sean Flook                 Updated call to SaveProperty.
-//    010   03.11.23 Sean Flook                 Added Message dialog for confirmation of cancelling the wizard.
-//    011   10.11.23 Sean Flook                 Updated action string.
-//    012   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    013   30.11.23 Sean Flook                 Changes required for Scottish authorities.
-//    014   01.12.23 Sean Flook                 Corrected field names.
-//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    016   17.01.24 Sean Flook                 Renamed fields and included sub-locality.
-//    017   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    018   11.03.24 Sean Flook           GLB12 Removed bottom margin.
-//    019   22.03.24 Sean Flook           GLB12 Use new constant for height.
-//    020   27.03.24 Sean Flook                 Added a tooltip to the close button.
-//    021   27.03.24 Sean Flook                 Changes required to remove warnings.
-//    022   22.04.24 Sean Flook       IMANN-374 Disable the buttons when creating the properties.
-//    023   24.04.24 Sean Flook       IMANN-390 Get the list of new UPRNs from the API before creating the properties.
-//    024   25.04.24 Sean Flook       IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
-//    025   25.04.24 Sean Flook       IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
-//    026   08.05.24 Sean Flook       IMANN-447 Added exclude from export and site visit.
-//    027   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
-//    028   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
-//    029   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    030   28.06.24 Sean Flook       IMANN-676 Ensure failed UPRNs are always returned to the API.
-//    031   17.07.24 Sean Flook       IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
-//    032   03.09.24 Sean Flook       IMANN-968 Correctly handle API errors.
-//    033   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   27.03.23 Sean Flook          WI40609 Treat 0 as null for numbers.
+//    003   28.03.23 Sean Flook          WI40631 Always set the addressPoints when leaving the property details page.
+//    004   05.04.23 Sean Flook          WI40669 Changes required for cross references.
+//    005   13.04.23 Sean Flook          WI40681 If template has cross reference add a record.
+//    006   13.04.23 Sean Flook          WI40681 Added validation of cross references.
+//    007   07.09.23 Sean Flook                  Changed function name.
+//    008   06.10.23 Sean Flook                  Use colour variables.
+//    009   27.10.23 Sean Flook                  Updated call to SaveProperty.
+//    010   03.11.23 Sean Flook                  Added Message dialog for confirmation of cancelling the wizard.
+//    011   10.11.23 Sean Flook                  Updated action string.
+//    012   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    013   30.11.23 Sean Flook                  Changes required for Scottish authorities.
+//    014   01.12.23 Sean Flook                  Corrected field names.
+//    015   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    016   17.01.24 Sean Flook                  Renamed fields and included sub-locality.
+//    017   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    018   11.03.24 Sean Flook            GLB12 Removed bottom margin.
+//    019   22.03.24 Sean Flook            GLB12 Use new constant for height.
+//    020   27.03.24 Sean Flook                  Added a tooltip to the close button.
+//    021   27.03.24 Sean Flook                  Changes required to remove warnings.
+//    022   22.04.24 Sean Flook        IMANN-374 Disable the buttons when creating the properties.
+//    023   24.04.24 Sean Flook        IMANN-390 Get the list of new UPRNs from the API before creating the properties.
+//    024   25.04.24 Sean Flook        IMANN-390 Display a message dialog if there are no available UPRNs to use to create the properties.
+//    025   25.04.24 Sean Flook        IMANN-390 If a property is failed by the API return the UPRN back to the API so it can be reused.
+//    026   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit.
+//    027   29.05.24 Sean Flook        IMANN-504 Only create second language for Welsh authorities.
+//    028   14.06.24 Sean Flook        IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
+//    029   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    030   28.06.24 Sean Flook        IMANN-676 Ensure failed UPRNs are always returned to the API.
+//    031   17.07.24 Sean Flook        IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
+//    032   03.09.24 Sean Flook        IMANN-968 Correctly handle API errors.
+//    033   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    034   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -247,7 +250,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
       let notePkId = -10;
       let dualLanguageLink = 0;
 
-      const getNewUprnsUrl = GetListOfUprnsUrl(userContext.currentUser.token);
+      const getNewUprnsUrl = GetListOfUprnsUrl(userContext.currentUser);
       const newUprnCount = addressPoints.filter((x) => x.language === "ENG").length;
       let haveEnoughUprns = true;
 
@@ -876,7 +879,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
     };
 
     async function GetParentInformation() {
-      const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser.token);
+      const propertyUrl = GetPropertyFromUPRNUrl(userContext.currentUser);
 
       const getPaoDetails = (parentRecord) => {
         return `${parentRecord.paoText ? parentRecord.paoText : ""}${

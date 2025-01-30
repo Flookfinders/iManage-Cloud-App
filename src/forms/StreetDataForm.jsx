@@ -140,6 +140,7 @@
 //#endregion Version 1.0.3.0 changes
 //#region Version 1.0.4.0 changes
 //    117   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    118   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3059,7 +3060,7 @@ function StreetDataForm({ data, loading }) {
     } else {
       newUsrnRef.current = 0;
 
-      const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser.token, !settingsContext.isScottish && hasASD);
+      const updateUsrnUrl = GetUpdateStreetUrl(userContext.currentUser, !settingsContext.isScottish && hasASD);
 
       if (updateUsrnUrl) {
         if (userContext.currentUser.showMessages)
@@ -10453,7 +10454,7 @@ function StreetDataForm({ data, loading }) {
                   const relatedObj = {
                     parent: propertyContext.wizardData.parent.uprn,
                     property: rangeEngLpis[0].uprn,
-                    userToken: userContext.currentUser.token,
+                    currentUser: userContext.currentUser,
                   };
 
                   if (parentRec.logical_status === 8) {

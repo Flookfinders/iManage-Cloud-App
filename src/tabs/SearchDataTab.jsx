@@ -78,6 +78,7 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.4.0 changes
 //    060   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1362,7 +1363,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                   const relatedObj = {
                     parent: propertyContext.wizardData.parent.uprn,
                     property: rangeEngLpis[0].uprn,
-                    userToken: userContext.currentUser.token,
+                    currentUser: userContext.currentUser,
                   };
                   if (parentRec.logicalStatus === 8) {
                     historicRec.current = { property: parentRec, related: relatedObj };

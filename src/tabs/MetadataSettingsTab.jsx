@@ -28,6 +28,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -728,17 +729,17 @@ function MetadataSettingsTab({ variant }) {
     switch (variant) {
       case "property":
         errorType = settingsContext.isScottish ? "gazetteer" : "property";
-        saveUrl = GetLLPGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        saveUrl = GetLLPGMetadataUrl("PUT", userContext.currentUser, settingsContext.isScottish);
         originalData = getOriginalPropertyApiData(settingsContext.isScottish);
         break;
       case "street":
         errorType = "street";
-        saveUrl = GetLSGMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        saveUrl = GetLSGMetadataUrl("PUT", userContext.currentUser, settingsContext.isScottish);
         originalData = getOriginalStreetApiData();
         break;
       case "asd":
         errorType = "ASD";
-        saveUrl = GetASDMetadataUrl("PUT", userContext.currentUser.token, settingsContext.isScottish);
+        saveUrl = GetASDMetadataUrl("PUT", userContext.currentUser, settingsContext.isScottish);
         originalData = getOriginalAsdApiData();
         break;
       default:
@@ -1253,7 +1254,7 @@ function MetadataSettingsTab({ variant }) {
     switch (variant) {
       case "street":
         if (!streetApiUrl) {
-          const streetUrl = GetLSGMetadataUrl("GET", userContext.currentUser.token);
+          const streetUrl = GetLSGMetadataUrl("GET", userContext.currentUser);
           setStreetApiUrl(streetUrl);
         }
         SetUpStreetData();
@@ -1262,7 +1263,7 @@ function MetadataSettingsTab({ variant }) {
 
       case "asd":
         if (!asdApiUrl) {
-          const asdUrl = GetASDMetadataUrl("GET", userContext.currentUser.token);
+          const asdUrl = GetASDMetadataUrl("GET", userContext.currentUser);
           setAsdApiUrl(asdUrl);
         }
 
@@ -1271,7 +1272,7 @@ function MetadataSettingsTab({ variant }) {
 
       case "property":
         if (!propertyApiUrl) {
-          const propertyUrl = GetLLPGMetadataUrl("GET", userContext.currentUser.token, settingsContext.isScottish);
+          const propertyUrl = GetLLPGMetadataUrl("GET", userContext.currentUser, settingsContext.isScottish);
           setPropertyApiUrl(propertyUrl);
         }
 

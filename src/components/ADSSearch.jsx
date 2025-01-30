@@ -61,6 +61,7 @@
 //#endregion Version 1.0.3.0 changes
 //#region Version 1.0.4.0 changes
 //    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    043   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -235,7 +236,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
    */
   const GetApiSite = () => {
     if (!urlDetails && userContext.currentUser) {
-      const url = GetSearchURL(userContext.currentUser.token);
+      const url = GetSearchURL(userContext.currentUser);
       setUrlDetails(url);
     }
   };
@@ -1254,7 +1255,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       )
         return;
 
-      const backgroundStreetsUrl = GetBackgroundStreetsUrl(userContext.currentUser.token);
+      const backgroundStreetsUrl = GetBackgroundStreetsUrl(userContext.currentUser);
 
       if (backgroundStreetsUrl) {
         const returnValue = await fetch(
@@ -1320,7 +1321,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       )
         return;
 
-      const unassignedEsusUrl = GetUnassignedEsusUrl(userContext.currentUser.token);
+      const unassignedEsusUrl = GetUnassignedEsusUrl(userContext.currentUser);
 
       if (unassignedEsusUrl) {
         const returnValue = await fetch(
@@ -1388,7 +1389,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       )
         return;
 
-      const backgroundPropertiesUrl = GetBackgroundPropertiesUrl(userContext.currentUser.token);
+      const backgroundPropertiesUrl = GetBackgroundPropertiesUrl(userContext.currentUser);
 
       if (backgroundPropertiesUrl) {
         const returnValue = await fetch(
@@ -1455,7 +1456,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       )
         return;
 
-      const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(userContext.currentUser.token);
+      const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(userContext.currentUser);
 
       if (backgroundProvenancesUrl) {
         const returnValue = await fetch(
@@ -1576,7 +1577,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
   }, [userContext]);
 
   return (
-    (<Fragment>
+    <Fragment>
       <Autocomplete
         id={`ads-${variant}-search`}
         open={searchContext.searchPopupOpen}
@@ -1660,12 +1661,12 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
                     )}
                   </InputAdornment>
                 ),
-              }
+              },
             }}
           />
         )}
         slots={{
-          popper: StyledPopper
+          popper: StyledPopper,
         }}
       />
       <Popper id={filterId} open={filterOpen} anchorEl={filterAnchorEl} placement="bottom-end">
@@ -1693,7 +1694,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
         }`}</Alert>
       </Snackbar>
       <HistoricPropertyDialog open={openHistoricProperty} onClose={handleHistoricPropertyClose} />
-    </Fragment>)
+    </Fragment>
   );
 }
 

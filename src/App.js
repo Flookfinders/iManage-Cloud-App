@@ -98,6 +98,7 @@
 //#endregion Version 1.0.3.0 changes
 //#region Version 1.0.4.0 changes
 //    073   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//    074   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2223,7 +2224,7 @@ function App() {
     reloading = false
   ) {
     async function GetParentUprn(uprn) {
-      const propertyUrl = GetPropertyFromUPRNUrl(openRelated.userToken);
+      const propertyUrl = GetPropertyFromUPRNUrl(openRelated.currentUser.token);
 
       if (propertyUrl) {
         const parentUprn = await fetch(`${propertyUrl.url}/${uprn}`, {
@@ -2534,7 +2535,7 @@ function App() {
    */
   function HandleResetProperty() {
     previousProperty.current = property;
-    HandlePropertyChange(0, 0, "", "", "", 0, 0, false, null, 0);
+    HandlePropertyChange(0, 0, "", "", "", 0, 0, false, null, null);
     setLogicalStatus(null);
   }
 
@@ -2962,7 +2963,7 @@ function App() {
   async function GetBackgroundStreetData(extent) {
     if (!currentUser || extent.zoomLevel < 16) return null;
 
-    const backgroundStreetsUrl = GetBackgroundStreetsUrl(currentUser.token);
+    const backgroundStreetsUrl = GetBackgroundStreetsUrl(currentUser);
 
     if (backgroundStreetsUrl) {
       const returnValue = await fetch(
@@ -3016,7 +3017,7 @@ function App() {
   async function GetUnassignedEsuData(extent) {
     if (!currentUser || extent.zoomLevel < 16) return null;
 
-    const unassignedEsusUrl = GetUnassignedEsusUrl(currentUser.token);
+    const unassignedEsusUrl = GetUnassignedEsusUrl(currentUser);
 
     if (unassignedEsusUrl) {
       const returnValue = await fetch(
@@ -3070,7 +3071,7 @@ function App() {
   async function GetBackgroundPropertyData(extent) {
     if (!currentUser || extent.zoomLevel < 18) return null;
 
-    const backgroundPropertiesUrl = GetBackgroundPropertiesUrl(currentUser.token);
+    const backgroundPropertiesUrl = GetBackgroundPropertiesUrl(currentUser);
 
     if (backgroundPropertiesUrl) {
       const returnValue = await fetch(
@@ -3124,7 +3125,7 @@ function App() {
   async function GetBackgroundProvenanceData(extent) {
     if (!currentUser || extent.zoomLevel < 18) return null;
 
-    const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(currentUser.token);
+    const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(currentUser);
 
     if (backgroundProvenancesUrl) {
       const returnValue = await fetch(

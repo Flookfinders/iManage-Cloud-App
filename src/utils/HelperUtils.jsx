@@ -3,65 +3,65 @@
 //
 //  Description: Helper utilities
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001            Sean Flook                 Initial Revision.
-//    002   05.04.23 Sean Flook         WI40669 Handle commas in error messages. Correctly format cross reference source in GetCrossRefAvatar.
-//    003   19.04.23 Sean Flook         WI40653 Added includeCheck.
-//    004   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
-//    005   20.09.23 Sean Flook                 Changed required for display streets and properties in Google street view. Also fixed ArraysEqual.
-//    006   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
-//    007   06.10.23 Sean Flook                 Use colour variables.
-//    008   11.10.23 Sean Flook       IMANN-163 Moved doOpenRecord here so it can be called from all the other files.
-//    009   03.11.23 Sean Flook       IMANN-175 Added mapSelectSearchString and modified StringAvatar.
-//    010   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    011   24.11.23 Sean Flook                 Moved Stack to @mui/system and ignore connecting words in TitleCase.
-//    012   30.11.23 Sean Flook                 added ' of ' to the ignore list in TitleCase.
-//    013   19.12.23 Sean Flook                 Various bug fixes.
-//    014   02.01.24 Sean Flook                 Added defaultMapLayerIds.
-//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    016   10.01.24 Sean Flook                 Fix warnings.
-//    017   12.01.24 Sean Flook       IMANN-233 Added getStartEndCoordinates.
-//    018   16.01.24 Sean Flook                 Added filteredLookups.
-//    019   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    020   01.02.24 Sean Flook                 Correctly handle BS7666 in lookupToTitleCase.
-//    021   02.02.24 Sean Flook       IMANN-269 Added isIso885914.
-//    022   08.02.24 Joel Benford     RTAB3     GetAvatarTooltip now takes streetStateCode
-//    023   13.02.24 Sean Flook                 Corrected the type 66 map data.
-//    024   16.02.24 Sean Flook        ESU17_GP Added mergeArrays.
-//    025   27.02.24 Sean Flook           MUL16 Added renderErrors.
-//    026   08.03.24 Sean Flook       IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
-//    027   12.03.24 Sean Flook           MUL10 Replaced renderErrors with renderErrorListItem.
-//    028   22.03.24 Sean Flook           GLB12 Added shorten.
-//    029   28.03.24 Sean Flook                 Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
-//    030   04.04.24 Sean Flook                 Added parentUprn to mapContext search data for properties.
-//    031   04.04.24 Sean Flook       IMANN-320 Added error trapping for GetChangedAssociatedRecords.
-//    032   09.04.24 Sean Flook       IMANN-376 Added new methods to allow for adding lookups on the fly.
-//    033   23.04.24 Sean Flook       IMANN-366 Added ability to detect the type of browser being used.
-//    034   23.04.24 Sean Flook                 Added bracketValidator.
-//    035   26.04.24 Sean Flook                 Included check for "<" & ">" in bracketValidator.
-//    036   01.05.24 Sean Flook       IMANN-429 Remove GAE code in addLookup.
-//    037   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
-//    038   03.05.24 Sean Flook                 Added getBaseMapLayers.
-//    039   17.05.24 Sean Flook       IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
-//    040   17.05.24 Joshua McCormick IMANN-460 Added PUT to call English with Welsh ref  
-//    041   23.05.24 Sean Flook       IMANN-478 Include usedByFrontEnd in includeCheck.
-//    042   30.05.24 Joel Benford     IMANN-496 Add GetOSClassificationAvatarAndText
-//    043   06.06.24 Joel Benford     IMANN-497 Add data to xrefs in addLookup
-//    044   18.06.24 Joel Benford     IMANN-560 Stop addLookups returning early on error
-//    045   16.06.24 Sean Flook       IMANN-577 Added characterSetValidator.
-//    046   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    047   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    048   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    049   25.07.24 Joshua McCormick IMANN-820 added mapContext.onEditMapObject in ResetContexts
-//    050   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
-//    051   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001            Sean Flook                  Initial Revision.
+//    002   05.04.23 Sean Flook          WI40669 Handle commas in error messages. Correctly format cross reference source in GetCrossRefAvatar.
+//    003   19.04.23 Sean Flook          WI40653 Added includeCheck.
+//    004   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
+//    005   20.09.23 Sean Flook                  Changed required for display streets and properties in Google street view. Also fixed ArraysEqual.
+//    006   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
+//    007   06.10.23 Sean Flook                  Use colour variables.
+//    008   11.10.23 Sean Flook        IMANN-163 Moved doOpenRecord here so it can be called from all the other files.
+//    009   03.11.23 Sean Flook        IMANN-175 Added mapSelectSearchString and modified StringAvatar.
+//    010   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    011   24.11.23 Sean Flook                  Moved Stack to @mui/system and ignore connecting words in TitleCase.
+//    012   30.11.23 Sean Flook                  added ' of ' to the ignore list in TitleCase.
+//    013   19.12.23 Sean Flook                  Various bug fixes.
+//    014   02.01.24 Sean Flook                  Added defaultMapLayerIds.
+//    015   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    016   10.01.24 Sean Flook                  Fix warnings.
+//    017   12.01.24 Sean Flook        IMANN-233 Added getStartEndCoordinates.
+//    018   16.01.24 Sean Flook                  Added filteredLookups.
+//    019   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    020   01.02.24 Sean Flook                  Correctly handle BS7666 in lookupToTitleCase.
+//    021   02.02.24 Sean Flook        IMANN-269 Added isIso885914.
+//    022   08.02.24 Joel Benford          RTAB3 GetAvatarTooltip now takes streetStateCode
+//    023   13.02.24 Sean Flook                  Corrected the type 66 map data.
+//    024   16.02.24 Sean Flook         ESU17_GP Added mergeArrays.
+//    025   27.02.24 Sean Flook            MUL16 Added renderErrors.
+//    026   08.03.24 Sean Flook        IMANN-348 Updated GetChangedAssociatedRecords and ResetContexts.
+//    027   12.03.24 Sean Flook            MUL10 Replaced renderErrors with renderErrorListItem.
+//    028   22.03.24 Sean Flook            GLB12 Added shorten.
+//    029   28.03.24 Sean Flook                  Modified GetChangedAssociatedRecords to fully check all ESUs if geometryTypeChanged is true.
+//    030   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
+//    031   04.04.24 Sean Flook        IMANN-320 Added error trapping for GetChangedAssociatedRecords.
+//    032   09.04.24 Sean Flook        IMANN-376 Added new methods to allow for adding lookups on the fly.
+//    033   23.04.24 Sean Flook        IMANN-366 Added ability to detect the type of browser being used.
+//    034   23.04.24 Sean Flook                  Added bracketValidator.
+//    035   26.04.24 Sean Flook                  Included check for "<" & ">" in bracketValidator.
+//    036   01.05.24 Sean Flook        IMANN-429 Remove GAE code in addLookup.
+//    037   09.02.24 Joel Benford     IM-227/228 Generalize ward/parish URL
+//    038   03.05.24 Sean Flook                  Added getBaseMapLayers.
+//    039   17.05.24 Sean Flook        IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
+//    040   17.05.24 Joshua McCormick  IMANN-460 Added PUT to call English with Welsh ref  
+//    041   23.05.24 Sean Flook        IMANN-478 Include usedByFrontEnd in includeCheck.
+//    042   30.05.24 Joel Benford      IMANN-496 Add GetOSClassificationAvatarAndText
+//    043   06.06.24 Joel Benford      IMANN-497 Add data to xrefs in addLookup
+//    044   18.06.24 Joel Benford      IMANN-560 Stop addLookups returning early on error
+//    045   16.06.24 Sean Flook        IMANN-577 Added characterSetValidator.
+//    046   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    047   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    048   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    049   25.07.24 Joshua McCormick  IMANN-820 added mapContext.onEditMapObject in ResetContexts
+//    050   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
+//    051   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
 //    052   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
@@ -74,6 +74,9 @@
 //    057   25.11.24 Sean Flook       IMANN-1083 Changed GeoPlaceProperty1 to allow the full ISO-8859-14 character set.
 //    057   18.12.24 Joshua McCormick IMANN-1109 Change GeoPlaceProperty2 to allow apostrophe for PAO/SAO
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    058   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -2030,47 +2033,47 @@ export const getLookupVariantString = (variant) => {
  *
  * @param {string} variant The type of lookup that we need the URL data for.
  * @param {string} endPointType The type of end point we need the URL data for.
- * @param {string} userToken The token for the user who is calling the function.
+ * @param {string} currentUser The current user who is calling the endpoint.
  * @param {number} authorityCode The DETR code for the authority.
  * @returns {object} The required URL data for the required lookup endpoint.
  */
-export function GetLookupUrl(variant, endPointType, userToken, authorityCode) {
+export function GetLookupUrl(variant, endPointType, currentUser, authorityCode) {
   switch (variant) {
     case "postcode":
-      return GetPostcodeUrl(endPointType, userToken);
+      return GetPostcodeUrl(endPointType, currentUser);
 
     case "postTown":
-      return GetPostTownUrl(endPointType, userToken);
+      return GetPostTownUrl(endPointType, currentUser);
 
     case "subLocality":
-      return GetSubLocalityUrl(endPointType, userToken);
+      return GetSubLocalityUrl(endPointType, currentUser);
 
     case "crossReference":
-      return GetAppCrossRefUrl(endPointType, userToken);
+      return GetAppCrossRefUrl(endPointType, currentUser);
 
     case "locality":
-      return GetLocalityUrl(endPointType, userToken);
+      return GetLocalityUrl(endPointType, currentUser);
 
     case "town":
-      return GetTownUrl(endPointType, userToken);
+      return GetTownUrl(endPointType, currentUser);
 
     case "island":
-      return GetIslandUrl(endPointType, userToken);
+      return GetIslandUrl(endPointType, currentUser);
 
     case "administrativeArea":
-      return GetAdministrativeAreaUrl(endPointType, userToken);
+      return GetAdministrativeAreaUrl(endPointType, currentUser);
 
     case "dbAuthority":
-      return GetDbAuthorityUrl(endPointType, userToken);
+      return GetDbAuthorityUrl(endPointType, currentUser);
 
     case "ward":
-      return GetWardsUrl(endPointType, userToken, authorityCode);
+      return GetWardsUrl(endPointType, currentUser, authorityCode);
 
     case "parish":
-      return GetParishesUrl(endPointType, userToken, authorityCode);
+      return GetParishesUrl(endPointType, currentUser, authorityCode);
 
     case "operationalDistrict":
-      return GetOperationalDistrictUrl(endPointType, userToken);
+      return GetOperationalDistrictUrl(endPointType, currentUser);
 
     default:
       return null;
@@ -2364,7 +2367,7 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
   }
 
   if (data) {
-    let lookupUrl = GetLookupUrl(data.variant, "POST", userContext.currentUser.token, authorityCode);
+    let lookupUrl = GetLookupUrl(data.variant, "POST", userContext.currentUser, authorityCode);
 
     if (userContext.currentUser.showMessages)
       console.log("[DEBUG] handleDoneAddLookup", {
@@ -2480,7 +2483,7 @@ export const addLookup = async (data, authorityCode, userContext, isWelsh, curre
 
           if (newCymLookup) {
             newEngLookup = UpdateEngLinkedRef(newEngLookup, newCymLookup);
-            lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser.token, authorityCode);
+            lookupUrl = GetLookupUrl(data.variant, "PUT", userContext.currentUser, authorityCode);
 
             if (lookupUrl) {
               const linkedResponse = await fetch(lookupUrl.url, {
@@ -2774,7 +2777,7 @@ export const characterSetValidator = (str, characterSet) => {
  * @returns  {Array} A list of the base map layer objects to be used.
  */
 export const getBaseMapLayers = async (userContext) => {
-  const mapLayerUrl = GetMapLayersUrl("GET", userContext.currentUser.token);
+  const mapLayerUrl = GetMapLayersUrl("GET", userContext.currentUser);
 
   let baseMapLayers = [];
 

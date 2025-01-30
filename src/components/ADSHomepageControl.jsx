@@ -23,6 +23,7 @@
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.4.0 changes
 //    010   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    011   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ function ADSHomepageControl() {
       const month = getMonthString(pDate.getMonth()).toLowerCase();
       const year = `${pDate.getFullYear()}`;
       const queryString = `?propertyEditsCutOffDate=${day}%20${month}%20${year}&maxLatestEditResults=${propertyMaxRows}`;
-      const endpoint = GetHomepageUrl(userContext.currentUser.token);
+      const endpoint = GetHomepageUrl(userContext.currentUser);
 
       await fetch(endpoint.url + queryString, {
         headers: endpoint.headers,

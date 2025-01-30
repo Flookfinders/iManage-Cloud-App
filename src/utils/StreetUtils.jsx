@@ -3,98 +3,101 @@
 //
 //  Description: Street utilities
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   16.08.22 Sean Flook         WI39??? Initial Revision.
-//    002   28.06.23 Sean Flook         WI40730 Fixed GetDistrictLabel.
-//    003   23.08.23 Sean Flook       IMANN-159 Added state, classification and surface to GetNewStreet.
-//    004   07.09.23 Sean Flook                 Added code to assist with ESU maintenance.
-//    005   20.09.23 Sean Flook                 Added OneScotland specific record types. Also changes for unassigning and assigning ESUs.
-//    006   06.10.23 Sean Flook                 Added DisplayStreetInStreetView, updateMapStreetData, GetWholeRoadGeometry & GetProwStatusLabel as well as various bug fixes.
-//    007   03.11.23 Sean Flook                 Added hyphen to one-way.
-//    008   10.11.23 Sean Flook                 Removed HasASDPlus as no longer required.
-//    009   24.11.23 Sean Flook                 Moved Stack to @mui/system and renamed successor to successorCrossRef.
-//    010   01.12.23 Sean Flook       IMANN-194 Update the street descriptor lookup after doing a save or delete.
-//    011   01.12.23 Sean Flook                 Include island in the street address for Scottish authorities.
-//    012   12.12.23 Sean Flook                 Modified FilteredStreetType to exclude Unassigned ESU.
-//    013   19.12.23 Sean Flook                 Various bug fixes.
-//    014   21.12.23 Sean Flook                 Corrected street type filter for NSG only.
-//    015   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    016   08.01.24 Sean Flook                 Changes to fix warnings.
-//    017   12.01.24 Sean Flook       IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
-//    018   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    019   25.01.24 Sean Flook                 Changes required after UX review.
-//    020   26.01.24 Sean Flook       IMANN-260 Corrected field name.
-//    021   26.01.24 Sean Flook       IMANN-251 Added missing record type to hasStreetChanged.
-//    022   30.01.24 Sean Flook                 Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
-//    023   02.02.24 Sean Flook       IMANN-264 Include Scottish record types when handling errors from API.
-//    024   05.02.24 Sean Flook                 Added filteredOperationalDistricts.
-//    025   06.02.23 Sean Flook       IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
-//    026   13.02.23 Sean Flook                 Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
-//    027   13.02.23 Sean Flook                 Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
-//    028   13.02.24 Sean Flook                 Ensure the PRoW geometry is passed through. If assigning ESUs when creating a new street use the ESU Id of the assigned ESU.
-//    029   13.02.24 Sean Flook                 Removed parameter from StreetDelete as no longer required.
-//    030   14.02.24 Sean Flook                 When creating a new street ensure the ESU Id is correctly set.
-//    031   14.02.24 Sean Flook        ESU14_GP Changed updateMapStreetData to exclude deleted records.
-//    032   14.02.24 Sean Flook                 Added a bit of error trapping.
-//    033   07.03.24 Sean Flook       IMANN-348 Made hasStreetChanged more robust.
-//    034   08.03.24 Sean Flook       IMANN-348 Added ESU to hasStreetChanged.
-//    035   11.03.24 Sean Flook        ESU29_GP Added setASDLayerVisibility.
-//    036   12.03.24 Sean Flook                 Improved error handling when deleting.
-//    037   18.03.24 Sean Flook         ASD3_OS Tweaked GetAsdSecondaryText.
-//    038   26.03.24 Sean Flook        ASD10_GP Modified setASDLayerVisibility.
-//    039   05.04.24 Sean Flook                 Correctly handle errors when creating, updating and deleting.
-//    040   24.04.24 Sean Flook       IMANN-390 When creating a new street if the USRN is already set use that; otherwise use 0.
-//    041   02.05.24 Joshua McCormick IMANN-283 Map overlay, removed unneeded code numbers from Status & Type
-//    042   02.05.24 Joshua McCormick IMANN-283 Added check to GetStreetTypeLabel for included label, reverted 041 changes
-//    043   02.05.24 Joshua McCormick IMANN-283 GetStreetTypeLabel now has included label defaulted to true 
-//    044   02.05.24 Joel Benford     IMANN-275 Use ENG for unassigned lookups in Scotland
-//    045   08.05.24 Sean Flook       IMANN-447 Added exclude from export when creating a new street.
-//    046   14.05.24 Sean Flook       IMANN-438 Fixed setting the prowUsrn field when updating.
-//    047   15.05.24 Sean Flook       IMANN-131 Ensure NeverExport is always set.
-//    048   21.05.24 Sean Flook       IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
-//    049   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
-//    050   03.06.24 Sean Flook       IMANN-281 Do not send null for required integer fields.
-//    051   04.06.24 Sean Flook       IMANN-281 Default to current date if start date is null when creating a new street.
-//    052   04.06.24 Sean Flook       IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
-//    053   12.06.24 Sean Flook       IMANN-515 Correctly set the changeType and end dates when state is 4.
-//    054   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    055   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    056   21.06.24 Sean Flook       IMANN-636 Added hasASD to GetNewStreet.
-//    057   21.06.24 Sean Flook       IMANN-614 After saving changes update the source data in the sandbox.
-//    058   21.06.24 Sean Flook       IMANN-636 Correctly call updateMapStreetData after saving a street.
-//    059   27.06.24 Joel Benford     IMANN-685 Saving OWE sequence number -> seqNum
-//    060   03.07.24 Sean Flook       IMANN-697 Also check the single form of the key when handling errors.
-//    061   08.07.24 Sean Flook       IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
-//    062   09.07.24 Sean Flook       IMANN-709 Handle new ESUs when checking HD and OWE records.
-//    063   10.07.24 Sean Flook       IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
-//    064   11.07.24 Sean Flook       IMANN-682 If whole road is true ensure specific location is empty.
-//    065   11.07.24 Joel Benford     IMANN-727 Use unassignedEngIsland for both languages
-//    066   17.07.24 Joshua McCormick IMANN-548 Added formatStreetData util
-//    067   17.07.24 Joshua McCormick IMANN-548 Changed formatStreetData to getStreetSearchData
-//    068   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//    069   23.08.24 Sean Flook       IMANN-469 Only delete ESUs and associated records if the street is being deleted, not when it is just being closed.
-//    070   23.08.24 Sean Flook       IMANN-469 Delete OWE records when street is closed.
-//    071   28.08.24 Sean Flook       IMANN-895 When time fields are falsy send null to the API.
-//    072   02.09.24 Sean Flook       IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
-//    073   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
-//    074   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
+//    001   16.08.22 Sean Flook          WI39??? Initial Revision.
+//    002   28.06.23 Sean Flook          WI40730 Fixed GetDistrictLabel.
+//    003   23.08.23 Sean Flook        IMANN-159 Added state, classification and surface to GetNewStreet.
+//    004   07.09.23 Sean Flook                  Added code to assist with ESU maintenance.
+//    005   20.09.23 Sean Flook                  Added OneScotland specific record types. Also changes for unassigning and assigning ESUs.
+//    006   06.10.23 Sean Flook                  Added DisplayStreetInStreetView, updateMapStreetData, GetWholeRoadGeometry & GetProwStatusLabel as well as various bug fixes.
+//    007   03.11.23 Sean Flook                  Added hyphen to one-way.
+//    008   10.11.23 Sean Flook                  Removed HasASDPlus as no longer required.
+//    009   24.11.23 Sean Flook                  Moved Stack to @mui/system and renamed successor to successorCrossRef.
+//    010   01.12.23 Sean Flook        IMANN-194 Update the street descriptor lookup after doing a save or delete.
+//    011   01.12.23 Sean Flook                  Include island in the street address for Scottish authorities.
+//    012   12.12.23 Sean Flook                  Modified FilteredStreetType to exclude Unassigned ESU.
+//    013   19.12.23 Sean Flook                  Various bug fixes.
+//    014   21.12.23 Sean Flook                  Corrected street type filter for NSG only.
+//    015   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    016   08.01.24 Sean Flook                  Changes to fix warnings.
+//    017   12.01.24 Sean Flook        IMANN-233 Modified GetNewStreetData to update the street start and end coordinates if required.
+//    018   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    019   25.01.24 Sean Flook                  Changes required after UX review.
+//    020   26.01.24 Sean Flook        IMANN-260 Corrected field name.
+//    021   26.01.24 Sean Flook        IMANN-251 Added missing record type to hasStreetChanged.
+//    022   30.01.24 Sean Flook                  Updated GetStreetCreateData and GetStreetUpdateData to reflect the current models used in the relevant API endpoints.
+//    023   02.02.24 Sean Flook        IMANN-264 Include Scottish record types when handling errors from API.
+//    024   05.02.24 Sean Flook                  Added filteredOperationalDistricts.
+//    025   06.02.23 Sean Flook        IMANN-264 In filteredOperationalDistricts if we do not have an organisation return an empty array.
+//    026   13.02.23 Sean Flook                  Modified GetWholeRoadLabel to handle type 66 (PRoW) records.
+//    027   13.02.23 Sean Flook                  Updated GetAsdSecondaryText to handle type 66 (PRoW) records.
+//    028   13.02.24 Sean Flook                  Ensure the PRoW geometry is passed through. If assigning ESUs when creating a new street use the ESU Id of the assigned ESU.
+//    029   13.02.24 Sean Flook                  Removed parameter from StreetDelete as no longer required.
+//    030   14.02.24 Sean Flook                  When creating a new street ensure the ESU Id is correctly set.
+//    031   14.02.24 Sean Flook         ESU14_GP Changed updateMapStreetData to exclude deleted records.
+//    032   14.02.24 Sean Flook                  Added a bit of error trapping.
+//    033   07.03.24 Sean Flook        IMANN-348 Made hasStreetChanged more robust.
+//    034   08.03.24 Sean Flook        IMANN-348 Added ESU to hasStreetChanged.
+//    035   11.03.24 Sean Flook         ESU29_GP Added setASDLayerVisibility.
+//    036   12.03.24 Sean Flook                  Improved error handling when deleting.
+//    037   18.03.24 Sean Flook          ASD3_OS Tweaked GetAsdSecondaryText.
+//    038   26.03.24 Sean Flook         ASD10_GP Modified setASDLayerVisibility.
+//    039   05.04.24 Sean Flook                  Correctly handle errors when creating, updating and deleting.
+//    040   24.04.24 Sean Flook        IMANN-390 When creating a new street if the USRN is already set use that; otherwise use 0.
+//    041   02.05.24 Joshua McCormick  IMANN-283 Map overlay, removed unneeded code numbers from Status & Type
+//    042   02.05.24 Joshua McCormick  IMANN-283 Added check to GetStreetTypeLabel for included label, reverted 041 changes
+//    043   02.05.24 Joshua McCormick  IMANN-283 GetStreetTypeLabel now has included label defaulted to true 
+//    044   02.05.24 Joel Benford      IMANN-275 Use ENG for unassigned lookups in Scotland
+//    045   08.05.24 Sean Flook        IMANN-447 Added exclude from export when creating a new street.
+//    046   14.05.24 Sean Flook        IMANN-438 Fixed setting the prowUsrn field when updating.
+//    047   15.05.24 Sean Flook        IMANN-131 Ensure NeverExport is always set.
+//    048   21.05.24 Sean Flook        IMANN-469 Modified GetStreetUpdateData to set streetSurface, highwayDedicationCode, hdProw and changeType of ASD records when state is closed.
+//    049   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
+//    050   03.06.24 Sean Flook        IMANN-281 Do not send null for required integer fields.
+//    051   04.06.24 Sean Flook        IMANN-281 Default to current date if start date is null when creating a new street.
+//    052   04.06.24 Sean Flook        IMANN-515 Ensure the end dates are set on all the ESUs, HDs and OWEs when the state is set to closed.
+//    053   12.06.24 Sean Flook        IMANN-515 Correctly set the changeType and end dates when state is 4.
+//    054   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    055   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    056   21.06.24 Sean Flook        IMANN-636 Added hasASD to GetNewStreet.
+//    057   21.06.24 Sean Flook        IMANN-614 After saving changes update the source data in the sandbox.
+//    058   21.06.24 Sean Flook        IMANN-636 Correctly call updateMapStreetData after saving a street.
+//    059   27.06.24 Joel Benford      IMANN-685 Saving OWE sequence number -> seqNum
+//    060   03.07.24 Sean Flook        IMANN-697 Also check the single form of the key when handling errors.
+//    061   08.07.24 Sean Flook        IMANN-596 Before doing the check on changes to the HD and OWE records ensure we have the ESU record.
+//    062   09.07.24 Sean Flook        IMANN-709 Handle new ESUs when checking HD and OWE records.
+//    063   10.07.24 Sean Flook        IMANN-741 Do not try and iterate the ASD records if user does not have ASD rights.
+//    064   11.07.24 Sean Flook        IMANN-682 If whole road is true ensure specific location is empty.
+//    065   11.07.24 Joel Benford      IMANN-727 Use unassignedEngIsland for both languages
+//    066   17.07.24 Joshua McCormick  IMANN-548 Added formatStreetData util
+//    067   17.07.24 Joshua McCormick  IMANN-548 Changed formatStreetData to getStreetSearchData
+//    068   18.07.24 Sean Flook        IMANN-772 Corrected field name.
+//    069   23.08.24 Sean Flook        IMANN-469 Only delete ESUs and associated records if the street is being deleted, not when it is just being closed.
+//    070   23.08.24 Sean Flook        IMANN-469 Delete OWE records when street is closed.
+//    071   28.08.24 Sean Flook        IMANN-895 When time fields are falsy send null to the API.
+//    072   02.09.24 Sean Flook        IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
+//    073   02.09.24 Sean Flook        IMANN-976 Handle "Unassigned" in lookups.
+//    074   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    075   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//    076   01.11.24 Sean Flook      IMANN-1010 Include new fields in search results.
-//    077   06.11.24 Sean Flook      IMANN-1047 Make some of the code more robust.
+//    075   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
+//    076   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
+//    077   06.11.24 Sean Flook       IMANN-1047 Make some of the code more robust.
 //#endregion Version 1.0.1.0 changes
 //#region Version 1.0.2.0 changes
-//    078   26.11.24 Sean Flook      IMANN-1057 Scottish authorities do not have Gaelic lookup records.
-//    079   02.12.24 Sean Flook      IMANN-1059 Do not set the change type to D on ASD records if the pk id is 0.
+//    078   26.11.24 Sean Flook       IMANN-1057 Scottish authorities do not have Gaelic lookup records.
+//    079   02.12.24 Sean Flook       IMANN-1059 Do not set the change type to D on ASD records if the pk id is 0.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    080   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -593,7 +596,7 @@ export function GetNewStreet(
  */
 export async function StreetDelete(usrn, deleteEsus, lookupContext, streetContext, userContext, isScottish) {
   const deleteUrl = GetDeleteStreetUrl(
-    userContext.currentUser.token,
+    userContext.currentUser,
     !isScottish && userContext.currentUser && userContext.currentUser.hasASD
   );
 
@@ -2820,7 +2823,7 @@ export async function GetStreetMapData(usrn, userContext, isScottish) {
   if (usrn === 0) return null;
 
   const streetUrl = GetStreetByUSRNUrl(
-    userContext.currentUser.token,
+    userContext.currentUser,
     !isScottish && userContext.currentUser && userContext.currentUser.hasASD
   );
 
@@ -2983,7 +2986,7 @@ export async function GetEsuData(esuId, userContext) {
 export async function GetMultipleEsusData(esuIds, userContext) {
   if (!esuIds || !esuIds.length) return null;
 
-  const esuUrl = GetMultipleEsusByIdUrl(userContext.currentUser.token);
+  const esuUrl = GetMultipleEsusByIdUrl(userContext.currentUser);
 
   if (esuUrl) {
     const returnData = await fetch(`${esuUrl.url}/${esuIds.join()}`, {
@@ -3066,8 +3069,8 @@ export async function SaveStreet(
   let streetSaved = null;
   const hasASD = userContext.currentUser && userContext.currentUser.hasASD;
   const saveUrl = streetContext.currentStreet.newStreet
-    ? GetCreateStreetUrl(userContext.currentUser.token, !isScottish && hasASD)
-    : GetUpdateStreetUrl(userContext.currentUser.token, !isScottish && hasASD);
+    ? GetCreateStreetUrl(userContext.currentUser, !isScottish && hasASD)
+    : GetUpdateStreetUrl(userContext.currentUser, !isScottish && hasASD);
   const saveData = streetContext.currentStreet.newStreet
     ? GetStreetCreateData(currentStreet, lookupContext, isScottish, hasASD)
     : GetStreetUpdateData(currentStreet, lookupContext, isScottish, hasASD);

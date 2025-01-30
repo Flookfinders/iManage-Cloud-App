@@ -3,32 +3,35 @@
 //
 //  Description: URL data about the api calls we need to make
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //#region Version 1.0.0.0 changes
-//    001   02.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   02.06.23 Joel Benford       WI40689 Invoke homepage control
-//    003   23.08.23 Sean Flook       IMANN-159 Include the street template and sub-locality lookup.
-//    004   07.09.23 Sean Flook                 Remove unnecessary awaits.
-//    005   02.01.24 Sean Flook                 Changed console.log to console.error for error messages.
-//    006   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    007   25.01.24 Sean Flook                 Correctly handle status code 204.
-//    008   13.02.24 Sean Flook                 Correctly handle the response from the GET endpoints.
-//    009   26.02.24 Joel Benford     IMANN-242 Add DbAuthority to lookups context
-//    010   09.02.24 Joel Benford    IM-227/228 Generalize ward/parish URL
-//    011   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//    012   05.07.24 Sean Flook       IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
-//    013   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
-//    014   18.09.24 Sean Flook       IMANN-980 Added missing parameter when calling fetchData.
+//    001   02.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   02.06.23 Joel Benford        WI40689 Invoke homepage control
+//    003   23.08.23 Sean Flook        IMANN-159 Include the street template and sub-locality lookup.
+//    004   07.09.23 Sean Flook                  Remove unnecessary awaits.
+//    005   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
+//    006   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    007   25.01.24 Sean Flook                  Correctly handle status code 204.
+//    008   13.02.24 Sean Flook                  Correctly handle the response from the GET endpoints.
+//    009   26.02.24 Joel Benford      IMANN-242 Add DbAuthority to lookups context
+//    010   09.02.24 Joel Benford     IM-227/228 Generalize ward/parish URL
+//    011   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
+//    012   05.07.24 Sean Flook        IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
+//    013   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
+//    014   18.09.24 Sean Flook        IMANN-980 Added missing parameter when calling fetchData.
 //#endregion Version 1.0.0.0 changes
 //#region Version 1.0.1.0 changes
-//    015   30.10.24 Sean Flook      IMANN-1040 Display a message dialog if we get an error loading the lookups etc.
+//    015   30.10.24 Sean Flook       IMANN-1040 Display a message dialog if we get an error loading the lookups etc.
 //#endregion Version 1.0.1.0 changes
+//#region Version 1.0.4.0 changes
+//    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
@@ -318,13 +321,13 @@ const HomePage = () => {
     const LoadWardParishLookups = async () => {
       const Lookups = [
         {
-          url: GetWardsUrl("GET", userContext.currentUser.token, Number(authorityDetails.dataProviderCode)),
+          url: GetWardsUrl("GET", userContext.currentUser, Number(authorityDetails.dataProviderCode)),
           data: lookupWards,
           noRecords: [],
           id: "lookupWards",
         },
         {
-          url: GetParishesUrl("GET", userContext.currentUser.token, Number(authorityDetails.dataProviderCode)),
+          url: GetParishesUrl("GET", userContext.currentUser, Number(authorityDetails.dataProviderCode)),
           data: lookupParishes,
           noRecords: [],
           id: "lookupParishes",
@@ -345,79 +348,79 @@ const HomePage = () => {
     const LoadLookups = async () => {
       const Lookups = [
         {
-          url: GetValidationMessagesUrl(userContext.currentUser.token),
+          url: GetValidationMessagesUrl(userContext.currentUser),
           data: lookupValidationMessages,
           noRecords: [],
           id: "lookupValidationMessages",
         },
         {
-          url: GetLocalityUrl("GET", userContext.currentUser.token),
+          url: GetLocalityUrl("GET", userContext.currentUser),
           data: lookupLocalities,
           noRecords: [],
           id: "lookupLocalities",
         },
         {
-          url: GetTownUrl("GET", userContext.currentUser.token),
+          url: GetTownUrl("GET", userContext.currentUser),
           data: lookupTowns,
           noRecords: [],
           id: "lookupTowns",
         },
         {
-          url: GetIslandUrl("GET", userContext.currentUser.token),
+          url: GetIslandUrl("GET", userContext.currentUser),
           data: lookupIslands,
           noRecords: [],
           id: "lookupIslands",
         },
         {
-          url: GetAdministrativeAreaUrl("GET", userContext.currentUser.token),
+          url: GetAdministrativeAreaUrl("GET", userContext.currentUser),
           data: lookupAdminAuthorities,
           noRecords: [],
           id: "lookupAdminAuthorities",
         },
         {
-          url: GetOperationalDistrictUrl("GET", userContext.currentUser.token),
+          url: GetOperationalDistrictUrl("GET", userContext.currentUser),
           data: lookupOperationalDistricts,
           noRecords: [],
           id: "lookupOperationalDistricts",
         },
         {
-          url: GetAppCrossRefUrl("GET", userContext.currentUser.token),
+          url: GetAppCrossRefUrl("GET", userContext.currentUser),
           data: lookupAppCrossRefs,
           noRecords: [],
           id: "lookupAppCrossRefs",
         },
         {
-          url: GetStreetDescriptorUrl("GET", userContext.currentUser.token),
+          url: GetStreetDescriptorUrl("GET", userContext.currentUser),
           data: lookupStreetDescriptors,
           noRecords: [],
           id: "lookupStreetDescriptors",
         },
         {
-          url: GetSubLocalityUrl("GET", userContext.currentUser.token),
+          url: GetSubLocalityUrl("GET", userContext.currentUser),
           data: lookupSubLocalities,
           noRecords: [],
           id: "lookupSubLocalities",
         },
         {
-          url: GetPostTownUrl("GET", userContext.currentUser.token),
+          url: GetPostTownUrl("GET", userContext.currentUser),
           data: lookupPostTowns,
           noRecords: [],
           id: "lookupPostTowns",
         },
         {
-          url: GetPostcodeUrl("GET", userContext.currentUser.token),
+          url: GetPostcodeUrl("GET", userContext.currentUser),
           data: lookupPostcodes,
           noRecords: [],
           id: "lookupPostcodes",
         },
         {
-          url: GetDbAuthorityUrl("GET", userContext.currentUser.token),
+          url: GetDbAuthorityUrl("GET", userContext.currentUser),
           data: lookupDbAuthorities,
           noRecords: [],
           id: "lookupDbAuthorities",
         },
         {
-          url: GetApiMetadataUrl(userContext.currentUser.token),
+          url: GetApiMetadataUrl(userContext.currentUser),
           data: apiMetadata,
           noRecords: {
             iManageAPIVer: "Unknown",
@@ -437,7 +440,7 @@ const HomePage = () => {
           id: "apiMetadata",
         },
         {
-          url: GetLookupMetadataUrl(userContext.currentUser.token),
+          url: GetLookupMetadataUrl(userContext.currentUser),
           data: lookupMetadata,
           noRecords: {
             iManageAPIVer: "Unknown",
@@ -457,7 +460,7 @@ const HomePage = () => {
           id: "lookupMetadata",
         },
         {
-          url: GetSettingsMetadataUrl(userContext.currentUser.token),
+          url: GetSettingsMetadataUrl(userContext.currentUser),
           data: settingsMetadata,
           noRecords: {
             iManageAPIVer: "Unknown",
@@ -477,7 +480,7 @@ const HomePage = () => {
           id: "settingsMetadata",
         },
         {
-          url: GetAuthorityDetailsUrl("GET", userContext.currentUser.token),
+          url: GetAuthorityDetailsUrl("GET", userContext.currentUser),
           data: authorityDetails,
           noRecords: {
             dataProviderCode: null,
@@ -498,19 +501,19 @@ const HomePage = () => {
           id: "authorityDetails",
         },
         {
-          url: GetPropertyTemplatesUrl("GET", userContext.currentUser.token),
+          url: GetPropertyTemplatesUrl("GET", userContext.currentUser),
           data: propertyTemplates,
           noRecords: [],
           id: "propertyTemplates",
         },
         {
-          url: GetStreetTemplateUrl("GET", userContext.currentUser.token),
+          url: GetStreetTemplateUrl("GET", userContext.currentUser),
           data: streetTemplate,
           noRecords: {},
           id: "streetTemplate",
         },
         {
-          url: GetMapLayersUrl("GET", userContext.currentUser.token),
+          url: GetMapLayersUrl("GET", userContext.currentUser),
           data: mapLayers,
           noRecords: [],
           id: "mapLayers",
