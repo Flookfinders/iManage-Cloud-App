@@ -76,9 +76,10 @@
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.4.0 changes
 //    058   03.02.25 Sean Flook       IMANN-1676 Only validate Property strings against ISO 8859-14.
+//    059   03.02.25 Sean Flook       IMANN-1678 Only validate Property strings against ISO 8859-14.
 //#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    059   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    060   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2728,10 +2729,8 @@ export const characterSetValidator = (str, characterSet) => {
 
   switch (characterSet) {
     case "GeoPlaceProperty1":
-      valid = isIso885914(str);
-      break;
-
     case "GeoPlaceProperty2":
+    case "OneScotlandProperty":
       valid = isIso885914(str);
       break;
 
@@ -2749,10 +2748,6 @@ export const characterSetValidator = (str, characterSet) => {
 
     case "EsriLayerId":
       valid = !/[^a-zA-Z0-9]+/giu.test(str);
-      break;
-
-    case "OneScotlandProperty":
-      valid = !/[^\w ',&\-/\\]+/giu.test(str);
       break;
 
     case "OneScotlandStreet":
