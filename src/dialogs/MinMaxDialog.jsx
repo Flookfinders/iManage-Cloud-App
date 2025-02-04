@@ -21,9 +21,9 @@
 //#region Version 1.0.1.0 changes
 //    007   08.10.24 Sean Flook        IMANN-986 Added new error parameter.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

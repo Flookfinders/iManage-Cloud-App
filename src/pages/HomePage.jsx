@@ -29,10 +29,10 @@
 //#region Version 1.0.1.0 changes
 //    015   30.10.24 Sean Flook       IMANN-1040 Display a message dialog if we get an error loading the lookups etc.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

@@ -32,9 +32,9 @@
 //#region Version 1.0.1.0 changes
 //    018   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    019   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

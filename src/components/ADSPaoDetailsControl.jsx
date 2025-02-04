@@ -16,9 +16,9 @@
 //    003   06.10.23 Sean Flook                  Use colour variables.
 //    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

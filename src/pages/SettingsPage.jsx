@@ -22,9 +22,9 @@
 //    009   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    010   07.08.24 Sean Flook        IMANN-907 Reload the lookups context as well.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

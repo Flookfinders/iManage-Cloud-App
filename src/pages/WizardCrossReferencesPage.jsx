@@ -22,9 +22,9 @@
 //    009   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
 //    010   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

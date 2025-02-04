@@ -48,9 +48,9 @@
 //#region Version 1.0.3.0 changes
 //    030   09.01.25 Sean Flook        IMANN-781 Call onMapChange when opening a property.
 //#endregion Version 1.0.3.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    031   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

@@ -21,9 +21,9 @@
 //#region Version 1.0.2.0 changes
 //    007   12.11.24 Sean Flook                  Various changes to improve the control.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

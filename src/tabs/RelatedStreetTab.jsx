@@ -54,9 +54,9 @@
 //    039   10.10.24 Sean Flook       IMANN-1018 Corrected setting of userCanEdit.
 //    040   01.11.24 Sean Flook       IMANN-1010 Do not need to add 10 to the street record type value.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    041   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

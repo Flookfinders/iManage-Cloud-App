@@ -24,9 +24,9 @@
 //    011   10.01.24 Sean Flook                  Removed street state as no longer required.
 //    012   05.02.24 Sean Flook                  Ignore case when looking at labels when getting the required colours.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

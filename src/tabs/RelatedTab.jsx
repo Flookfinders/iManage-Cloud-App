@@ -55,9 +55,9 @@
 //#region Version 1.0.2.0 changes
 //    037   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
-//    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
+//    038   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

@@ -35,10 +35,10 @@
 //    020   10.10.24 Sean Flook        IMANN-986 Corrected method name.
 //    021   24.10.24 Sean Flook       IMANN-1040 Added PostUserLogoffUrl.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    023   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

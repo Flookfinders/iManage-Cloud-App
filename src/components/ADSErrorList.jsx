@@ -24,9 +24,9 @@
 //    011   27.06.24 Joel Benford      IMANN-685 OWE sequence numbers -> seqNum
 //    012   22.07.24 Sean Flook        IMANN-766 Replace holding character ¬ with a comma.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

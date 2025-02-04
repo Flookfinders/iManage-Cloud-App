@@ -59,10 +59,10 @@
 //    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    041   09.01.25 Sean Flook       IMANN-1125 Only get background data if required.
 //#endregion Version 1.0.3.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    043   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

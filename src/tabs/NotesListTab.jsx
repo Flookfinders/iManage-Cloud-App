@@ -26,9 +26,9 @@
 //    013   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    014   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

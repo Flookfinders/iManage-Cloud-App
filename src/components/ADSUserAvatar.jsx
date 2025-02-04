@@ -17,9 +17,9 @@
 //    004   11.04.24 Sean Flook                  Do not adjust the auditname.
 //    005   04.07.24 Sean Flook        IMANN-705 Use displayName for the user icon.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

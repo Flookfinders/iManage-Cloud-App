@@ -27,9 +27,9 @@
 //    014   09.07.24 Joshua McCormick  IMANN-520 Property Names input set to required 
 //    015   15.07.24 Sean Flook                  Display non-field errors.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

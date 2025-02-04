@@ -43,9 +43,9 @@
 //    028   24.10.24 Sean Flook       IMANN-1040 Call the logoff endpoint when logging a user off the system.
 //    029   07.01.25 Joshua McCormick IMANN-1050 Initial Check Notifications with changeset 65608
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    030   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

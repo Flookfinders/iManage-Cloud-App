@@ -17,9 +17,9 @@
 //    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    005   11.03.24 Sean Flook            MUL13 Added wideLabel parameter.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

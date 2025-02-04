@@ -27,9 +27,9 @@
 //    014   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
 //    015   29.05.24 Joshua McCormick   IMANN-94 Rename Edit template title to Rename template
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

@@ -97,9 +97,12 @@
 //    072   16.01.25 Sean Flook       IMANN-1136 Removed editingProvenance and changed provenanceMerged to provenanceMerging.
 //#endregion Version 1.0.3.0 changes
 //#region Version 1.0.4.0 changes
-//    073   22.01.25 Sean Flook       IMANN-1077 Updated the version.
-//    074   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    073   03.02.25 Sean Flook       IMANN-1676 Updated the version.
 //#endregion Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
+//    074   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//    075   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -187,7 +190,7 @@ function App() {
 
   const currentMapExtent = useRef(null);
 
-  const guiVersion = "1.0.4.0";
+  const guiVersion = "1.0.5.0";
 
   const onlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };
   const offlinePolling = { enabled: true, url: "https://ipv4.icanhazip.com", interval: 5000, timeout: 5000 };

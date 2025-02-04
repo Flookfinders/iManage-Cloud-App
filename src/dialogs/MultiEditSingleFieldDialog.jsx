@@ -33,9 +33,9 @@
 //    020   08.07.24 Sean Flook        IMANN-715 Increase the failed count if failed to save property.
 //    021   03.09.24 Sean Flook        IMANN-968 Corrected copy and paste error.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    022   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

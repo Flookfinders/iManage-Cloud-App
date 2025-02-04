@@ -29,9 +29,9 @@
 //    016   09.07.24 Joshua McCormick  IMANN-644 Change password error message handling shows errors.Password[0] instead of whole response
 //    017   10.09.24 Sean Flook        IMANN-980 Removed unnecessary console messages.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

@@ -69,9 +69,9 @@
 //    052   18.11.24 Sean Flook       IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
 //    053   18.11.24 Sean Flook       IMANN-1056 Added getPropertyListDetails.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    054   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

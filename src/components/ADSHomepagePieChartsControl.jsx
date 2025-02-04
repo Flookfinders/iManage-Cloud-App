@@ -16,9 +16,9 @@
 //    003   24.11.23 Sean Flook                  Moved Box to @mui/system and sorted out a warning.
 //    004   22.03.24 Sean Flook            GLB12 Fix the height of the charts.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

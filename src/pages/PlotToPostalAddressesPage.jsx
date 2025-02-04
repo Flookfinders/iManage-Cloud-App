@@ -18,9 +18,9 @@
 //    003   14.11.24 Sean Flook       IMANN-1012 Only create the gaelic record if required.
 //    004   03.12.24 Sean Flook       IMANN-1056 Workout the grid page size from the available height when loading the page for the first time.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

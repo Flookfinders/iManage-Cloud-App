@@ -31,10 +31,10 @@
 //    022   05.09.24 Sean Flook        IMANN-575 Added additional debug message.
 //    023   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    024   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    025   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

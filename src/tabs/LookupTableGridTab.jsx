@@ -24,9 +24,9 @@
 //    011   17.05.24 Sean Flook        IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
 //    012   28.05.24 Joel Benford      IMANN-481 Hide delete button fro wards and parishes
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

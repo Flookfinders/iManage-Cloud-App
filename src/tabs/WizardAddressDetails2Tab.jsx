@@ -31,9 +31,9 @@
 //#region Version 1.0.1.0 changes
 //    017   24.10.24 Sean Flook       IMANN-1033 Only sort and filter lookups when required.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

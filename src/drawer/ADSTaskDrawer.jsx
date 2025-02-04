@@ -17,9 +17,9 @@
 //    004   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    005   11.03.24 Sean Flook            GLB12 Correctly set width.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

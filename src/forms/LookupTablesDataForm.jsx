@@ -39,9 +39,9 @@
 //    024   02.10.24 Sean Flook        IMANN-994 Include the PKId in the update data for App Cross References.
 //    025   07.10.24 Sean Flook        IMANN-995 Corrected check for linked records when refreshing data after a delete.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

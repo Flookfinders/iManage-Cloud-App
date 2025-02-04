@@ -75,8 +75,11 @@
 //    057   18.12.24 Joshua McCormick IMANN-1109 Change GeoPlaceProperty2 to allow apostrophe for PAO/SAO
 //#endregion Version 1.0.2.0 changes
 //#region Version 1.0.4.0 changes
-//    058   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    058   03.02.25 Sean Flook       IMANN-1676 Only validate Property strings against ISO 8859-14.
 //#endregion Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
+//    059   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
@@ -2729,9 +2732,7 @@ export const characterSetValidator = (str, characterSet) => {
       break;
 
     case "GeoPlaceProperty2":
-      valid =
-        isIso885914(str) &&
-        !/[^\w !.,&;:[\]()+\-'/@£$àáâäèéêëìíîïòóôöùúûüỳýŷÿŵÀÁÂÄÈÉÊËÌÍÎÏÒÓÔÖÚÙÛÜỲÝŸŶŴ]+/giu.test(str);
+      valid = isIso885914(str);
       break;
 
     case "GeoPlaceAZOnly":

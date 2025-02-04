@@ -70,9 +70,9 @@
 //    054   07.01.25 Joshua McCormick  IMANN-1122 Removed onOrganisationChange check inside updateCurrentData
 //    055   07.01.25 Joshua McCormick  IMANN-1122 Removed unnecessary if statement for onOrganisationChange
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    056   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

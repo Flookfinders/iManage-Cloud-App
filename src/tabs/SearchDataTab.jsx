@@ -76,10 +76,10 @@
 //#region Version 1.0.2.0 changes
 //    059   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    060   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

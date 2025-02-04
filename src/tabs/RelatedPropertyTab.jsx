@@ -69,9 +69,9 @@
 //    051   07.01.25 Sean Flook       IMANN-1124 Ensure the current property is in view when opening the related tab from code.
 //    052   09.01.25 Sean Flook       IMANN-1124 Check the object exists before trying to bring it in to view.
 //#endregion Version 1.0.3.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    053   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

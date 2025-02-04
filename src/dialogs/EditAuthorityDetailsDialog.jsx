@@ -27,10 +27,10 @@
 //    013   08.10.24 Sean Flook        IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
 //    014   10.10.24 Sean Flook        IMANN-986 Call correct method.
 //#endregion Version 1.0.1.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

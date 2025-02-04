@@ -64,9 +64,9 @@
 //#region Version 1.0.2.0 changes
 //    048   25.11.24 Sean Flook       IMANN-1052 Changed label of classification so it will not clash with property wizard.
 //#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    049   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

@@ -35,9 +35,9 @@
 //    023   11.07.24 Sean Flook        IMANN-759 Set the display variable if we do not have the input reference.
 //    024   15.07.24 Sean Flook        IMANN-759 Always set the display variable.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    025   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */

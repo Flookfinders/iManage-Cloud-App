@@ -23,9 +23,9 @@
 //    010   04.07.24 Sean Flook                  Updated URL for the help for new location.
 //    011   29.08.24 Sean Flook        IMANN-965 Updated wording.
 //#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#region Version 1.0.5.0 changes
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 /* #endregion header */
