@@ -59,9 +59,12 @@
 //    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    041   09.01.25 Sean Flook       IMANN-1125 Only get background data if required.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    042   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
+//#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//    043   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    043   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    044   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -1535,7 +1538,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       !backgroundPropertyData.current &&
       !mapContext.currentBackgroundData.properties &&
       mapContext.currentExtent &&
-      mapContext.currentExtent.zoomLevel > 17 &&
+      mapContext.currentExtent.zoomLevel > 15 &&
       userContext.currentUser &&
       userContext.currentUser.hasProperty
     ) {
@@ -1547,7 +1550,7 @@ function ADSSearch({ variant, placeholder, onSearchClick }) {
       !backgroundProvenanceData.current &&
       !mapContext.currentBackgroundData.provenances &&
       mapContext.currentExtent &&
-      mapContext.currentExtent.zoomLevel > 17 &&
+      mapContext.currentExtent.zoomLevel > 15 &&
       userContext.currentUser &&
       userContext.currentUser.hasProperty
     ) {

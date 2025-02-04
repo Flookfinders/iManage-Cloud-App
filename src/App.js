@@ -98,10 +98,11 @@
 //#endregion Version 1.0.3.0 changes
 //#region Version 1.0.4.0 changes
 //    073   03.02.25 Sean Flook       IMANN-1676 Updated the version.
+//    074   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
 //#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    074   22.01.25 Sean Flook       IMANN-1077 Updated the version.
-//    075   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    075   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//    076   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -3072,7 +3073,7 @@ function App() {
    * @returns {array} The list of properties within the given extent.
    */
   async function GetBackgroundPropertyData(extent) {
-    if (!currentUser || extent.zoomLevel < 18) return null;
+    if (!currentUser || extent.zoomLevel < 16) return null;
 
     const backgroundPropertiesUrl = GetBackgroundPropertiesUrl(currentUser);
 
@@ -3126,7 +3127,7 @@ function App() {
    * @returns {array} The list of properties within the given extent.
    */
   async function GetBackgroundProvenanceData(extent) {
-    if (!currentUser || extent.zoomLevel < 18) return null;
+    if (!currentUser || extent.zoomLevel < 16) return null;
 
     const backgroundProvenancesUrl = GetBackgroundProvenancesUrl(currentUser);
 
@@ -3219,7 +3220,7 @@ function App() {
         unassignedEsuData = [];
       }
 
-      if (extent.hasProperties && extent.zoomLevel > 17) {
+      if (extent.hasProperties && extent.zoomLevel > 15) {
         backgroundPropertyData = await GetBackgroundPropertyData(extent);
         backgroundProvenanceData = await GetBackgroundProvenanceData(extent);
       } else {
