@@ -134,9 +134,12 @@
 //    114   16.01.25 Sean Flook       IMANN-1135 When selecting properties adjust the opacity of the street layer.
 //    115   16.01.25 Sean Flook       IMANN-1136 Correctly handle merging provenance extents.
 //#endregion Version 1.0.3.0 changes
+//#region Version 1.0.4.0 changes
+//    116   04.02.25 Sean Flook       IMANN-1677 Save the correct object to historicRec when opening a historic property.
+//#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    116   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
-//    117   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    117   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
+//    118   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -2843,7 +2846,18 @@ function ADSEsriMap(startExtent) {
   const handleOpenProperty = useCallback(() => {
     if (recordAttributes.current) {
       if (recordAttributes.current.LogicalStatus === 8) {
-        historicRec.current = { property: recordAttributes.current, related: null };
+        const historicProperty = {
+          type: 24,
+          uprn: recordAttributes.current.UPRN,
+          address: recordAttributes.current.Address,
+          formattedAddress: recordAttributes.current.FormattedAddress,
+          postcode: recordAttributes.current.Postcode,
+          easting: recordAttributes.current.Easting,
+          northing: recordAttributes.current.Northing,
+          logical_status: recordAttributes.current.LogicalStatus,
+          classification_code: recordAttributes.current.Classification,
+        };
+        historicRec.current = { property: historicProperty, related: null };
         setOpenHistoricProperty(true);
       } else {
         streetContext.onStreetChange(0, "", false);
