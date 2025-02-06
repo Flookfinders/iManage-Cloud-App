@@ -99,10 +99,11 @@
 //#region Version 1.0.4.0 changes
 //    073   03.02.25 Sean Flook       IMANN-1676 Updated the version.
 //    074   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
+//    075   06.02.25 Sean Flook       IMANN-1679 If authorisation has expired display the home page.
 //#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    075   22.01.25 Sean Flook       IMANN-1077 Updated the version.
-//    076   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    076   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//    077   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -622,6 +623,17 @@ function App() {
    * Event to handle when the users authorisation has expired.
    */
   function HandleAuthorisationExpired() {
+    // navigate("/"); // Return to the home page
+    history.push("/"); // Ensure we are on the home page
+    HandleResetStreet();
+    HandleResetProperty();
+    HandleSearchDataChange("", []);
+    HandleResetSandbox();
+    HandleBackgroundDataChange([], [], [], []);
+    HandleMapSearchDataChange([], [], [], null, null);
+    HandleMapChange([], null, null);
+    HandleEditMapObject(null, null);
+    HandleClearInformation();
     setCurrentUser(null);
     localStorage.removeItem("currentUser");
     loginMessage.current = "Authorisation has expired, re-enter your credentials.";

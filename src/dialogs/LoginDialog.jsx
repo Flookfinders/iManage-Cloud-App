@@ -29,8 +29,11 @@
 //    016   09.07.24 Joshua McCormick  IMANN-644 Change password error message handling shows errors.Password[0] instead of whole response
 //    017   10.09.24 Sean Flook        IMANN-980 Removed unnecessary console messages.
 //#endregion Version 1.0.0.0 changes
+//#region Version 1.0.4.0 changes
+//    018   06.02.25 Sean Flook       IMANN-1679 Correctly display the login dialog when a user has expired.
+//#endregion Version 1.0.4.0 changes
 //#region Version 1.0.5.0 changes
-//    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    019   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //#endregion Version 1.0.5.0 changes
 //
 //--------------------------------------------------------------------------------------------------
@@ -970,16 +973,14 @@ function LoginDialog({ isOpen, title, message, changePassword, onClose }) {
   }, [apiUrl]);
 
   useEffect(() => {
-    if (changePassword) setStep(3);
-  }, [changePassword]);
-
-  useEffect(() => {
-    if (message === "Authorisation has expired, re-enter your credentials.") setStep(0);
-  }, [message]);
-
-  useEffect(() => {
     setShowDialog(isOpen);
-  }, [isOpen]);
+    if (changePassword) {
+      setStep(3);
+    } else {
+      setStep(0);
+      setAuthenticationCode("");
+    }
+  }, [isOpen, changePassword]);
 
   return (
     <Dialog open={showDialog} aria-labelledby="user-login-dialog" fullWidth maxWidth="xs" onClose={handleDialogClose}>
