@@ -3,7 +3,7 @@
 //
 //  Description: Property validation
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //  Maximum validation numbers
 //  =================================
@@ -73,6 +73,9 @@
 //    045   14.11.24 Sean Flook       IMANN-1039 Correctly add check 2400108.
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //#endregion Version 1.0.2.0 changes
+//#region Version 1.0.4.0 changes
+//    047   07.02.25 Sean Flook       IMANN-1676 Removed checks 2100065, 2100076, 2100077, 3100021 and 3100022.
+//#endregion Version 1.0.4.0 changes
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header
@@ -115,11 +118,11 @@ import {
   failsCheck2100061,
   failsCheck2100062,
   failsCheck2100063,
-  failsCheck2100065,
+  // failsCheck2100065,
   failsCheck2100068,
   failsCheck2100073,
-  failsCheck2100076,
-  failsCheck2100077,
+  // failsCheck2100076,
+  // failsCheck2100077,
 } from "./Type21ValidationChecks";
 import {
   failsCheck2200009,
@@ -223,8 +226,8 @@ import {
   failsCheck3100016,
   failsCheck3100017,
   failsCheck3100019,
-  failsCheck3100021,
-  failsCheck3100022,
+  // failsCheck3100021,
+  // failsCheck3100022,
 } from "./Type31ValidationChecks";
 import {
   failsCheck3200008,
@@ -531,10 +534,10 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     }
 
     // Organisation name contains unmatched brackets.
-    currentCheck = GetCheck(2100065, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2100065(data.organisation, data.logicalStatus)) {
-      organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
+    // currentCheck = GetCheck(2100065, currentLookups, methodName, isScottish, showDebugMessages);
+    // if (includeCheck(currentCheck, isScottish) && failsCheck2100065(data.organisation, data.logicalStatus)) {
+    //   organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    // }
 
     // Enter a level.
     currentCheck = GetCheck(2100068, currentLookups, methodName, isScottish, showDebugMessages);
@@ -549,16 +552,16 @@ export function ValidateBlpuData(data, currentLookups, isScottish) {
     }
 
     // Organisation name contains repeated punctuation.
-    currentCheck = GetCheck(2100076, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2100076(data.organisation)) {
-      organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
+    // currentCheck = GetCheck(2100076, currentLookups, methodName, isScottish, showDebugMessages);
+    // if (includeCheck(currentCheck, isScottish) && failsCheck2100076(data.organisation)) {
+    //   organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    // }
 
     // Organisation name contains double spaces.
-    currentCheck = GetCheck(2100077, currentLookups, methodName, isScottish, showDebugMessages);
-    if (includeCheck(currentCheck, isScottish) && failsCheck2100077(data.organisation)) {
-      organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
-    }
+    // currentCheck = GetCheck(2100077, currentLookups, methodName, isScottish, showDebugMessages);
+    // if (includeCheck(currentCheck, isScottish) && failsCheck2100077(data.organisation)) {
+    //   organisationErrors.push(GetErrorMessage(currentCheck, isScottish));
+    // }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateBlpuData - Finished checks");
 
@@ -1587,16 +1590,16 @@ export function ValidateOrganisationData(data, index, currentLookups) {
     }
 
     // Organisation name contains repeated punctuation.
-    currentCheck = GetCheck(3100021, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && failsCheck3100021(data.organisation)) {
-      organisationErrors.push(GetErrorMessage(currentCheck, true));
-    }
+    // currentCheck = GetCheck(3100021, currentLookups, methodName, true, showDebugMessages);
+    // if (includeCheck(currentCheck, true) && failsCheck3100021(data.organisation)) {
+    //   organisationErrors.push(GetErrorMessage(currentCheck, true));
+    // }
 
     // Organisation name contains double spaces.
-    currentCheck = GetCheck(3100022, currentLookups, methodName, true, showDebugMessages);
-    if (includeCheck(currentCheck, true) && failsCheck3100022(data.organisation)) {
-      organisationErrors.push(GetErrorMessage(currentCheck, true));
-    }
+    // currentCheck = GetCheck(3100022, currentLookups, methodName, true, showDebugMessages);
+    // if (includeCheck(currentCheck, true) && failsCheck3100022(data.organisation)) {
+    //   organisationErrors.push(GetErrorMessage(currentCheck, true));
+    // }
 
     if (showDebugMessages) console.log("[DEBUG] ValidateOrganisationData - Finished checks");
 
