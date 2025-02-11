@@ -62,8 +62,11 @@
 //region Version 1.0.2.0
 //    056   28.11.24 Sean Flook       IMANN-1073 If validation fails when trying to save do not proceed so validation messages can be seen.
 //endregion Version 1.0.2.0
+//region Version 1.0.4.0
+//    057   11.02.25 Sean Flook       IMANN-1680 If we are displaying the Gazetteer page without a search string display iManage Cloud.
+//endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    057   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    058   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -89,6 +92,7 @@ import {
   StringAvatar,
   ResetContexts,
   mapSelectSearchString,
+  blankGazetteerSearchString,
 } from "../utils/HelperUtils";
 import {
   streetToTitleCase,
@@ -1116,14 +1120,17 @@ function ADSAppBar(props) {
               ) : haveSearch ? (
                 <>
                   <Typography sx={titleStyle()} variant="subtitle1" noWrap align="left">
-                    {` ${searchContext.currentSearchData.results.length} results ${
-                      searchContext.currentSearchData.searchString === mapSelectSearchString
-                        ? "from selecting properties from the map"
-                        : "for"
-                    } `}
-                    {searchContext.currentSearchData.searchString !== mapSelectSearchString && (
-                      <strong>{searchContext.currentSearchData.searchString}</strong>
-                    )}
+                    {searchContext.currentSearchData.searchString !== blankGazetteerSearchString
+                      ? ` ${searchContext.currentSearchData.results.length} results ${
+                          searchContext.currentSearchData.searchString === mapSelectSearchString
+                            ? "from selecting properties from the map"
+                            : "for"
+                        } `
+                      : "iManage Cloud"}
+                    {searchContext.currentSearchData.searchString !== mapSelectSearchString &&
+                      searchContext.currentSearchData.searchString !== blankGazetteerSearchString && (
+                        <strong>{searchContext.currentSearchData.searchString}</strong>
+                      )}
                   </Typography>
                   {(haveStreetError || havePropertyError) && (
                     <Stack

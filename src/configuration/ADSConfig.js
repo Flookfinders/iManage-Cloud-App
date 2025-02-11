@@ -38,6 +38,7 @@
 //region Version 1.0.5.0
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    023   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
+//    024   11.02.25 Sean Flook       IMANN-1680 Fixed GetCreateStreetUrl.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -305,7 +306,7 @@ export function GetMultiEditSearchUrl(currentUser) {
 export function GetCreateStreetUrl(currentUser, hasAsd) {
   if (!currentUser || !currentUser.mainApi) return null;
   const url = GetApiSite(currentUser.mainApi, `/api/${apiVersion}Street${hasAsd ? "WithAsd" : ""}`);
-  return getUrl(url, "POST", "application/json", currentUser);
+  return getUrl(url, "POST", "application/json", currentUser.token);
 }
 
 /**

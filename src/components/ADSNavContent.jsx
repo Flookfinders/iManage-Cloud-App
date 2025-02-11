@@ -43,8 +43,11 @@
 //    028   24.10.24 Sean Flook       IMANN-1040 Call the logoff endpoint when logging a user off the system.
 //    029   07.01.25 Joshua McCormick IMANN-1050 Initial Check Notifications with changeset 65608
 //endregion Version 1.0.1.0
+//region Version 1.0.4.0
+//    030   11.02.25 Sean Flook       IMANN-1680 Set the search string when clicking on the gazetteer button and we do not already have one.
+//endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    030   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    031   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -70,6 +73,7 @@ import {
   stringToSentenceCase,
   ResetContexts,
   FormatDateTime,
+  blankGazetteerSearchString,
 } from "../utils/HelperUtils";
 import { GetCurrentStreetData, SaveStreet, hasStreetChanged } from "../utils/StreetUtils";
 import {
@@ -685,6 +689,12 @@ const ADSNavContent = (props) => {
    */
   const handleGazetteerClick = () => {
     // navigate(GazetteerRoute);
+    if (
+      !searchContext.currentSearchData.searchString ||
+      searchContext.currentSearchData.searchString === "!+reload+!"
+    ) {
+      searchContext.onSearchDataChange(blankGazetteerSearchString, []);
+    }
     history.push(GazetteerRoute);
     setActiveButton();
   };

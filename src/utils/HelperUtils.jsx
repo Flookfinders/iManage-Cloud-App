@@ -77,9 +77,10 @@
 //region Version 1.0.4.0
 //    058   03.02.25 Sean Flook       IMANN-1676 Only validate Property strings against ISO 8859-14.
 //    059   03.02.25 Sean Flook       IMANN-1678 Only validate Property strings against ISO 8859-14.
+//    060   11.02.25 Sean Flook       IMANN-1680 Added blankGazetteerSearchString.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    060   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ import {
 import { tooltipStyle } from "./ADSStyles";
 
 export const mapSelectSearchString = "IDX:MAP";
+export const blankGazetteerSearchString = "IDX:GAZ";
 
 export const defaultMapLayerIds = [
   "backgroundPropertyLayer",

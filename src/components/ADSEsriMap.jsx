@@ -136,10 +136,11 @@
 //endregion Version 1.0.3.0
 //region Version 1.0.4.0
 //    116   04.02.25 Sean Flook       IMANN-1677 Save the correct object to historicRec when opening a historic property.
+//    117   11.02.25 Sean Flook       IMANN-1680 Added some error handling.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    117   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
-//    118   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    118   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
+//    119   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -9663,7 +9664,9 @@ function ADSEsriMap(startExtent) {
 
           switch (propertyContext.wizardData.type) {
             case "view":
-              const rangeEngLpis = propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG");
+              const rangeEngLpis = Array.isArray(propertyContext.wizardData.savedProperty)
+                ? propertyContext.wizardData.savedProperty[0].lpis.filter((x) => x.language === "ENG")
+                : propertyContext.wizardData.savedProperty.lpis.filter((x) => x.language === "ENG");
               switch (propertyContext.wizardData.variant) {
                 case "range":
                   doOpenRecord(
