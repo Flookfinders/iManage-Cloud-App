@@ -3,7 +3,7 @@
 //
 //  Description: Type 21 validation checks
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,9 @@
 //region Version 1.0.1.0
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //endregion Version 1.0.1.0
+//region Version 1.0.4.0
+//    002   11.02.25 Sean Flook      IMANN-1678 Fixed failsCheck2100019 for OneScotland.
+//endregion Version 1.0.4.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -150,7 +153,7 @@ export const failsCheck2100018 = (organisation) => {
  */
 export const failsCheck2100019 = (organisation, isScottish) => {
   return (
-    organisation && !characterSetValidator(organisation, `${isScottish ? "OneScotlandLookup" : "GeoPlaceProperty1"}`)
+    organisation && !characterSetValidator(organisation, `${isScottish ? "OneScotlandProperty" : "GeoPlaceProperty1"}`)
   );
 };
 
