@@ -1,7 +1,7 @@
-/* #region imports */
+//#region imports
 import React, { useState, useRef, useContext, createContext, Fragment } from "react";
 import ConfirmEditLossDialog from "./../dialogs/ConfirmEditLossDialog";
-/* #endregion imports */
+//#endregion imports
 
 const EditConfirmationServiceContext = createContext();
 

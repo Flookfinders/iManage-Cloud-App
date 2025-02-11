@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property utilities
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   16.08.22 Sean Flook          WI39??? Initial Revision.
 //    002   16.03.23 Sean Flook          WI40583 Modified SavePropertyAndUpdate to correctly return the result of the save.
 //    003   23.03.23 Sean Flook          WI40603 Include parentUprn in GetNewPropertyData.
@@ -59,22 +59,22 @@
 //    046   16.08.24 Sean Flook        IMANN-861 Added new key from API for successor errors.
 //    047   02.09.24 Sean Flook        IMANN-976 Handle "Unassigned" in lookups.
 //    048   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    049   01.10.24 Sean Flook        IMANN-899 Use the correct field for BLPU App Cross Reference.
 //    050   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    051   31.10.24 Sean Flook       IMANN-1012 Various changes required for plot to postal wizard.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    052   18.11.24 Sean Flook       IMANN-1062 Include Alternative in the list of LPI logical status for Plot to Postal existing LPI.
 //    053   18.11.24 Sean Flook       IMANN-1056 Added getPropertyListDetails.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    054   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import { GetLookupLabel, GetCurrentDate } from "./HelperUtils";
 import ObjectComparison, {

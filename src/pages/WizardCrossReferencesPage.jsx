@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit Cross Reference Dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial version.
 //    002   04.04.23 Sean Flook          WI40669 Implemented.
 //    003   13.04.23 Sean Flook          WI40681 Added validation of cross references.
@@ -21,13 +21,13 @@
 //    008   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
 //    009   18.03.24 Sean Flook       STRFRM3_OS Set the styling for the header row of the data grid.
 //    010   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

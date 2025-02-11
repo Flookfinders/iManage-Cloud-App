@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Plot to Postal Wizard Dialog
 //
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.1.0 changes
+//#region Version 1.0.1.0
 //    001   15.10.24 Sean Flook      IMANN-1012 Initial Revision.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    002   13.11.24 Sean Flook      IMANN-1012 Use the correct validation.
 //    003   14.11.24 Sean Flook      IMANN-1012 Only set the alt fields if required for Scottish authorities.
 //    004   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
 //    005   21.11.24 Sean Flook      IMANN-1065 Added additional checks in the useEffect to prevent error.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { forwardRef, useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

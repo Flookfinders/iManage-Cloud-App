@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Icons used to distinguish classification of property
 //
@@ -10,16 +10,16 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   23.07.21 Sean Flook                 Initial Revision.
 //    002   20.11.23 Sean Flook                 Added icon for street BLPUs.
 //    003   20.11.23 Sean Flook                 Modified GetClassificationIcon to change the classification for street BLPUs.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React from "react";
 import { SvgIcon } from "@mui/material";
@@ -28,7 +28,7 @@ import TerrainIcon from "@mui/icons-material/Terrain";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 
-/* #endregion imports */
+//#endregion imports
 
 /**
  * Method to get the classification icon from the classification code.

@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Address List
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   29.03.23 Sean Flook          WI40639 Correctly set the note when adding a new one.
 //    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
@@ -31,18 +31,18 @@
 //    018   25.04.24 Sean Flook                  Display the information control for the wizard as well.
 //    019   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    020   18.06.24 Sean Flook        IMANN-599 Use the correct classification when moving BLPUs for Scottish authorities.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    021   21.11.24 Sean Flook       IMANN-1065 Include the UPRN when dealing with move BLPU.
 //    022   22.11.24 Sean Flook       IMANN-1065 When moving a BLPU keep the classification in the BLPU object for Scottish authorities.
 //    023   03.12.24 Sean Flook       IMANN-1081 Include classification errors for Scottish authorities.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    024   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useRef, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

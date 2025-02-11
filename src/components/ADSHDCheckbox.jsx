@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Checkbox component used in the highway dedication tab.
 //
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   20.08.24 Sean Flook        IMANN-818 Initial version.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    002   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

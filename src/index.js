@@ -1,4 +1,4 @@
-/* #region imports */
+//#region imports
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -11,7 +11,7 @@ import reportWebVitals from "./reportWebVitals";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import "./index.css";
 
-/* #endregion imports */
+//#endregion imports
 
 // const container = document.getElementById("root");
 // const root = createRoot(container);

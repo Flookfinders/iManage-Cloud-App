@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Type 10 validation checks
 //
@@ -10,13 +10,13 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.2.0 changes
+//#region Version 1.0.2.0
 //    001   25.11.24 Sean Flook      IMANN-1076 Initial Revision.
 //    002   27.11.24 Sean Flook      IMANN-1076 Modified to handle different types of date.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import { isValid, parseISO } from "date-fns";
 

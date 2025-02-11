@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Template tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   30.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook          WI40578 Added ability to filter templates by templateUseType.
 //    003   22.03.23 Sean Flook          WI40598 Close EditPropertyTemplateTab if deleting the template.
@@ -30,14 +30,14 @@
 //    017   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    018   26.06.24 Joel Benford                Null never export and site visit -> false on save, string lpiLevel if Scottish
 //    019   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    021   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";

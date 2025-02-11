@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Settings page
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   03.11.23 Sean Flook                  Updated TreeView and TreeItem.
@@ -21,13 +21,13 @@
 //    008   18.04.24 Sean Flook        IMANN-351 Changes required to reload the contexts after a refresh.
 //    009   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    010   07.08.24 Sean Flook        IMANN-907 Reload the lookups context as well.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useEffect, useState, useContext } from "react";
 import SettingsContext from "../context/settingsContext";

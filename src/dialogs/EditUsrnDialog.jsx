@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to edit the USRN
 //
@@ -10,10 +10,10 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   29.05.24 Sean Flook       IMANN-490 Initial version.
 //    002   11.06.24 Sean Flook       IMANN-490 Changed id.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

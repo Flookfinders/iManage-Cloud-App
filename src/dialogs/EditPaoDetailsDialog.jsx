@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit PAO details dialog
 //
@@ -10,16 +10,16 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    005   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";

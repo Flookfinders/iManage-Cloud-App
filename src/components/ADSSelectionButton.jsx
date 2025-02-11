@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Control to be used in the selection control.
 //
@@ -10,17 +10,17 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Added mergeExtent.
 //    003   20.02.24 Sean Flook            MUL1 Added createList and existingList variants.
 //    004   20.02.24 Sean Flook            MUL6 Changed the RPC icon to PushPin.
 //    005   27.02.24 Sean Flook           MUL16 Added removeFromList.
 //    006   14.03.24 Sean Flook        ESU24_GP Use correct icon for assign esu.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React from "react";
 import PropTypes from "prop-types";

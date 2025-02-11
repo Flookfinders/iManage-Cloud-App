@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Street Page
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   20.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   23.08.23 Sean Flook        IMANN-159 Use the street template defaults whe getting a new street.
 //    003   07.09.23 Sean Flook                  Cleaned the code.
@@ -30,16 +30,16 @@
 //    021   26.07.24 Sean Flook        IMANN-850 Store the apiUrl so that on refresh we are still using the correct URL.
 //    022   05.09.24 Sean Flook        IMANN-575 Added additional debug message.
 //    023   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    024   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    025   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router";
@@ -63,7 +63,7 @@ import { EditConfirmationServiceProvider } from "./EditConfirmationPage";
 import StreetDataForm from "../forms/StreetDataForm";
 import ADSEsriMap from "../components/ADSEsriMap";
 
-/* #endregion imports */
+//#endregion imports
 
 function StreetPage() {
   const streetContext = useContext(StreetContext);

@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Street data tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   30.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
 //    003   20.07.23 Sean Flook                  Added ability to display the street in Google street view.
@@ -54,22 +54,22 @@
 //    041   24.07.24 Sean Flook        IMANN-830 When changing the type there is no need to update the map.
 //    042   25.07.24 Sean Flook        IMANN-849 Convert the correct variables to numbers.
 //    043   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    044   30.09.24 Sean Flook        IMANN-617 Check we have a USRN before calling onUpdateUsrn.
 //    045   02.10.24 Sean Flook        IMANN-550 Changed menu item order.
 //    046   02.10.24 Sean Flook        IMANN-999 Changed label to State date.
 //    047   10.10.24 Sean Flook       IMANN-1018 Allow LLPG editors to edit streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    048   25.11.24 Sean Flook       IMANN-1052 Changed label of classification so it will not clash with property wizard.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    049   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

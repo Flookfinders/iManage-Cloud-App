@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard finalise page
 //
@@ -10,14 +10,14 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React from "react";
 import PropTypes from "prop-types";

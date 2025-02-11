@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Filter by Date component
 //
@@ -10,24 +10,24 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   13.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   08.12.23 Sean Flook                  Migrated DatePicker to v6.
 //    003   18.12.23 Sean Flook                  Ensure tooltip is displayed
 //    004   03.01.24 Sean Flook                  Fixed warning.
 //    005   16.01.24 Sean Flook        IMANN-237 Added a clear button.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    006   12.11.24 Sean Flook                  Various required to improve the display of the controls.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    007   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -44,7 +44,7 @@ import {
   FormDateInputNoMarginStyle,
 } from "../utils/ADSStyles";
 
-/* #endregion imports */
+//#endregion imports
 
 ADSFilterDateControl.propTypes = {
   label: PropTypes.string.isRequired,

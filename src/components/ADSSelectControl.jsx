@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Select component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
 //    003   12.05.21 Sean Flook          WI39345 Changed to allow for the display of icons.
@@ -32,23 +32,23 @@
 //    019   09.04.24 Sean Flook        IMANN-376 Modified to show an add button if required.
 //    020   13.06.24 Sean Flook        IMANN-553 Changes required to handle values of 0.
 //    021   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    022   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    023   12.11.24 Sean Flook                  Added ability to show the data has been changed.
 //    024   25.11.24 Sean Flook       IMANN-1052 Changes required for the change in label for street classification.
 //    025   25.11.24 Sean Flook       IMANN-1052 Removed debug message which is no longer required.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    026   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
@@ -86,7 +86,7 @@ import {
   tooltipStyle,
 } from "../utils/ADSStyles";
 
-/* #endregion imports */
+//#endregion imports
 
 ADSSelectControl.propTypes = {
   label: PropTypes.string.isRequired,

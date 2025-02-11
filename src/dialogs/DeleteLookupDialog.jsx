@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Delete lookup dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Stack to @mui/system.
@@ -20,13 +20,13 @@
 //    007   29.02.24 Joel Benford      IMANN-242 Add DbAuthority.
 //    008   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
 //    009   27.03.24 Sean Flook                  Added ADSDialogTitle.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    010   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

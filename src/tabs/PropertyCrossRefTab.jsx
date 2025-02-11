@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Details Tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   20.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
 //    003   28.03.23 Sean Flook         WI40596 Removed above change.
@@ -32,7 +32,7 @@
 //    019   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

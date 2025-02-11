@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Control for handling a selection of objects
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   18.04.23 Sean Flook         WI40685 Do not allow properties to be created on a closed street, a type 3/4 street or a rejected/historic parent property.
 //    003   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
@@ -45,24 +45,24 @@
 //    032   11.07.24 Sean Flook       IMANN-747 Only display menu items if the user has the rights to use them.
 //    033   11.07.24 Sean Flook       IMANN-748 Only display menu items if user has the correct rights.
 //    034   17.07.24 Joshua McCormick IMANN-548 zoomToStreet fix
-//    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
+//    035   17.07.24 Joshua McCormick IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet
 //    036   18.07.24 Sean Flook       IMANN-761 Remove the Close and Delete menu options for streets.
 //    036   18.07.24 Sean Flook       IMANN-773 Correctly set the parent information when creating property/ies.
 //    037   28.08.24 Sean Flook       IMANN-957 Added missing formattedAddress field to map search data.
 //    038   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    039   27.09.24 Sean Flook       IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    040   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    041   31.10.24 Sean Flook      IMANN-1012 Added the plot to postal wizard.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    042   13.11.24 Sean Flook      IMANN-1012 Made the plot to postal wizard menu item visible.
 //    043   18.11.24 Sean Flook      IMANN-1056 Use the new getPropertyListDetails method.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

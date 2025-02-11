@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit Property Template tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -26,13 +26,13 @@
 //    013   08.05.24 Sean Flook        IMANN-447 Added exclude from export and site visit to the options of fields that can be edited.
 //    014   22.05.24 Sean Flook        IMANN-473 Corrected label for Scottish authorities.
 //    015   29.05.24 Joshua McCormick   IMANN-94 Rename Edit template title to Rename template
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

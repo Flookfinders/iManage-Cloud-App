@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Related Property tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   30.07.21 Sean Flook                  Initial Revision.
 //    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
 //    003   18.04.23 Sean Flook          WI40685 Modified call to ADSSelectionControl.
@@ -60,21 +60,21 @@
 //    046   07.08.24 Sean Flook        IMANN-891 Use stopPropagation rather than persist.
 //    047   07.08.24 Sean Flook        IMANN-973 Use a string for the makeChildUprn.
 //    048   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    049   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    050   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.3.0
 //    051   07.01.25 Sean Flook       IMANN-1124 Ensure the current property is in view when opening the related tab from code.
 //    052   09.01.25 Sean Flook       IMANN-1124 Check the object exists before trying to bring it in to view.
-//#endregion Version 1.0.3.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.3.0
+//#region Version 1.0.5.0
 //    053   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

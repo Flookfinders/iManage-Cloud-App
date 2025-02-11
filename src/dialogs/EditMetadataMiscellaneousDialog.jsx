@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit metadata miscellaneous dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
@@ -21,14 +21,14 @@
 //    008   31.01.24 Joel Benford                Changes to as save and support OS
 //    009   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                  Added ADSDialogTitle.
-//    011   09.05.24 Joel Benford      IMANN-443 Allow Gaelic for Scottish property metadata 
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//    011   09.05.24 Joel Benford      IMANN-443 Allow Gaelic for Scottish property metadata
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

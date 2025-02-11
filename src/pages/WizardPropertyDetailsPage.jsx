@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Property Details page
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -26,16 +26,16 @@
 //    013   29.05.24 Sean Flook        IMANN-494 Pass through the scottish flag when calling getLpiOfficialAddress.
 //    014   29.05.24 Sean Flook        IMANN-504 Corrected names for BLPU level.
 //    015   21.06.24 Sean Flook        IMANN-578 Corrected name for LPI level.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    016   25.11.24 Sean Flook       IMANN-1085 Added divider between Provenance and Notes in Other card.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

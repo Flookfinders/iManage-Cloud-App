@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Search component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
 //    003   18.04.23 Sean Flook          WI40687 Handle a 204 response.
@@ -47,30 +47,30 @@
 //    034   08.07.24 Sean Flook        IMANN-728 Only get the background properties and provenances if the user can see properties.
 //    035   18.07.24 Sean Flook        IMANN-772 Corrected field name.
 //    036   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    037   02.10.24 Sean Flook        IMANN-996 Call onEditMapObject when opening a property.
 //    038   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    039   12.11.24 Sean Flook                  Anchor the filter dialog to the filter button when displaying.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.3.0
 //    040   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    041   09.01.25 Sean Flook       IMANN-1125 Only get background data if required.
-//#endregion Version 1.0.3.0 changes
-//#region Version 1.0.4.0 changes
+//#endregion Version 1.0.3.0
+//#region Version 1.0.4.0
 //    042   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
-//#endregion Version 1.0.4.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.4.0
+//#region Version 1.0.5.0
 //    043   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    044   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
@@ -137,7 +137,7 @@ import {
 import { useTheme, styled } from "@mui/styles";
 import userContext from "../context/userContext";
 
-/* #endregion imports */
+//#endregion imports
 
 const apiFetch = async (url, headers, dataIfAborted, signal) => {
   try {

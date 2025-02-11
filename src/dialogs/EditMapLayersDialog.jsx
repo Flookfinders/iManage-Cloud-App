@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit map layers dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
@@ -24,15 +24,15 @@
 //    011   08.02.24 Sean Flook                  Correctly set additional fields.
 //    012   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
 //    013   27.03.24 Sean Flook                  Added ADSDialogTitle.
-//    014   09.07.24 Joshua McCormick  IMANN-520 Property Names input set to required 
+//    014   09.07.24 Joshua McCormick  IMANN-520 Property Names input set to required
 //    015   15.07.24 Sean Flook                  Display non-field errors.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useRef, useContext, useEffect } from "react";
 import PropTypes from "prop-types";

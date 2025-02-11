@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Application Bar component
 //
@@ -10,19 +10,19 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   26.01.24 Sean Flook       IMANN-251 Reset associatedRecords when option is true.
 //    003   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 import React, { useState, useRef, useContext, createContext, Fragment } from "react";
 import ConfirmEditLossDialog from "./../dialogs/ConfirmEditLossDialog";
-/* #endregion imports */
+//#endregion imports
 
 const SaveConfirmationServiceContext = createContext();
 

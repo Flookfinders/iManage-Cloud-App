@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Control used to display a list of the errors.
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -19,19 +19,19 @@
 //    006   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    007   27.02.24 Sean Flook            MUL15 Changed to use dialogTitleStyle.
 //    008   27.03.24 Sean Flook                  Added ADSDialogTitle.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    009   31.10.24 Sean Flook       IMANN-1012 Added plotToPostal.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    010   03.12.24 Sean Flook       IMANN-1081 Include classification errors for Scottish authorities.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";

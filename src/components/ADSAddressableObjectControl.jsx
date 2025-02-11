@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Address Details 2 (Range create)
 //
@@ -32,7 +32,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   25.04.23 Sean Flook          WI40703 Do not allow text with invalid characters to be pasted in and displayed.
 //    003   30.06.23 Sean Flook          WI40770 Ensure the end suffix is uppercase.
@@ -48,16 +48,16 @@
 //    013   10.07.24 Sean Flook        IMANN-649 Prevent carat from jumping to end of text.
 //    014   11.07.24 Sean Flook        IMANN-759 Set the display variable if we do not have the input reference.
 //    015   15.07.24 Sean Flook        IMANN-759 Always set the display variable.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    016   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";

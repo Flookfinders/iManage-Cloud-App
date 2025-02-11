@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Navigation Bar component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   17.08.23 Sean Flook        IMANN-156 Modified to allow the login dialog to be displayed again after user has clicked cancel.
 //    003   07.09.23 Sean Flook                  Changed function name and cleaned the code.
@@ -28,16 +28,16 @@
 //    015   02.07.24 Sean Flook        IMANN-642 If unauthorised set the step to 0.
 //    016   09.07.24 Joshua McCormick  IMANN-644 Change password error message handling shows errors.Password[0] instead of whole response
 //    017   10.09.24 Sean Flook        IMANN-980 Removed unnecessary console messages.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.4.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.4.0
 //    018   06.02.25 Sean Flook       IMANN-1679 Correctly display the login dialog when a user has expired.
-//#endregion Version 1.0.4.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.4.0
+//#region Version 1.0.5.0
 //    019   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

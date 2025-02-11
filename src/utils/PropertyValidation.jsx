@@ -21,7 +21,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   22.03.23 Sean Flook         WI40596 Corrected typo.
 //    003   28.03.23 Sean Flook         WI40625 Added checks for start date prior to 1753 to cross references and extents.
@@ -64,18 +64,18 @@
 //    040   26.07.24 Sean Flook       IMANN-860 Report check 3000012 on the correct field.
 //    041   22.08.24 Sean Flook       IMANN-951 Corrected field names.
 //    042   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    043   31.10.24 Joel Benford    IMANN-1039 Add check 2400108 (LPI must have USRN)
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    044   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    045   14.11.24 Sean Flook       IMANN-1039 Correctly add check 2400108.
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.4.0
 //    047   07.02.25 Sean Flook       IMANN-1676 Removed checks 2100065, 2100076, 2100077, 3100021 and 3100022.
-//#endregion Version 1.0.4.0 changes
+//#endregion Version 1.0.4.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header

@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Lookup tables tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   03.11.23 Sean Flook                  Make labels the same within application.
 //    003   24.11.23 Sean Flook                  Moved Stack to @mui/system.
@@ -26,17 +26,17 @@
 //    013   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    014   02.07.24 Sean Flook        IMANN-666 Moved permit scheme id and out of hours arrangement.
 //    015   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.0.0
 //    016   02.10.24 Sean Flook        IMANN-409 Set newDistrict flag for EditDistrictLookupDialog.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    018   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";

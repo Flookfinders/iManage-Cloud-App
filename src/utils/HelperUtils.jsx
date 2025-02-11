@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Helper utilities
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   05.04.23 Sean Flook          WI40669 Handle commas in error messages. Correctly format cross reference source in GetCrossRefAvatar.
 //    003   19.04.23 Sean Flook          WI40653 Added includeCheck.
@@ -50,7 +50,7 @@
 //    037   09.02.24 Joel Benford     IM-227/228 Generalize ward/parish URL
 //    038   03.05.24 Sean Flook                  Added getBaseMapLayers.
 //    039   17.05.24 Sean Flook        IMANN-309 Only check all ESUs if geometry has changed and this is not a new street.
-//    040   17.05.24 Joshua McCormick  IMANN-460 Added PUT to call English with Welsh ref  
+//    040   17.05.24 Joshua McCormick  IMANN-460 Added PUT to call English with Welsh ref
 //    041   23.05.24 Sean Flook        IMANN-478 Include usedByFrontEnd in includeCheck.
 //    042   30.05.24 Joel Benford      IMANN-496 Add GetOSClassificationAvatarAndText
 //    043   06.06.24 Joel Benford      IMANN-497 Add data to xrefs in addLookup
@@ -62,28 +62,28 @@
 //    049   25.07.24 Joshua McCormick  IMANN-820 added mapContext.onEditMapObject in ResetContexts
 //    050   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
 //    051   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    052   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    053   31.10.24 Sean Flook       IMANN-1012 Added getLookupLinkedRef method.
 //    054   01.10.24 Sean Flook       IMANN-1010 For streets the logicalStatus is no longer greater than 10 in GetAvatarTooltip.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    055   14.11.24 Sean Flook       IMANN-1049 Look for the correct character in GetUserName.
 //    056   14.11.24 Sean Flook       IMANN-1012 Added getCheckIcon.
 //    057   25.11.24 Sean Flook       IMANN-1083 Changed GeoPlaceProperty1 to allow the full ISO-8859-14 character set.
 //    057   18.12.24 Joshua McCormick IMANN-1109 Change GeoPlaceProperty2 to allow apostrophe for PAO/SAO
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.4.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.4.0
 //    058   03.02.25 Sean Flook       IMANN-1676 Only validate Property strings against ISO 8859-14.
 //    059   03.02.25 Sean Flook       IMANN-1678 Only validate Property strings against ISO 8859-14.
-//#endregion Version 1.0.4.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.4.0
+//#region Version 1.0.5.0
 //    060   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import { useContext } from "react";
 import LookupContext from "../context/lookupContext";

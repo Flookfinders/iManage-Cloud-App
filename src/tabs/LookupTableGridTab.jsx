@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Lookup table grid tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and removed a warning.
@@ -23,13 +23,13 @@
 //    010   26.04.24 Sean Flook        IMANN-413 Removed Gaelic option.
 //    011   17.05.24 Sean Flook        IMANN-176 Added a new button to allow for spatially updating BLPU ward and parish codes.
 //    012   28.05.24 Joel Benford      IMANN-481 Hide delete button fro wards and parishes
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

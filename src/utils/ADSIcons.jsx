@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Icons used within the application
 //
@@ -10,19 +10,19 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   15.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    005   14.03.24 Sean Flook        ESU24_GP Added AssignEsuIcon.
 //    006   04.04.24 Sean Flook                 Added SupportAgentIcon.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React from "react";
 import { SvgIcon } from "@mui/material";
@@ -30,7 +30,7 @@ import { Box } from "@mui/system";
 import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import { adsWhite, adsLightGreyD } from "./ADSColours";
 
-/* #endregion imports */
+//#endregion imports
 
 /**
  * Method to get the indent icon.

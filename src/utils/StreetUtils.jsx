@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Street utilities
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   16.08.22 Sean Flook          WI39??? Initial Revision.
 //    002   28.06.23 Sean Flook          WI40730 Fixed GetDistrictLabel.
 //    003   23.08.23 Sean Flook        IMANN-159 Added state, classification and surface to GetNewStreet.
@@ -53,7 +53,7 @@
 //    040   24.04.24 Sean Flook        IMANN-390 When creating a new street if the USRN is already set use that; otherwise use 0.
 //    041   02.05.24 Joshua McCormick  IMANN-283 Map overlay, removed unneeded code numbers from Status & Type
 //    042   02.05.24 Joshua McCormick  IMANN-283 Added check to GetStreetTypeLabel for included label, reverted 041 changes
-//    043   02.05.24 Joshua McCormick  IMANN-283 GetStreetTypeLabel now has included label defaulted to true 
+//    043   02.05.24 Joshua McCormick  IMANN-283 GetStreetTypeLabel now has included label defaulted to true
 //    044   02.05.24 Joel Benford      IMANN-275 Use ENG for unassigned lookups in Scotland
 //    045   08.05.24 Sean Flook        IMANN-447 Added exclude from export when creating a new street.
 //    046   14.05.24 Sean Flook        IMANN-438 Fixed setting the prowUsrn field when updating.
@@ -85,22 +85,22 @@
 //    072   02.09.24 Sean Flook        IMANN-975 Handle "Unassigned" in the lookups when getting the new street address.
 //    073   02.09.24 Sean Flook        IMANN-976 Handle "Unassigned" in lookups.
 //    074   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    075   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    076   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
 //    077   06.11.24 Sean Flook       IMANN-1047 Make some of the code more robust.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    078   26.11.24 Sean Flook       IMANN-1057 Scottish authorities do not have Gaelic lookup records.
 //    079   02.12.24 Sean Flook       IMANN-1059 Do not set the change type to D on ASD records if the pk id is 0.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    080   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React from "react";
 import dateFormat from "dateformat";

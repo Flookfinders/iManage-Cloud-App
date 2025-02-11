@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Display the list of BLPU provenances for the property.
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -29,16 +29,16 @@
 //    016   29.04.24 Joshua McCormick  IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    017   05.06.24 Sean Flook        IMANN-523 Use the provenance colour for the avatar.
 //    018   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    019   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useRef, useContext, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

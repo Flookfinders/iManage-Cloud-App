@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard select template page
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   05.04.23 Sean Flook         WI40669 Fixed warnings.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -18,7 +18,7 @@
 //    005   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    006   10.01.24 Sean Flook                 Fix warnings.
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

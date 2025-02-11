@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Control used to display a dialog title.
 //
@@ -10,13 +10,13 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   27.03.24 Sean Flook                 Initial version.
 //    002   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React from "react";
 import PropTypes from "prop-types";

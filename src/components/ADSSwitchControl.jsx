@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: ADS Switch control
 //
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   31.03.23 Sean Flook          WI40656 Correctly display control when checked changes.
 //    003   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
 //    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    005   11.03.24 Sean Flook            MUL13 Added wideLabel parameter.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -33,7 +33,7 @@ import { Box } from "@mui/system";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 
-/* #endregion imports */
+//#endregion imports
 
 ADSSwitchControl.propTypes = {
   label: PropTypes.string.isRequired,

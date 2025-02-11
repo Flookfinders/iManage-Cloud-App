@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to make a property a child of another property
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   27.02.24 Sean Flook            MUL16 Initial Revision.
 //    002   12.03.24 Sean Flook            MUL10 Display errors in a list control.
 //    003   22.03.24 Sean Flook            MUL16 Correctly set the address data.
@@ -19,15 +19,15 @@
 //    006   04.04.24 Sean Flook                  Added parentUprn to mapContext search data for properties.
 //    007   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
 //    008   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    009   30.09.24 Sean Flook        IMANN-605 Display the selected parent address on the first page once selected.
 //    010   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    011   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

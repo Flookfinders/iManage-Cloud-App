@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: The page routing form.
 //
@@ -10,15 +10,15 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
@@ -33,7 +33,7 @@ import UserAdminPage from "./pages/UserAdminPage";
 import SettingsPage from "./pages/SettingsPage";
 import { hasLoginExpired } from "./utils/HelperUtils";
 
-/* #endregion imports */
+//#endregion imports
 
 export const HomeRoute = "/";
 export const GazetteerRoute = "/gazetteer";

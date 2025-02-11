@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Classification Tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   18.09.23 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
@@ -31,7 +31,7 @@
 //    018   08.07.24 Sean Flook       IMANN-718 Use the correct field name.
 //    019   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    020   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

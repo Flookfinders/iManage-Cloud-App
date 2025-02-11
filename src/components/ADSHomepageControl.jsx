@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Homepage Control containing dashboard information
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.06.23 Joel Benford        WI40689 Initial Revision.
 //    002   07.09.23 Sean Flook                  Modified function name.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -20,14 +20,14 @@
 //    007   25.01.24 Sean Flook                  Correctly handle status code 204.
 //    008   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    009   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    010   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    011   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import { React, useState, useEffect, useContext } from "react";
 

@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to multi-edit add classification for OneScotland authorities
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   26.10.23 Sean Flook        IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   30.11.23 Sean Flook                  Use a constant for the default classification scheme.
@@ -30,10 +30,10 @@
 //    017   22.08.24 Sean Flook        IMANN-946 Only display the Keep option when end date is set.
 //    018   28.08.24 Sean Flook        IMANN-959 When we have an end date set only display the keep option.
 //    019   10.09.24 Sean Flook        IMANN-979 When updating existing do not add a new record.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

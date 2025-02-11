@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Height, width & weight restriction data tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   16.10.23 Sean Flook                 Hide the button for the coordinates.
@@ -35,10 +35,10 @@
 //    022   18.06.24 Sean Flook       IMANN-595 Update the correct state variable for Feature description errors.
 //    023   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    024   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

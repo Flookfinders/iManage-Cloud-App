@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Text component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
 //    003   14.05.21 Sean Flook          WI39345 Updated className.
@@ -34,13 +34,13 @@
 //    022   10.07.24 Sean Flook        IMANN-649 Prevent carat from jumping to end of text.
 //    023   11.07.24 Sean Flook        IMANN-759 Set the display variable if we do not have the input reference.
 //    024   15.07.24 Sean Flook        IMANN-759 Always set the display variable.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    025   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 /* #region Character Sets used */
 //---------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@
 //---------------------------------------------------------------------------------------------------
 /* #endregion Character Sets used */
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -110,7 +110,7 @@ import { adsBlueA } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, FormInputStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 import { characterSetValidator, isEdgeChromium } from "../utils/HelperUtils";
 
-/* #endregion imports */
+//#endregion imports
 
 ADSTextControl.propTypes = {
   label: PropTypes.string,

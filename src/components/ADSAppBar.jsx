@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Application Bar component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   28.03.23 Sean Flook          WI40632 Set the source for onWizardDone.
 //    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
@@ -54,22 +54,22 @@
 //    051   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
 //    052   18.07.24 Sean Flook        IMANN-772 Corrected field name.
 //    053   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    054   10.10.24 Sean Flook       IMANN-1018 Allow LLPG editors to create streets.
 //    055   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    056   28.11.24 Sean Flook       IMANN-1073 If validation fails when trying to save do not proceed so validation messages can be seen.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    057   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useRef, useEffect, Fragment, useCallback } from "react";
 // import { useLocation, useNavigate } from "react-router";
@@ -151,7 +151,7 @@ import {
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-/* #endregion imports */
+//#endregion imports
 
 function ADSAppBar(props) {
   const theme = useTheme();

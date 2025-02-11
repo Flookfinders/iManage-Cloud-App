@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: ESRI Map component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   30.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook          WI40585 Use property wizard when creating properties.
 //    003   21.03.23 Sean Flook          WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
@@ -100,8 +100,8 @@
 //    086   28.08.24 Sean Flook        IMANN-957 Handle if formattedAddress  is missing from the property data.
 //    087   03.09.24 Sean Flook        IMANN-972 Prevent infinite loop from occurring.
 //    088   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    089   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    090   01.10.24 Sean Flook        IMANN-713 Changed the text on the buttons for adding a property/ies to a street.
 //    091   01.10.24 Sean Flook        IMANN-993 Display the extent merge tool.
@@ -112,11 +112,11 @@
 //    096   28.10.24 Joshua McCormick  IMANN-904 useEffect for mapContext.currentClearObject
 //    097   05.11.24 Sean Flook        IMANN-904 When clearing the current edit object clear the geometry as well.
 //    098   06.11.24 Sean Flook       IMANN-1047 Undo changes done for IMANN-904.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    099   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.3.0
 //    100   06.01.25 Sean Flook       IMANN-1121 Tidied up code around UI controls.
 //    101   06.01.25 Sean Flook       IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    102   06.01.25 Sean Flook       IMANN-1123 Changed issue number above.
@@ -133,19 +133,20 @@
 //    113   13.01.25 Sean Flook       IMANN-1132 Ensure the reordering of the layers is correctly run.
 //    114   16.01.25 Sean Flook       IMANN-1135 When selecting properties adjust the opacity of the street layer.
 //    115   16.01.25 Sean Flook       IMANN-1136 Correctly handle merging provenance extents.
-//#endregion Version 1.0.3.0 changes
-//#region Version 1.0.4.0 changes
+//#endregion Version 1.0.3.0
+//#region Version 1.0.4.0
 //    116   04.02.25 Sean Flook       IMANN-1677 Save the correct object to historicRec when opening a historic property.
-//#endregion Version 1.0.4.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.4.0
+//#region Version 1.0.5.0
 //    117   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
 //    118   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
+
 import React, { useContext, useState, useRef, useCallback, useEffect, Fragment } from "react";
 // import { useNavigate } from "react-router";
 import { useHistory } from "react-router";
@@ -258,7 +259,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import { adsWhite } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity, dataFormStyle } from "../utils/ADSStyles";
 
-/* #endregion imports */
+//#endregion imports
 
 const backgroundPropertyLayerName = "backgroundPropertyLayer";
 const backgroundProvenanceLayerName = "backgroundProvenanceLayer";

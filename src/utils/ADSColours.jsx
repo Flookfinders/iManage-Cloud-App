@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: All the colour codes used in the application
 //
@@ -14,13 +14,13 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   06.10.23 Sean Flook                 Initial version.
 //    002   09.02.24 Sean Flook                 Added new colours for ASD records.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    003   12.11.24 Sean Flook                 Added the ADS palette theme initially used by the filter chips.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

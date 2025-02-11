@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Context
 //
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.07.21 Sean Flook         WI39??? Initial Revision.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React from "react";
 
-/* #endregion imports */
+//#endregion imports
 
 const PropertyContext = React.createContext();
 PropertyContext.displayName = "PropertyContext";

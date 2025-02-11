@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to edit an existing lookup
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   29.06.23 Sean Flook                  Added ability to set enabled flag for cross reference records.
 //    003   07.09.23 Sean Flook                  Removed unnecessary awaits.
@@ -33,15 +33,15 @@
 //    020   13.06.24 Joel Benford      IMANN-497 Various fixes mostly on making historic
 //    021   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    023   01.10.24 Sean Flook        IMANN-431 Change the default returned in GetLinkedRef to -1.
 //    024   02.10.24 Sean Flook        IMANN-994 Include the PKId in the update data for App Cross References.
 //    025   07.10.24 Sean Flook        IMANN-995 Corrected check for linked records when refreshing data after a delete.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */

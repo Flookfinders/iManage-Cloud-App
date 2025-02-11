@@ -1,5 +1,5 @@
-//#region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Filter Control
 //
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   12.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
 //    005   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    006   12.11.24 Sean Flook                 Various required changes.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -63,7 +63,7 @@ import ReinstatementType from "../data/ReinstatementType";
 import SpecialDesignationCode from "../data/SpecialDesignationCode";
 import HWWDesignationCode from "../data/HWWDesignationCode";
 
-/* #endregion imports */
+//#endregion imports
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Location filter tab
 //
@@ -10,17 +10,17 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   07.07.21 Sean Flook         WI39??? Initial Revision.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    002   12.11.24 Sean Flook                 Various changes to improve the look and functionality.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useContext, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -39,7 +39,7 @@ FilterLocationTab.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-/* #endregion imports */
+//#endregion imports
 
 function FilterLocationTab({ changedFlags, selectedData, onChange }) {
   const lookupContext = useContext(LookupContext);

@@ -15,17 +15,17 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   25.04.23 Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Removed unnecessary console logs.
 //    003   15.12.23 Sean Flook                 Added comments.
 //    004   08.02.24 Sean Flook                 Changes required for viaEuropa.
 //    005   20.05.24 Sean Flook       IMANN-446 Added missing map layer checks.
 //    006   04.07.24 Sean Flook       IMANN-221 Updated messages.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    007   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header

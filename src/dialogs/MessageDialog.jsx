@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to display messages
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   03/11/23 Sean Flook                 Initial Revision.
 //    002   10.11.23 Sean Flook       IMANN-175 Added Move BLPU.
 //    003   20.12.23 Sean Flook       IMANN-152 Added Edit ASD Geometry and Edit ESU Geometry.
@@ -24,13 +24,13 @@
 //    011   04.04.24 Sean Flook                 Added cascadeLogicalStatus.
 //    012   25.04.24 Sean Flook       IMANN-390 Added noUprn and noUprnsRange.
 //    013   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    014   30.10.24 Sean Flook      IMANN-1040 Added failLookupLoad.
-//#endregion Version 1.0.1.0 changes
+//#endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext } from "react";
 import PropTypes from "prop-types";

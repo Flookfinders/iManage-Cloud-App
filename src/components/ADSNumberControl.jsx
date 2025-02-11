@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Number component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
 //    003   14.05.21 Sean Flook          WI39345 Updated className.
@@ -26,18 +26,18 @@
 //    013   19.06.24 Joshua McCormick  IMANN-503 Removed textfield changes, maximum change working
 //    014   19.06.24 Joshua McCormick  IMANN-503 handleNumberChangeEvent change to allow for 99.9 maximum
 //    015   20.06.24 Sean Flook        IMANN-633 Allow numbers to be removed.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    016   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    017   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid2, TextField, Typography, Tooltip, Skeleton } from "@mui/material";
@@ -51,7 +51,7 @@ import {
   tooltipStyle,
   skeletonHeight,
 } from "../utils/ADSStyles";
-/* #endregion imports */
+//#endregion imports
 
 ADSNumberControl.propTypes = {
   label: PropTypes.string.isRequired,

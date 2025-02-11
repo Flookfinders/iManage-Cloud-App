@@ -1,5 +1,5 @@
-//#region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: URL data about the api calls we need to make
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   23.08.23 Sean Flook        IMANN-159 Removed ASD Template as not required.
 //    003   07.09.23 Sean Flook                  Cleaned the code and function names.
@@ -29,19 +29,19 @@
 //    016   11.06.24 Sean Flook        IMANN-509 Reverted security API back to v1 for now.
 //    017   11.06.24 Sean Flook        IMANN-509 Undone above changes.
 //    018   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    019   01.10.24 Sean Flook        IMANN-986 Added new range URLs.
 //    020   10.10.24 Sean Flook        IMANN-986 Corrected method name.
 //    021   24.10.24 Sean Flook       IMANN-1040 Added PostUserLogoffUrl.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    022   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    023   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//#endregion header
 
 var currentConfig = null;
 

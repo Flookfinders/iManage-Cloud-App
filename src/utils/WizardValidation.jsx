@@ -14,7 +14,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   23.03.23 Sean Flook         WI40605 Use the correct templateUseType numbers and fixed checks.
 //    003   23.03.23 Sean Flook         WI40607 Added check for no address included when doing a range create.
@@ -46,15 +46,15 @@
 //    029   26.07.24 Sean Flook       IMANN-855 Modified checks 2400077 & 2400078.
 //    030   09.08.24 Joel Benford     IMANN-533 Modified checks 2100024 & 2400042.
 //    031   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.2.0
 //    032   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    033   21.11.24 Sean Flook       IMANN-1054 Pass through the currentLookups to failsCheck2300025.
 //    034   21.11.24 Sean Flook       IMANN-1064 Correctly get the post town and postcode data for check 2400060.
 //    035   21.11.24 Sean Flook       IMANN-1074 Call the correct method for check 2400108.
 //    036   22.11.24 Sean Flook       IMANN-1065 When moving a BLPU there is no need to check the level as we do not have that data.
 //    037   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
-//#endregion Version 1.0.2.0 changes
+//#endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header

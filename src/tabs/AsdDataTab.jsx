@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: ASD Data tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   10.08.23 Sean Flook                 Use the correct primaryCodeField for type 61 records.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -37,10 +37,10 @@
 //    024   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Move BLPU seed point dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   06/11/23 Sean Flook        IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system, renamed successor to successorCrossRef and simplified handleFinaliseClose.
 //    003   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
@@ -27,20 +27,20 @@
 //    014   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    015   09.07.24 Sean Flook        IMANN-731 Corrected Scottish data.
 //    016   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    017   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    018   18.11.24 Sean Flook       IMANN-1056 Use the new getPropertyListDetails method.
 //    019   21.11.24 Sean Flook       IMANN-1065 Correctly handle when the data is updated.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { forwardRef, useContext, useState, useRef, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";

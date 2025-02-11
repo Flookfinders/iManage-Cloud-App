@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Upload shape file dialog
 //
@@ -10,20 +10,20 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.01.24 Sean Flook                  Initial Revision.
 //    002   03.01.24 Sean Flook                  Fixed warning.
 //    003   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    004   11.01.24 Sean Flook                  Fix warnings.
 //    005   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
 //    006   27.03.24 Sean Flook                  Added ADSDialogTitle.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    007   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

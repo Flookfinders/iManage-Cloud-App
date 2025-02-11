@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Map
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   27.03.23 Sean Flook         WI40628 Correctly call onWizardSetCoordinate when dragging the pin on place on map page.
 //    003   07.09.23 Sean Flook                 Removed unnecessary wait.
@@ -33,17 +33,17 @@
 //    020   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    021   08.07.24 Sean Flook       IMANN-728 Pass in the new parameter to onExtentChange.
 //    022   10.09.24 Sean Flook       IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.3.0
 //    023   06.01.25 Sean Flook      IMANN-1123 Changed Multiple properties to Multiple addresses in popup.
 //    024   06.01.25 Sean Flook      IMANN-1123 Changed issue number above.
 //    025   07.01.25 Sean Flook      IMANN-1126 If the user changes the zoom level remember it.
 //    026   07.01.25 Sean Flook      IMANN-1123 Sort properties on logical status to try and get the cluster symbol correct.
 //    027   10.01.25 Sean Flook      IMANN-1126 Also handle when user uses the mouse wheel to zoom on the map.
-//#endregion Version 1.0.3.0 changes
+//#endregion Version 1.0.3.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useEffect, useState, useRef, Fragment } from "react";
 import PropTypes from "prop-types";

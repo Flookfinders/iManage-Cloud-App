@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Doughnut Chart component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   05.05.21 Sean Flook          WI39345 Initial Revision.
 //    002   10.05.21 Sean Flook          WI39345 Corrected icons.
 //    003   14.05.21 Sean Flook          WI39345 Display the total count in the center of chart.
@@ -23,15 +23,16 @@
 //    010   04.01.24 Sean Flook                  Fix colours for street type and correctly set the hover colour in the tooltip.
 //    011   10.01.24 Sean Flook                  Removed street state as no longer required.
 //    012   05.02.24 Sean Flook                  Ignore case when looking at labels when getting the required colours.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
+
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
@@ -46,7 +47,8 @@ import StreetType from "../data/StreetType";
 import BLPULogicalStatus from "../data/BLPULogicalStatus";
 import { dashboardIconStyle } from "../utils/ADSStyles";
 import { adsPaleBlueA } from "../utils/ADSColours";
-/* #endregion imports */
+
+//#endregion imports
 
 Chart.register(ArcElement, DoughnutController, Legend, Tooltip, {
   id: "centerText",

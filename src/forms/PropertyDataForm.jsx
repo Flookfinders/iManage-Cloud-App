@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Data Form
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   20.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   16.03.23 Sean Flook          WI40581 When deleting a cross ref ensure the form is closed.
 //    003   22.03.23 Sean Flook          WI40596 Pass the BLPU logical status to the data tabs.
@@ -78,30 +78,30 @@
 //    065   13.08.24 Sean Flook        IMANN-861 When creating a new successor record set the predecessor with the current UPRN.
 //    066   27.08.24 Sean Flook        IMANN-910 Corrected typo.
 //    067   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    068   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    069   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    070   30.10.24 Joel Benford     IMANN-1036 Set OS blpu state 0 when LS -> 9
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    071   28.11.24 Sean Flook       IMANN-1086 When cancelling changes to provenance ensure the map is also updated.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.3.0
 //    072   07.01.25 Joshua McCormick IMANN-1122 Removed unnecessary code for handleOrganisationChanged
 //    073   09.01.25 Sean Flook        IMANN-781 Include the pkId in the extent object.
 //    074   09.01.25 Sean Flook       IMANN-1086 Ensure the polygon is reverted/removed when cancelling/deleting.
 //    075   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //    076   16.01.25 Sean Flook       IMANN-1136 Correctly handle merging provenance extents.
-//#endregion Version 1.0.3.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.3.0
+//#region Version 1.0.5.0
 //    077   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router";
@@ -202,7 +202,7 @@ import {
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 import MessageDialog from "../dialogs/MessageDialog";
-/* #endregion imports */
+//#endregion imports
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

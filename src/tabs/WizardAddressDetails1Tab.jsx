@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard validation
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   24.03.23 Sean Flook         WI40608 Changes required to correctly handle changes to PAO details for child properties.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
@@ -19,13 +19,13 @@
 //    006   09.04.24 Sean Flook       IMANN-376 Allow lookups to be added on the fly.
 //    007   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //    008   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    009   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
-//#endregion Version 1.0.1.0 changes
+//#endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

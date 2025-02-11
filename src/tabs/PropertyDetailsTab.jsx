@@ -1,5 +1,5 @@
 //#region header */
-/**************************************************************************************************
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Details Tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   20.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
 //    003   22.03.23 Sean Flook          WI40596 Only allow editing if BLPU logical status is not historic or rejected.
@@ -63,21 +63,21 @@
 //    049   19.07.24 Sean Flook        IMANN-802 Added ability for Scottish authorities to add new Gaelic LPIs.
 //    050   23.07.24 Sean Flook        IMANN-403 Only update the map if the coordinates are within the valid range.
 //    051   20.08.24 Sean Flook        IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    052   30.10.24 Joel Benford      IMANN-1036 Set OS blpu state 0 when LS -> 9
 //    053   07.01.25 Joshua McCormick  IMANN-1122 Hide organisation change when editing
 //    054   07.01.25 Joshua McCormick  IMANN-1122 Removed onOrganisationChange check inside updateCurrentData
 //    055   07.01.25 Joshua McCormick  IMANN-1122 Removed unnecessary if statement for onOrganisationChange
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    056   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //#endregion header */
 
-/* #region imports */
+//#region imports
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

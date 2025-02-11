@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Interest data tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   10.08.23 Sean Flook                 Corrected field name.
 //    003   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
@@ -39,10 +39,10 @@
 //    026   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    027   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    028   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit Cross Reference Dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   04.04.23 Sean Flook         WI40669 Initial version.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
@@ -19,10 +19,10 @@
 //    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    008   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

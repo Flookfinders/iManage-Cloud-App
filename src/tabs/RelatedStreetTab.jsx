@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Related street tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   30.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook          WI40585 Hide Add property and range menu items.
 //    003   18.04.23 Sean Flook          WI40685 Modified call to ADSSelectionControl.
@@ -46,20 +46,20 @@
 //    033   26.06.24 Joshua McCormick  IMANN-548 ZoomToStreet fix, added setAnchorStreetActionsEl
 //    034   03.07.24 Joshua McCormick  IMANN-699 Renamed Add Property on Street to Add property
 //    035   17.07.24 Joshua McCormick  IMANN-548 zoomToStreet fix
-//    036   17.07.24 Joshua McCormick  IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet 
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//    036   17.07.24 Joshua McCormick  IMANN-548 changed FormatStreetData to getStreetSearchData, Removed find debug code in zoomToStreet
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    037   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    038   02.10.24 Sean Flook        IMANN-550 Changed menu item order.
 //    039   10.10.24 Sean Flook       IMANN-1018 Corrected setting of userCanEdit.
 //    040   01.11.24 Sean Flook       IMANN-1010 Do not need to add 10 to the street record type value.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.5.0
 //    041   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import MapContext from "../context/mapContext";

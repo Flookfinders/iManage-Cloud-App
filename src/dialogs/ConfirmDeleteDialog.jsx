@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Confirm delete dialog
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   05.04.23 Sean Flook         WI40669 Added in wizard cross references.
 //    003   27.06.23 Sean Flook         WI40757 Added in property template and map layer.
@@ -25,12 +25,12 @@
 //    012   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    013   04.04.24 Sean Flook                 Changes to allow for the user to decide to also delete ESUs for streets and child properties for parent properties.
 //    014   05.06.24 Sean Flook       IMANN-517 Corrected typo.
-//#endregion Version 1.0.0.0 changes
+//#endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -59,7 +59,7 @@ import { adsBlueA, adsRed, adsWhite, adsPaleBlueA, adsDarkRed } from "../utils/A
 import { useTheme } from "@mui/styles";
 import { deleteDialogContentStyle } from "../utils/ADSStyles";
 
-/* #endregion imports */
+//#endregion imports
 
 ConfirmDeleteDialog.propTypes = {
   open: PropTypes.bool.isRequired,

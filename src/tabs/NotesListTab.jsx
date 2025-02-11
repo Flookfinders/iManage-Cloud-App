@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Notes list tab
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   10.08.23 Sean Flook                  Do not display the deleted records.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -25,13 +25,13 @@
 //    012   23.05.24 Sean Flook        IMANN-486 Changed seqNo to seqNum.
 //    013   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    014   04.07.24 Sean Flook        IMANN-705 Use displayName if lastUser is the same as auditName.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

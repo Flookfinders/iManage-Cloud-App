@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Latest Edits control for homepage
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   02.06.23 Joel Benford        WI40689 Initial Revision.
 //    002          ? Sean Flook                  Various layout changes
 //    003   05.07.23 Joel Benford        WI40762 Add lastUser to latest edits grid
@@ -37,23 +37,23 @@
 //    024   04.07.24 Sean Flook        IMANN-705 Also change tooltip.
 //    025   18.07.24 Sean Flook        IMANN-772 Corrected field name.
 //    026   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.1.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.1.0
 //    027   03.10.24 Sean Flook       IMANN-1001 Use getClassificationCode to determine the classification code to use.
 //    028   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0 changes
-//#region Version 1.0.2.0 changes
+//#endregion Version 1.0.1.0
+//#region Version 1.0.2.0
 //    029   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
-//#endregion Version 1.0.2.0 changes
-//#region Version 1.0.3.0 changes
+//#endregion Version 1.0.2.0
+//#region Version 1.0.3.0
 //    030   09.01.25 Sean Flook        IMANN-781 Call onMapChange when opening a property.
-//#endregion Version 1.0.3.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.3.0
+//#region Version 1.0.5.0
 //    031   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
 import { React, useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

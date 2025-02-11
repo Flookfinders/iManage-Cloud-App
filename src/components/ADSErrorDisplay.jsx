@@ -1,5 +1,5 @@
-/* #region header */
-/**************************************************************************************************
+//#region header
+//--------------------------------------------------------------------------------------------------
 //
 //  Description: Error Display component
 //
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0 changes
+//#region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   22.04.21 Sean Flook          WI39345 Removed extra label as not required any more.
 //    003   18.06.21 Sean Flook          WI39345 Corrected spelling.
@@ -18,15 +18,15 @@
 //    005   06.04.23 Sean Flook          WI40677 Allow errorText to be a string or an array of strings.
 //    006   06.10.23 Sean Flook                  Use colour variables.
 //    007   24.11.23 Sean Flook                  Moved Stack to @mui/system.
-//#endregion Version 1.0.0.0 changes
-//#region Version 1.0.5.0 changes
+//#endregion Version 1.0.0.0
+//#region Version 1.0.5.0
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0 changes
+//#endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-/* #endregion header */
+//#endregion header
 
-/* #region imports */
+//#region imports
 
 import React, { useState, useEffect } from "react";
 import { Typography, Grid2 } from "@mui/material";
@@ -34,7 +34,7 @@ import { Stack } from "@mui/system";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { adsRed } from "../utils/ADSColours";
 
-/* #endregion imports */
+//#endregion imports
 
 const ADSErrorDisplay = ({ errorText, id }) => {
   const [errorString, setErrorString] = useState(null);
