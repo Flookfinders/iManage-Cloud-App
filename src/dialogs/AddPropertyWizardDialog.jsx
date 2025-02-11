@@ -47,9 +47,10 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.4.0
 //    034   07.02.25 Sean Flook       IMANN-1676 Corrected typo.
+//    035   11.02.25 Sean Flook       IMANN-1683 If USRN does not exist in the street descriptor lookups re-populate the street descriptor lookup.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    035   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    036   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ import WizardFinalisePage from "../pages/WizardFinalisePage";
 import WizardFinaliseDialog from "./WizardFinaliseDialog";
 import MessageDialog from "./MessageDialog";
 
-import { GetListOfUprnsUrl, GetPropertyFromUPRNUrl } from "../configuration/ADSConfig";
+import { GetListOfUprnsUrl, GetPropertyFromUPRNUrl, GetStreetDescriptorUrl } from "../configuration/ADSConfig";
 import { stringToSentenceCase } from "../utils/HelperUtils";
 import { streetDescriptorToTitleCase } from "../utils/StreetUtils";
 import { ValidateAddressDetails, ValidateCrossReference, ValidatePropertyDetails } from "../utils/WizardValidation";
@@ -1515,10 +1516,26 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
   /**
    * Event to handle when the next button is clicked.
    */
-  const handleNext = () => {
+  const handleNext = async () => {
     switch (activeStep) {
       case 0: // Select template
         if (selectedTemplate.current) {
+          const lookupStreet = lookupContext.currentLookups.streetDescriptors.find((x) => x.usrn === parent.usrn);
+          if (!lookupStreet) {
+            const streetDescriptorUrl = GetStreetDescriptorUrl("GET", userContext.currentUser);
+
+            if (streetDescriptorUrl) {
+              await fetch(streetDescriptorUrl.url, {
+                headers: streetDescriptorUrl.headers,
+                crossDomain: true,
+                method: "GET",
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  lookupContext.onUpdateLookup("streetDescriptor", data);
+                });
+            }
+          }
           getAddressDetailsData();
           doNext();
         }
