@@ -3,7 +3,7 @@
 //
 //  Description: Type 31 validation checks
 //
-//  Copyright:    © 2024 Idox Software Limited.
+//  Copyright:    © 2024 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,6 +13,9 @@
 //region Version 1.0.1.0
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
 //endregion Version 1.0.1.0
+//region Version 1.0.4.0
+//    002   11.02.25 Sean Flook      IMANN-1678 Fixed failsCheck3100017.
+//endregion Version 1.0.4.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -87,7 +90,7 @@ export const failsCheck3100016 = (organisation) => {
  * @returns {Boolean} True if the check fails; otherwise false.
  */
 export const failsCheck3100017 = (organisation) => {
-  return organisation && !characterSetValidator(organisation, "OneScotlandLookup");
+  return organisation && !characterSetValidator(organisation, "OneScotlandProperty");
 };
 
 /**
