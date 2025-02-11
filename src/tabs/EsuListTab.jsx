@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ESU list tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   10.08.23 Sean Flook                 Do not display the deleted records.
 //    003   07.09.23 Sean Flook                 Changes required to maintain ESUs.
@@ -35,10 +35,10 @@
 //    022   22.03.24 Sean Flook       PRFRM6_GP Ensure the information control is correctly displayed.
 //    023   14.05.24 Joshua McCormick IMANN-364 noWrap & padding to prevent toolbar content overlapping
 //    024   08.07.24 Sean Flook       IMANN-728 Only show the Add or Assign ESU button if the user has the rights.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

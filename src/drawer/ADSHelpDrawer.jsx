@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Help Drawer component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   26.04.23 Sean Flook          WI40697 Updated contact information.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -22,15 +22,15 @@
 //    009   26.06.24 Peter Bryden                Added in help reference.
 //    010   04.07.24 Sean Flook                  Updated URL for the help for new location.
 //    011   29.08.24 Sean Flook        IMANN-965 Updated wording.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -62,7 +62,7 @@ import {
 } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-//#endregion imports
+//endregion imports
 
 ADSHelpDrawer.propTypes = {
   open: PropTypes.bool.isRequired,

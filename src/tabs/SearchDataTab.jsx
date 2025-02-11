@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: List records returned from a search
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   21.03.23 Sean Flook          WI40592 Do not allow properties to be created on a closed street or a type 3/4 street.
 //    003   22.03.23 Sean Flook          WI40600 Correctly call handleOpenRecord from the grid view.
@@ -65,24 +65,24 @@
 //    051   18.07.24 Joshua McCormick  IMANN-548 zoomToStreet add street if not in newMapSearchProperties
 //    052   18.07.24 Sean Flook        IMANN-772 Corrected field name.
 //    053   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    054   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    055   02.10.24 Sean Flook        IMANN-550 Changed menu item order for streets.
 //    056   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    057   23.10.24 Sean Flook       IMANN-1019 Use the correct data when opening the record.
 //    058   01.11.24 Sean Flook       IMANN-1010 Use the correct data determining the street icon.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    059   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    060   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, Fragment, useEffect } from "react";
 // import { useNavigate } from "react-router";

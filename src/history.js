@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description:  Wrapper for the history
@@ -10,17 +10,17 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook                 Initial version.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
-//#region imports
+//region imports
 
 import { createBrowserHistory } from "history";
 
-//#endregion imports
+//endregion imports
 
 export default createBrowserHistory();

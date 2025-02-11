@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Task Drawer component
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   06.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    004   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    005   11.03.24 Sean Flook            GLB12 Correctly set width.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React from "react";
 import PropTypes from "prop-types";
@@ -35,7 +35,7 @@ import { adsMidGreyB } from "../utils/ADSColours";
 import { drawerWidth } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-//#endregion imports
+//endregion imports
 
 ADSTaskDrawer.propTypes = {
   handleDrawerClose: PropTypes.func.isRequired,

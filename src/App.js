@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: The main application file used for contexts etc.
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   16.08.22 Sean Flook          WI39??? Initial Revision.
 //    002   16.03.23 Sean Flook          WI40583 Correctly set/reset propertyErrors.
 //    003   28.03.23 Sean Flook          WI40632 Added source to HandleWizardDone.
@@ -76,38 +76,38 @@
 //    063   06.08.24 Sean Flook        IMANN-903 Use a reference to store the loaded SHP files.
 //    064   27.08.24 Sean Flook        IMANN-925 Corrected typo.
 //    065   10.09.24 Sean Flook        IMANN-980 Set the showMessages rights for users and only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    066   26.09.24 Sean Flook        IMANN-573 Updated the version.
 //    067   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
 //    068   28.10.24 Sean Flook       IMANN-1040 Clear the localStorage and sessionStorage items when logoff user.
 //    069   28.10.24 Joshua McCormick  IMANN-904 added context for clearObject, setClearObject
 //    070   05.11.24 Sean Flook        IMANN-904 Correctly handle clearing the geometry in HandleSetLineGeometry.
 //    071   06.11.24 Sean Flook       IMANN-1047 Undo changes done for IMANN-904.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    066   13.11.24 Sean Flook       IMANN-1012 Updated the version.
 //    067   27.11.24 Sean Flook       IMANN-1096 Do not store the lookups in the session storage.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.3.0
+//endregion Version 1.0.2.0
+//region Version 1.0.3.0
 //    068   02.01.25 Sean Flook       IMANN-1121 Updated the version.
 //    069   07.01.25 Sean Flook       IMANN-1124 When opening the related tab always include the current property in the expand list.
 //    070   09.01.25 Sean Flook       IMANN-1125 Moved code to prevent the calls to get the background data from being run multiple times.
 //    071   13.01.25 Sean Flook       IMANN-1136 Various changes to improve editing provenances.
 //    072   16.01.25 Sean Flook       IMANN-1136 Removed editingProvenance and changed provenanceMerged to provenanceMerging.
-//#endregion Version 1.0.3.0
-//#region Version 1.0.4.0
+//endregion Version 1.0.3.0
+//region Version 1.0.4.0
 //    073   03.02.25 Sean Flook       IMANN-1676 Updated the version.
 //    074   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
 //    075   06.02.25 Sean Flook       IMANN-1679 If authorisation has expired display the home page.
-//#endregion Version 1.0.4.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.4.0
+//region Version 1.0.5.0
 //    076   22.01.25 Sean Flook       IMANN-1077 Updated the version.
 //    077   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useState, useRef, Fragment } from "react";
 import { Router } from "react-router-dom";
@@ -512,7 +512,7 @@ function App() {
   const [informationType, setInformationType] = useState(null);
   const [informationSource, setInformationSource] = useState(null);
 
-  //#region userContext
+  //region userContext
   /**
    * Event to handle when the user changes.
    *
@@ -650,9 +650,9 @@ function App() {
       setCurrentUser(savedUser);
     }
   }
-  //#endregion userContext
+  //endregion userContext
 
-  //#region lookupContext
+  //region lookupContext
   /**
    * Event to handle when the lookups change.
    *
@@ -879,9 +879,9 @@ function App() {
       });
     }
   }
-  //#endregion lookupContext
+  //endregion lookupContext
 
-  //#region sandboxContext
+  //region sandboxContext
   /**
    * Event to handle when the sandbox data needs to be changed.
    *
@@ -1264,9 +1264,9 @@ function App() {
   function HandleRefreshRelated(refresh) {
     setRefreshRelated(refresh);
   }
-  //#endregion sandboxContext
+  //endregion sandboxContext
 
-  //#region searchContext
+  //region searchContext
   /**
    * Event to handle when the search data has been changed.
    *
@@ -1368,9 +1368,9 @@ function App() {
       HandleSearchDataChange(savedSearchData.searchString, savedSearchData.results, true);
     }
   }
-  //#endregion searchContext
+  //endregion searchContext
 
-  //#region filterContext
+  //region filterContext
   /**
    * Event to handle when the search filter data changes.
    *
@@ -1389,9 +1389,9 @@ function App() {
       setSearchFilter(JSON.parse(sessionStorage.getItem("searchFilter")));
     }
   }
-  //#endregion filterContext
+  //endregion filterContext
 
-  //#region settingsContext
+  //region settingsContext
   /**
    * Event to handle when the settings node changes.
    *
@@ -1496,9 +1496,9 @@ function App() {
       setMapLayers(JSON.parse(sessionStorage.getItem("mapLayers")));
     }
   }
-  //#endregion settingsContext
+  //endregion settingsContext
 
-  //#region streetContext
+  //region streetContext
   /**
    * Event to handle when the current street data has changed.
    *
@@ -2223,9 +2223,9 @@ function App() {
       setExpandedAsd(JSON.parse(sessionStorage.getItem("expandedAsd")));
     }
   }
-  //#endregion streetContext
+  //endregion streetContext
 
-  //#region propertyContext
+  //region propertyContext
   /**
    * Event to handle the changing of a property.
    *
@@ -2854,9 +2854,9 @@ function App() {
       setWizardData(JSON.parse(sessionStorage.getItem("wizardData")));
     }
   }
-  //#endregion propertyContext
+  //endregion propertyContext
 
-  //#region mapContext
+  //region mapContext
   /**
    * Event to handle when background mapping data changes.
    *
@@ -3690,9 +3690,9 @@ function App() {
   function HandleCreateToolActivated(activated) {
     setCreateToolActivated(activated);
   }
-  //#endregion mapContext
+  //endregion mapContext
 
-  //#region informationContext
+  //region informationContext
   /**
    * Method to handle when the display information should be shown.
    *
@@ -3739,9 +3739,9 @@ function App() {
       HandleDisplayInformation(savedDisplayInformation.type, savedDisplayInformation.source, true);
     }
   }
-  //#endregion informationContext
+  //endregion informationContext
 
-  //#region return
+  //region return
   return (
     <StylesProvider injectFirst>
       <Router history={history}>
@@ -4035,7 +4035,7 @@ function App() {
       </Router>
     </StylesProvider>
   );
-  //#endregion return
+  //endregion return
 }
 
 export default App;

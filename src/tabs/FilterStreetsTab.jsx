@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Streets filter tab
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   15.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   05.01.24 Sean Flook                  Use CSS shortcuts.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.0.0
+//region Version 1.0.2.0
 //    003   12.11.24 Sean Flook                  Various changes to improve the look and functionality.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    004   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -51,7 +51,7 @@ FilterStreetsTab.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-//#endregion imports
+//endregion imports
 
 function FilterStreetsTab({ changedFlags, selectedData, onChange }) {
   const theme = useTheme();

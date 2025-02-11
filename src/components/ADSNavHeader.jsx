@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Navigation Bar Header component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
 //    003   27.10.23 Sean Flook                  Updated call to SavePropertyAndUpdate.
@@ -19,15 +19,15 @@
 //    006   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    007   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    008   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    009   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useRef, Fragment } from "react";
 // import { useNavigate } from "react-router";
@@ -55,7 +55,7 @@ import { HomeRoute } from "../PageRouting";
 import { useTheme } from "@mui/styles";
 import { GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 const ADSNavHeader = () => {
   const theme = useTheme();

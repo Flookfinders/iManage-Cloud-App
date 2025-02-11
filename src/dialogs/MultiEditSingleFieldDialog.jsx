@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to multi-edit the logical status
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   17.10.23 Sean Flook        IMANN-175 Initial Revision.
 //    002   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system and renamed successor to successorCrossRef.
 //    003   08.12.23 Sean Flook                  Migrated DataGrid to v6.
@@ -32,13 +32,13 @@
 //    019   08.07.24 Sean Flook        IMANN-716 Corrected Scottish property records.
 //    020   08.07.24 Sean Flook        IMANN-715 Increase the failed count if failed to save property.
 //    021   03.09.24 Sean Flook        IMANN-968 Corrected copy and paste error.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    022   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

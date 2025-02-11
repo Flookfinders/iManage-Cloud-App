@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Whats New Avatar component
@@ -10,25 +10,25 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   06.07.21 Sean Flook                  Initial Revision.
 //    002   05.01.24 Sean Flook                  Changes to sort out warnings.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    003   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React from "react";
 import { Tooltip, Grid2, Badge, SvgIcon, IconButton } from "@mui/material";
 import { ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-//#endregion imports
+//endregion imports
 
 function ADSWhatsNewAvatar(props) {
   const theme = useTheme();

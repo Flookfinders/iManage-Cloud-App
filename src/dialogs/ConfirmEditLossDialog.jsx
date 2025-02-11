@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Confirm edit loss dialog
@@ -10,16 +10,16 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    004   24.06.24 Sean Flook       IMANN-170 Changes required for cascading parent PAO changes to children.
 //    005   28.06.24 Sean Flook       IMANN-170 Fixed warning.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";

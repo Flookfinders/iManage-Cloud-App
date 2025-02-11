@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Whole road control
@@ -10,20 +10,20 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                  Use colour variables.
 //    004   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
 //    005   13.02.24 Sean Flook                  Changes required to handle PRoW records.
 //    006   13.02.24 Sean Flook                  Corrected variant strings.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    007   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

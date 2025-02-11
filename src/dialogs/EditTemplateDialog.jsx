@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit template dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   31.03.23 Sean Flook          WI40652 For template and wizard do not include Historic or Rejected logical status.
 //    003   06.04.23 Sean Flook          WI40675 Correctly call FilteredBLPUState.
@@ -49,20 +49,20 @@
 //    036   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    037   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    038   08.08.24 Sean Flook        IMANN-911 Corrected typo.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    039   01.10.24 Sean Flook        IMANN-665 Changed Designation to Type for HWW.
 //    040   31.10.24 Sean Flook       IMANN-1012 Changes required for the plot to postal wizard.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    041   25.11.24 Sean Flook       IMANN-1085 Added divider between Provenance and Notes for wizardOther.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

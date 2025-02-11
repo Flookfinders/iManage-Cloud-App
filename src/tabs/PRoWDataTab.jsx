@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Public right of way data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                  Use new dataFormStyle.
@@ -33,13 +33,13 @@
 //    020   09.07.24 Joshua McCormick  IMANN-594 Added displayCharactersLeft to PRoW source
 //    021   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
 //    022   29.08.24 Sean Flook        IMANN-908 Correctly set the defMapGeometryType variable.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    023   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

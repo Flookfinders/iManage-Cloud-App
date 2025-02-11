@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to edit an existing lookup
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   29.06.23 Sean Flook          WI40744 Added Make Historic switch.
 //    003   29.06.23 Sean Flook                  Added enabled flag for cross reference records.
@@ -25,13 +25,13 @@
 //    012   27.03.24 Sean Flook                  Added ADSDialogTitle.
 //    013   19.04.24 Sean Flook        IMANN-355 Use a dropdown list for selecting the authority.
 //    014   26.04.24 Sean Flook        IMANN-413 Removed Gaelic option.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

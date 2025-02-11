@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: URL data about the api calls we need to make
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   02.06.23 Joel Benford        WI40689 Invoke homepage control
 //    003   23.08.23 Sean Flook        IMANN-159 Include the street template and sub-locality lookup.
@@ -25,17 +25,17 @@
 //    012   05.07.24 Sean Flook        IMANN-629 If we cannot return the apiMetadata then it means we are looking at different database and need to expire the current user.
 //    013   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
 //    014   18.09.24 Sean Flook        IMANN-980 Added missing parameter when calling fetchData.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    015   30.10.24 Sean Flook       IMANN-1040 Display a message dialog if we get an error loading the lookups etc.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 

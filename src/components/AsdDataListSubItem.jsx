@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ASD data list sub-item component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   11.10.23 Sean Flook                 Correctly handle expand and collapse.
@@ -27,10 +27,10 @@
 //    014   22.02.24 Joel Benford     IMANN-287 Correct hover blue
 //    015   22.04.24 Sean Flook       IMANN-298 Do not display the delete button if more than 1 record is checked.
 //    016   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Property cross reference list tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   27.10.23 Sean Flook                  Use new dataFormStyle.
@@ -28,17 +28,17 @@
 //    015   27.03.24 Sean Flook        IMANN-336 Undone above changes as already done under STRFRM3_OS.
 //    016   29.04.24 Joshua McCormick  IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    017   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    018   20.06.24 Sean Flook       IMANN-1003 Removed the add icon when we have no records.
 //    019   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

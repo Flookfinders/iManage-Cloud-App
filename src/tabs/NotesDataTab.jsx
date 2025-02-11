@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Notes data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   24.07.23 Sean Flook                 Added ability to delete the note.
 //    003   10.08.23 Sean Flook                 Added last user field.
@@ -34,13 +34,13 @@
 //    021   23.05.24 Sean Flook       IMANN-486 Changed seqNo to seqNum.
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   04.07.24 Sean Flook       IMANN-705 Use displayName rather than auditName.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    024   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

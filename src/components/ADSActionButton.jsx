@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Action Button component
@@ -10,19 +10,19 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   05.01.24 Sean Flook                 Use CSS shortcuts.
 //    004   10.01.24 Sean Flook                 Fix warnings.
 //    005   04.04.24 Sean Flook                 Added propType for missing parameter.
 //    006   10.06.24 Sean Flook       IMANN-509 Added the password variant.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React from "react";
 import PropTypes from "prop-types";
@@ -50,7 +50,7 @@ import { adsBlueA, adsMidGreyA, adsWhite } from "../utils/ADSColours";
 import { tooltipStyle } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-//#endregion imports
+//endregion imports
 
 ADSActionButton.propTypes = {
   variant: PropTypes.oneOf([

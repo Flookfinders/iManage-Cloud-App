@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Historic Property Warning dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   05.04.23 Sean Flook         WI40596 Initial version.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system.
@@ -18,10 +18,10 @@
 //    005   09.02.24 Sean Flook                 Modified after UX review.
 //    006   27.02.24 Sean Flook           MUL15 Changed to use dialogTitleStyle.
 //    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React from "react";
 import PropTypes from "prop-types";

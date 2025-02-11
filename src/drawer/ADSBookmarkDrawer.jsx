@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Bookmark Drawer component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   06.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box to @mui/system.
@@ -19,15 +19,15 @@
 //    006   11.03.24 Sean Flook            GLB12 Correctly set width.
 //    007   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
 //    008   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    009   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
@@ -47,7 +47,7 @@ import { adsMidGreyB } from "../utils/ADSColours";
 import { drawerWidth } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
 
-//#endregion imports
+//endregion imports
 
 ADSBookmarkDrawer.propTypes = {
   handleDrawerClose: PropTypes.func.isRequired,

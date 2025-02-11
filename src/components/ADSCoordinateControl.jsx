@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Coordinate Control component
@@ -10,27 +10,27 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   07.07.21 Sean Flook                  Initial Revision.
 //    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    003   10.01.24 Sean Flook                  Fix warnings.
 //    004   04.04.24 Sean Flook        IMANN-319 Do not allow coordinates to be changed outside the allowable limits.
 //    005   04.04.24 Sean Flook        IMANN-403 Removed above changes as preventing user from changing coordinates.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    006   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    007   12.11.24 Sean Flook                  Added ability to show that something has been changed.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -52,7 +52,7 @@ import {
   skeletonHeight,
 } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 ADSCoordinateControl.propTypes = {
   label: PropTypes.string.isRequired,

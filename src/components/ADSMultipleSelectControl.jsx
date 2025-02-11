@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Multiple Select component
@@ -10,25 +10,25 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   12.07.21 Sean Flook                  Initial Revision.
 //    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                  Use colour variables.
 //    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    005   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    006   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.0.0
+//region Version 1.0.2.0
 //    007   12.11.24 Sean Flook                  Various changes to improve the control.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -80,7 +80,7 @@ import {
 import { ThemeProvider } from "@mui/material/styles";
 import GetClassificationIcon from "../utils/ADSClassificationIcons";
 
-//#endregion imports
+//endregion imports
 
 ADSMultipleSelectControl.propTypes = {
   label: PropTypes.string.isRequired,

@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to edit the USRN
@@ -10,13 +10,13 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   29.05.24 Sean Flook       IMANN-490 Initial version.
 //    002   11.06.24 Sean Flook       IMANN-490 Changed id.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";

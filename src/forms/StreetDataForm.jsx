@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Street data form
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   25.04.23 Sean Flook          WI40706 Use the correct value to open the related tab.
 //    003   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
@@ -119,8 +119,8 @@
 //    105   20.08.24 Sean Flook        IMANN-818 Corrected typo.
 //    106   27.08.24 Sean Flook        IMANN-925 If creating a new street and editing the USRN save the street with the new USRN.
 //    107   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    108   27.09.24 Sean Flook        IMANN-573 when creating a new child or range of children check the parent is not already at the maximum allowable level.
 //    109   03.10.24 Sean Flook       IMANN-1004 Ensure the descriptorFormData is null when changing street.
 //    110   10.10.24 Sean Flook       IMANN-1018 Do not display the ESU tab if only LLPG.
@@ -128,23 +128,23 @@
 //    112   22.10.24 Sean Flook       IMANN-1018 Changes required to handle creating LLPG Streets.
 //    113   01.11.24 Sean Flook       IMANN-1010 Include new fields in search results.
 //    114   06.11.24 Sean Flook       IMANN-1047 When discarding changes where there could be geometry ensure the map search data is updated as well.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    115   21.11.24 Sean Flook       IMANN-1029 Use the correct UPRN when calling GetParentHierarchy.
 //    116   15.01.25 Joshua McCormick IMANN-1128 streetDescriptors town/ref use adminAreaRef when null
 //    117   15.01.25 Joshua McCormick IMANN-1128 newSecondDescriptor uses firstLocality instead of null
 //    118   15.01.25 Joshua McCormick IMANN-1128 Ensure newSecondDescriptor does not return null for town/ref
-//#endregion Version 1.0.2.0
-//#region Version 1.0.3.0
+//endregion Version 1.0.2.0
+//region Version 1.0.3.0
 //    116   16.01.25 Sean Flook       IMANN-1136 Clear the createToolActivated flag if required.
-//#endregion Version 1.0.3.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.3.0
+//region Version 1.0.5.0
 //    117   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    118   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 // import { useNavigate } from "react-router";

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Address Details 2 (Range create)
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   23.03.23 Sean Flook          WI40607 Display an error for address list if we have one.
 //    003   24.03.23 Sean Flook          WI40608 Changes required to correctly handle changes to PAO details for child properties.
@@ -27,16 +27,16 @@
 //    014   18.06.24 Sean Flook        IMANN-577 Use characterSetValidator.
 //    015   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    016   20.06.24 Sean Flook        IMANN-633 Enforce the maximum for the numbers.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    017   24.10.24 Sean Flook       IMANN-1033 Only sort and filter lookups when required.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

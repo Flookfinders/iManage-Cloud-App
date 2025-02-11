@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ESU Data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Handle unassigned ESUs.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -34,14 +34,14 @@
 //    021   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    022   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    023   18.07.24 Sean Flook       IMANN-772 Corrected field name.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    094   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
 //    095   24.10.24 Sean Flook      IMANN-1040 Use sessionStorage rather than localStorage.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

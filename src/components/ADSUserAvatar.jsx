@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: User Avatar component
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook                  Initial Revision.
 //    002   03.11.23 Sean Flook                  Modify to use the auditName.
 //    003   10.11.23 Sean Flook                  Modified call to StringAvatar.
 //    004   11.04.24 Sean Flook                  Do not adjust the auditname.
 //    005   04.07.24 Sean Flook        IMANN-705 Use displayName for the user icon.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, Fragment } from "react";
 import PropTypes from "prop-types";
@@ -34,7 +34,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Tooltip, IconButton, Avatar, Typography } from "@mui/material";
 import { ActionIconStyle, tooltipStyle } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 ADSUserAvatar.propTypes = {
   onUserClick: PropTypes.func.isRequired,

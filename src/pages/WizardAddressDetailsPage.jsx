@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard address details page
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   05.04.23 Sean Flook         WI40669 Fixed warning and reduced code.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -20,10 +20,10 @@
 //    007   29.05.24 Sean Flook       IMANN-504 Only create second language for Welsh authorities.
 //    008   11.06.24 Joshua McCormick IMANN-451 fixed saving states changing lang, cleanup.
 //    009   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

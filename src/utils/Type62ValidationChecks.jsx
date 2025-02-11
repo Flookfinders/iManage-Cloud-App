@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Type 62 validation checks
@@ -10,15 +10,15 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.1.0
+//region Version 1.0.1.0
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    002   26.11.24 Sean Flook      IMANN-1089 Include coordinates in failsCheck6200028.
-//#endregion Version 1.0.2.0
+//endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import { filteredLookup, isEndBeforeStart, isFutureDate, isIso885914 } from "./HelperUtils";
 

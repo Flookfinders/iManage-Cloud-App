@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Street validation
@@ -28,7 +28,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   19.04.23 Sean Flook         WI40653 use includeCheck to determine if a check should be run.
 //    003   10.08.23 Sean Flook                 Corrected object name.
@@ -64,17 +64,17 @@
 //    042   06.08.24 Sean Flook       IMANN-876 Removed check 6600018 as not required.
 //    043   22.08.24 Sean Flook       IMANN-951 Corrected field names.
 //    044   02.09.24 Sean Flook       IMANN-976 Handle "Unassigned" in lookups.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.0.0
+//region Version 1.0.2.0
 //    045   31.10.24 Sean Flook       IMANN-1012 Changed to use new checks to prevent duplicating check code.
 //    046   25.11.24 Sean Flook       IMANN-1076 Added check for a valid date in date fields.
 //    047   26.11.24 Sean Flook       IMANN-1089 Updated checks 6100023, 6200028 and 6300033.
 //    048   04.12.24 Sean Flook       IMANN-1087 Corrected the order of parameters for check 6300012.
 //    049   05.12.24 Sean Flook       IMANN-1087 Include the currentLookups in call to failsCheck6300051.
-//#endregion Version 1.0.2.0
+//endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import { failsCheck1000020 } from "./Type10ValidationChecks";
 import {

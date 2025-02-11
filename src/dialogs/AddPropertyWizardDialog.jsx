@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Add Property Wizard Dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   27.03.23 Sean Flook          WI40609 Treat 0 as null for numbers.
 //    003   28.03.23 Sean Flook          WI40631 Always set the addressPoints when leaving the property details page.
@@ -44,16 +44,16 @@
 //    031   17.07.24 Sean Flook        IMANN-797 After getting a validation error if user returns and clicks Back clear the errors.
 //    032   03.09.24 Sean Flook        IMANN-968 Correctly handle API errors.
 //    033   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.4.0
+//endregion Version 1.0.0.0
+//region Version 1.0.4.0
 //    034   07.02.25 Sean Flook       IMANN-1676 Corrected typo.
-//#endregion Version 1.0.4.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.4.0
+//region Version 1.0.5.0
 //    035   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { forwardRef, useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Metadata settings tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   07.09.23 Sean Flook                  Cleaned the code.
 //    003   06.10.23 Sean Flook                  Use colour variables.
@@ -25,14 +25,14 @@
 //    012   31.01.24 Joel Benford                Changes to as save and support OS
 //    013   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    014   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";

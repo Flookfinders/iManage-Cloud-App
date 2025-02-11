@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Street template tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   10.08.23 Sean Flook                  Modified to call the API to update the values.
 //    003   23.08.23 Sean Flook        IMANN-159 Use the new street template structure.
@@ -28,18 +28,18 @@
 //    015   08.05.24 Sean Flook        IMANN-447 Added exclude from export.
 //    016   19.06.24 Sean Flook        IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    017   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    018   01.10.24 Sean Flook        IMANN-664 Changed Indicators to Indicator.
 //    019   22.10.24 Sean Flook       IMANN-1018 Hide ESU and associated cards if do not have streets.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    021   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect } from "react";
 import SettingsContext from "../context/settingsContext";

@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Page
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   20.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   07.09.23 Sean Flook                  Cleaned the code.
 //    003   02.01.24 Sean Flook                  Changed console.log to console.error for error messages.
@@ -24,16 +24,16 @@
 //    011   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
 //    012   05.09.24 Sean Flook        IMANN-575 Added additional debug message.
 //    013   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    014   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    015   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router";
@@ -57,7 +57,7 @@ import PropertyDataForm from "../forms/PropertyDataForm";
 import ADSEsriMap from "../components/ADSEsriMap";
 import { EditConfirmationServiceProvider } from "./EditConfirmationPage";
 
-//#endregion imports
+//endregion imports
 
 function PropertyPage() {
   const propertyContext = useContext(PropertyContext);

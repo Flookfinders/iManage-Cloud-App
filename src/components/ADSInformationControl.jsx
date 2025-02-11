@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Control used to display information to the user.
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   18.01.24 Sean Flook                 Initial Revision.
 //    002   09.02.24 Sean Flook                 Updated message for assignESUList.
 //    003   13.02.24 Sean Flook                 Added inexactASD variant.
@@ -21,10 +21,10 @@
 //    008   22.03.24 Sean Flook       PRFRM5_GP Added moveSeedPoint, managePolygon & createPolygon variants.
 //    009   22.03.24 Sean Flook       PRFRM6_GP Added manageESU variant.
 //    010   25.04.24 Sean Flook                 Added propertyWizard variant.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React from "react";
 import PropTypes from "prop-types";

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Compare two objects.
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   28.06.23 Sean Flook         WI40256 Changed Extent to Provenance where appropriate.
 //    003   07.09.23 Sean Flook                 Added EsuComparison.
@@ -22,13 +22,13 @@
 //    009   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    010   27.06.24 Joel Benford     IMANN-685 HD sequence numbers -> seqNum
 //    011   06.08.24 Sean Flook       IMANN-886 Check highway dedication record end date when merging.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    012   01.10.24 Sean Flook       IMANN-899 Modified ObjectComparison to handle BLPU App Cross Ref and Provenance where the second object uses ID rather than PKID.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 export const streetKeysToIgnore = [
   "maintenanceResponsibility",

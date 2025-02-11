@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Navigation Bar component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   28.06.23 Sean Flook          WI40256 Changed Extent to Provenance where appropriate.
 //    003   03.07.23 Sean Flook                  Hide Users & permissions, Export and Import options.
@@ -38,19 +38,19 @@
 //    025   24.06.24 Sean Flook        IMANN-170 Changes required for cascading parent PAO changes to children.
 //    026   04.07.24 Sean Flook        IMANN-705 Use displayName for the user icon.
 //    027   15.07.24 Sean Flook        IMANN-762 If user cannot see properties default to street template when opening the settings.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    028   24.10.24 Sean Flook       IMANN-1040 Call the logoff endpoint when logging a user off the system.
 //    029   07.01.25 Joshua McCormick IMANN-1050 Initial Check Notifications with changeset 65608
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    030   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 // import { useNavigate, useLocation } from "react-router";
@@ -137,7 +137,7 @@ import { useTheme } from "@mui/styles";
 import LoginDialog from "../dialogs/LoginDialog";
 import { PostUserLogoffUrl } from "../configuration/ADSConfig";
 
-//#endregion imports
+//endregion imports
 
 const ADSNavContent = (props) => {
   const theme = useTheme();

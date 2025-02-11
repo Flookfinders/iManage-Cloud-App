@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Language component
@@ -10,21 +10,21 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   27.06.23 Sean Flook          WI40729 Correctly handle if errorText is a string rather then an array.
 //    003   06.10.23 Sean Flook                  Use colour variables.
 //    004   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    005   29.05.24 Sean Flook        IMANN-489 Prevent the user from changing the language.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -37,7 +37,7 @@ import ADSErrorDisplay from "./ADSErrorDisplay";
 import { adsBlueA, adsMidGreyA, adsWhite, adsLightGreyB, adsOffWhite } from "../utils/ADSColours";
 import { FormBoxRowStyle, FormRowStyle, controlLabelStyle, tooltipStyle } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 ADSLanguageControl.propTypes = {
   label: PropTypes.string.isRequired,

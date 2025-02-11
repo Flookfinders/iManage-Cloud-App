@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Lookup Context
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   20.08.21 Sean Flook         WI39??? Initial Revision.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React from "react";
 
-//#endregion imports
+//endregion imports
 
 const LookupContext = React.createContext();
 LookupContext.displayName = "LookupContext";

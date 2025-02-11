@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Display the list of classifications for the property.
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   18.09.23 Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   27.10.23 Sean Flook                  Use new dataFormStyle.
@@ -27,16 +27,16 @@
 //    014   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
 //    015   30.05.24 Joel Benford      IMANN-496 Add classification code avatar
 //    016   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    017   31.10.24 Sean Flook       IMANN-1012 Changed height of skeleton control.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useState, useRef, useContext, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ESU Data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Changes to handle dividing an ESU and unassigning an ESU.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -28,10 +28,10 @@
 //    015   27.02.24 Joshua McCormick IMANN-286 Using clippath for highway dedication indicator to alter appearance
 //    016   14.03.24 Sean Flook        ESU19_GP Moved getHighwayDedicationIconStyle to ADSStyles.
 //    017   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";

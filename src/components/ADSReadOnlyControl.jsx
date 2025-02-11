@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Read Only component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
 //    003   14.05.21 Sean Flook          WI39345 Updated className.
@@ -18,15 +18,15 @@
 //    005   27.02.24 Sean Flook            MUL16 Added ability to display a button.
 //    006   18.03.24 Sean Flook       STRFRM4_OS Added nullString parameter.
 //    007   29.05.24 Sean Flook        IMANN-490 Modified for USRN.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    008   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
@@ -47,7 +47,7 @@ import {
 import { useTheme } from "@mui/styles";
 import ADSErrorDisplay from "./ADSErrorDisplay";
 
-//#endregion imports
+//endregion imports
 
 ADSReadOnlyControl.propTypes = {
   loading: PropTypes.bool,

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Wizard Action dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   22.09.23 Sean Flook                 Changes required to handle Scottish classifications.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -31,13 +31,13 @@
 //    018   19.06.24 Joshua McCormick IMANN-503 BLPU Level max set to 99.9
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    020   16.07.24 Sean Flook       IMANN-581 Limit the RPC drop down list to values valid for new records.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    021   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

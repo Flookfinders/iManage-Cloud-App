@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Doughnut Charts array for Homepage
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   02.06.23 Joel Benford        WI40689 Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box to @mui/system and sorted out a warning.
 //    004   22.03.24 Sean Flook            GLB12 Fix the height of the charts.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import { Grid2, Card, CardContent } from "@mui/material";
 import { Box } from "@mui/system";

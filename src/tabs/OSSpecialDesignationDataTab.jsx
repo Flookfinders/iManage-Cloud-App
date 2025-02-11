@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: OneScotland special designation data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Ensure the OK button is enabled when creating a new record and use colour variables.
 //    003   27.10.23 Sean Flook                 Use new dataFormStyle.
@@ -39,10 +39,10 @@
 //    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    027   19.08.24 Sean Flook       IMANN-874 Added additional case.
 //    028   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

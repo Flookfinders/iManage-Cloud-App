@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Icons used to distinguish streets
@@ -10,24 +10,24 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   23.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.0.0
+//endregion Version 1.0.0.0
+//region Version 1.0.0.0
 //    003   201.11.24 Sean Flook     IMANN-1010 No longer need to take 10 from the type.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React from "react";
 import { SvgIcon } from "@mui/material";
 import { adsWhite } from "./ADSColours";
 
-//#endregion imports
+//endregion imports
 
 /**
  * Method to get the street icon.

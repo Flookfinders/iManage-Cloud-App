@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Dialog used to edit an existing operational district record
@@ -10,18 +10,18 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   01.02.24 Sean Flook                 Initial Revision.
 //    002   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
 //    003   27.03.24 Sean Flook                 Added ADSDialogTitle.
 //    004   02.07.24 Sean Flook       IMANN-666 Moved permit scheme id and out of hours arrangement.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.0.0
+//endregion Version 1.0.0.0
+//region Version 1.0.0.0
 //    016   02.10.24 Sean Flook       IMANN-409 Added newDistrict flag to determine how the title is displayed.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";

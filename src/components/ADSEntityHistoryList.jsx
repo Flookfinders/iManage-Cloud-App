@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Entity history list component
@@ -10,17 +10,17 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   06.10.23 Sean Flook                 Use colour variables.
 //    003   24.11.23 Sean Flook                 Moved Stack to @mui/system and use StringAvatar to display the user initials.
 //    004   05.01.24 Sean Flook                 use CSS shortcuts.
 //    005   20.06.24 Sean Flook       IMANN-634 Added error trapping.
 //    006   04.07.24 Sean Flook       IMANN-705 Use displayName if lastUser is the same as auditName.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, Fragment } from "react";
 

@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Details Tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   20.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
 //    003   28.03.23 Sean Flook         WI40596 Removed above change.
@@ -50,13 +50,13 @@
 //    037   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
 //    038   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    039   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    040   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

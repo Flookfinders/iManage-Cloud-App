@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Properties filter tab
@@ -10,22 +10,22 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   07.07.21 Sean Flook          WI39??? Initial Revision.
 //    002   22.09.23 Sean Flook                  Changes required to handle Scottish classifications.
 //    003   05.01.24 Sean Flook                  Use CSS shortcuts.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.0.0
+//region Version 1.0.2.0
 //    004   12.11.24 Sean Flook                  Various changes to improve the look and functionality.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    005   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -53,7 +53,7 @@ FilterPropertiesTab.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-//#endregion imports
+//endregion imports
 
 function FilterPropertiesTab({ changedFlags, selectedData, onChange }) {
   const theme = useTheme();

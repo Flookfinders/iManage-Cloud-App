@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Edit authority details dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
@@ -21,19 +21,19 @@
 //    009   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
 //    010   27.03.24 Sean Flook                  Added ADSDialogTitle.
 //    011   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    012   02.10.24 Sean Flook        IMANN-997 Removed display language.
 //    013   08.10.24 Sean Flook        IMANN-986 Changes required for updating USRN, UPRN and ESU Id ranges.
 //    014   10.10.24 Sean Flook        IMANN-986 Call correct method.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    015   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";

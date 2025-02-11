@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Add template dialog
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
@@ -22,13 +22,13 @@
 //    009   18.07.24 Sean Flook        IMANN-571 Corrected bug.
 //    010   26.07.24 Sean Flook        IMANN-867 Pass the id into getData when using an existing template.
 //    011   22.08.24 Sean Flook        IMANN-945 Correctly store the id when selecting a template and then pass into getData.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";

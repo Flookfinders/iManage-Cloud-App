@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ESU Data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   07.09.23 Sean Flook                 Added GetESUMapSymbol.
 //    003   20.09.23 Sean Flook                 Tweaks to GetESUMapSymbol.
@@ -19,14 +19,14 @@
 //    006   09.02.24 Sean Flook                 Modified GetASDMapSymbol to handle different ASD types.
 //    007   04.03.24 Sean Flook            COL3 Changed the colour and style for type 51/61 ASD records.
 //    008   08.05.24 Sean Flook                 Bug fixes in GetExtentMapSymbol.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    009   04.10.24 Sean Flook      IMANN-1005 Use a different colour for a closed street.
 //    010   14.10.24 Sean Flook      IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import CIMSymbol from "@arcgis/core/symbols/CIMSymbol";
 

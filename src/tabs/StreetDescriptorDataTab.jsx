@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Street descriptor tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial version.
 //    002   27.10.23 Sean Flook                 Use new dataFormStyle.
 //    003   24.11.23 Sean Flook                 Moved Box to @mui/system.
@@ -32,15 +32,15 @@
 //    019   19.06.24 Sean Flook       IMANN-629 Changes to code so that current user is remembered and a 401 error displays the login dialog.
 //    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    021   18.07.24 Sean Flook       IMANN-678 After adding a new lookup call UpdateSandbox.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    022   03.10.24 Sean Flook      IMANN-1002 Corrected character set to use for descriptor.
 //    023   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //    024   12.11.24 Sean Flook      IMANN-1018 Only filter and sort lookups when required.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

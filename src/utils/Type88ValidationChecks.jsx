@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Type 88 validation checks
@@ -10,12 +10,12 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.1.0
+//region Version 1.0.1.0
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 /**
  * Check 8800001 - Property range and child range

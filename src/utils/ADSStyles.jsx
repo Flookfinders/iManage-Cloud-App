@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: All the styling used by the app
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   05.04.23 Sean Flook         WI40669 Added wizardCrossRefFormStyle and removed the use of theme.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -44,19 +44,19 @@
 //    031   04.04.24 Sean Flook                 Added deleteDialogContentStyle.
 //    032   08.05.24 Sean Flook       IMANN-447 Fixed height in wizard.
 //    033   17.05.24 Sean Flook       IMANN-458 Modified GetTabIconStyle to include isActive.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    034   31.10.24 Sean Flook      IMANN-1012 Changes required for plot to postal wizard.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    035   12.11.24 Sean Flook                 Added FormDateInputNoMarginStyle.
 //    036   03.12.24 Sean Flook      IMANN-1056 Added plotToPostalGridHeight.
-//#endregion Version 1.0.2.0
+//endregion Version 1.0.2.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
-//#region imports
+//region imports
 
 import CheckIcon from "@mui/icons-material/Check";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -83,7 +83,7 @@ import {
   adsPaleBlueB,
 } from "./ADSColours";
 
-//#endregion imports
+//endregion imports
 
 export const navBarWidth = "60";
 export const drawerWidth = "400";

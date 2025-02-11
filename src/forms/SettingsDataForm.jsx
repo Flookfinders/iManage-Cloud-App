@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Settings data form
@@ -10,16 +10,16 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   24.11.23 Sean Flook                 Moved Box to @mui/system.
 //    003   05.01.24 Sean Flook                 Changes to sort out warnings.
 //    004   10.01.24 Sean Flook                 Fix warnings.
 //    005   24.01.24 Joel Benford               Add scottish metadata to tree.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";

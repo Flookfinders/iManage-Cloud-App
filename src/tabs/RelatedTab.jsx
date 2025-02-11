@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Related tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   23.03.23 Sean Flook          WI40604 Call reset when opening a new record.
 //    003   05.04.23 Sean Flook          WI40596 If opening an historic property display the warning dialog.
@@ -48,19 +48,19 @@
 //    033   07.08.24 Sean Flook        IMANN-891 Moved where ResetContexts is called from to correctly handle historic properties.
 //    034   28.08.24 Sean Flook        IMANN-957 Added missing formattedAddress field to map search data.
 //    035   10.09.24 Sean Flook        IMANN-980 Only write to the console if the user has the showMessages right.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    036   14.10.24 Sean Flook       IMANN-1016 Changes required to handle LLPG Streets.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.2.0
+//endregion Version 1.0.1.0
+//region Version 1.0.2.0
 //    037   14.10.24 Sean Flook       IMANN-1100 Call onEditMapObject when opening a property.
-//#endregion Version 1.0.2.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.2.0
+//region Version 1.0.5.0
 //    038   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

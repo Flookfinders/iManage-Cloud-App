@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: ESU Data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                 Initial Revision.
 //    002   10.08.23 Sean Flook                 Fixed to work correctly for OneScotland.
 //    003   07.09.23 Sean Flook                 Changes required to maintain ESUs.
@@ -41,15 +41,15 @@
 //    028   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    029   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //    030   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    031   02.10.24 Sean Flook       IMANN-999 Changed label to State date.
 //    032   28.10.24 Joshua McCormick IMANN-904 mapContext call for onEditMapObject
 //    033   05.11.24 Sean Flook       IMANN-904 Corrected typo.
-//#endregion Version 1.0.1.0
+//endregion Version 1.0.1.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

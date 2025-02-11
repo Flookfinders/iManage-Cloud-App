@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Highway dedication data tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001            Sean Flook                  Initial Revision.
 //    002   06.10.23 Sean Flook                  Use colour variables.
 //    003   16.10.23 Sean Flook                  Ensure the OK button is enabled when creating a new record and use colour variables.
@@ -29,13 +29,13 @@
 //    016   06.08.24 Sean Flook        IMANN-893 Check we have a source ESU before getting the highway dedication record.
 //    017   06.08.24 Sean Flook        IMANN-905 When determining if the record has changed and we do not have it in the sourceStreet use the currentStreet.
 //    018   20.08.24 Sean Flook        IMANN-818 Use the new ADSHDCheckbox controls and handle errors for those controls.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.0.0
+//region Version 1.0.5.0
 //    019   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";

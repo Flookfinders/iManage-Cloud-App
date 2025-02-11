@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: From To date Control component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   07.07.21 Sean Flook                  Initial Revision.
 //    002   24.11.23 Sean Flook                  Moved Box to @mui/system.
 //    003   08.12.23 Sean Flook                  Migrated DatePicker to v6.
@@ -19,19 +19,19 @@
 //    006   05.01.24 Sean Flook                  Use CSS shortcuts.
 //    007   16.01.24 Sean Flook        IMANN-237 Added a clear button.
 //    008   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    009   10.10.24 Sean Flook       IMANN-1011 Changed display format to only show 3 characters for month.
 //    010   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    011   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -52,7 +52,7 @@ import {
   skeletonHeight,
 } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 ADSFromToDateControl.propTypes = {
   label: PropTypes.string.isRequired,

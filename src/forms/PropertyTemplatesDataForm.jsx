@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Property template data form
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   30.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   17.03.23 Sean Flook         WI40578 Added ability to filter templates by templateUseType.
 //    003   06.10.23 Sean Flook                 Use colour variables.
@@ -20,10 +20,10 @@
 //    007   25.01.24 Sean Flook                 Changes required after UX review.
 //    008   25.01.24 Sean Flook                 Move description so it lines up with title in the cards.
 //    009   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import React, { useState } from "react";
 

@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Type 87 validation checks
@@ -10,15 +10,15 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.1.0
+//region Version 1.0.1.0
 //    001   31.10.24 Sean Flook      IMANN-1012 Initial Revision.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.3.0
+//endregion Version 1.0.1.0
+//region Version 1.0.3.0
 //    002   06.01.25 Sean Flook      IMANN-1121 Fixed logic for failsCheck8700004.
-//#endregion Version 1.0.3.0
+//endregion Version 1.0.3.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
 import MapLayerTypes from "../data/MapLayerTypes";
 

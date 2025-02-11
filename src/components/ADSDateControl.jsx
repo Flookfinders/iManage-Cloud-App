@@ -1,4 +1,4 @@
-//#region header
+//region header
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Date component
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier             Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   13.04.21 Sean Flook          WI39345 Initial Revision.
 //    002   05.05.21 Sean Flook          WI39345 Tweaks to the UI after design review meeting.
 //    003   14.05.21 Sean Flook          WI39345 Updated className.
@@ -29,18 +29,18 @@
 //    016   05.01.24 Sean Flook                  use CSS shortcuts.
 //    017   16.01.24 Sean Flook        IMANN-237 Added a clear button.
 //    018   28.08.24 Sean Flook        IMANN-961 Use a TextField when user is read only.
-//#endregion Version 1.0.0.0
-//#region Version 1.0.1.0
+//endregion Version 1.0.0.0
+//region Version 1.0.1.0
 //    019   31.10.24 Sean Flook       IMANN-1012 Fix the height of the skeleton controls.
-//#endregion Version 1.0.1.0
-//#region Version 1.0.5.0
+//endregion Version 1.0.1.0
+//region Version 1.0.5.0
 //    020   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
-//#endregion Version 1.0.5.0
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header
+//endregion header
 
-//#region imports
+//region imports
 
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -64,7 +64,7 @@ import {
   skeletonHeight,
 } from "../utils/ADSStyles";
 
-//#endregion imports
+//endregion imports
 
 ADSDateControl.propTypes = {
   label: PropTypes.string.isRequired,

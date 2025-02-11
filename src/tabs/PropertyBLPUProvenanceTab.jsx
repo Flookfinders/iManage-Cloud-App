@@ -1,4 +1,4 @@
-//#region header */
+//region header */
 //--------------------------------------------------------------------------------------------------
 //
 //  Description: Property Details Tab
@@ -10,7 +10,7 @@
 //  Modification History:
 //
 //  Version Date     Modifier            Issue# Description
-//#region Version 1.0.0.0
+//region Version 1.0.0.0
 //    001   20.07.21 Sean Flook         WI39??? Initial Revision.
 //    002   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
 //    003   27.03.23 Sean Flook         WI40627 Prevent useEffect from being run when not required.
@@ -33,10 +33,10 @@
 //    020   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
 //    021   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
 //    022   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
-//#endregion Version 1.0.0.0
+//endregion Version 1.0.0.0
 //
 //--------------------------------------------------------------------------------------------------
-//#endregion header */
+//endregion header */
 
 import React, { useContext, useState, useRef, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
