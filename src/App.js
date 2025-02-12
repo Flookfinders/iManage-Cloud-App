@@ -100,10 +100,11 @@
 //    073   03.02.25 Sean Flook       IMANN-1676 Updated the version.
 //    074   04.02.25 Sean Flook       IMANN-1674 Use the same zoom level for background streets and properties.
 //    075   06.02.25 Sean Flook       IMANN-1679 If authorisation has expired display the home page.
+//    076   12.02.25 Sean Flook       IMANN-1684 Changes required to set the map extent to the authorities extent when returning to the gazetteer page with no search results.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    076   22.01.25 Sean Flook       IMANN-1077 Updated the version.
-//    077   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    077   22.01.25 Sean Flook       IMANN-1077 Updated the version.
+//    078   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -503,6 +504,7 @@ function App() {
   });
   const [provenanceMerging, setProvenanceMerging] = useState(false);
   const [createToolActivated, setCreateToolActivated] = useState(false);
+  const [viewAuthorityExtent, setViewAuthorityExtent] = useState(false);
 
   const [pointCaptureMode, setPointCaptureMode] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -3690,6 +3692,15 @@ function App() {
   function HandleCreateToolActivated(activated) {
     setCreateToolActivated(activated);
   }
+
+  /**
+   * Handle when need to view the authority extent.
+   *
+   * @param {Boolean} activated True when need to view the authority extent.
+   */
+  function HandleViewAuthorityExtent(viewAuthority) {
+    setViewAuthorityExtent(viewAuthority);
+  }
   //endregion mapContext
 
   //region informationContext
@@ -3927,6 +3938,7 @@ function App() {
                             layerVisibility: layerVisibility,
                             provenanceMerging: provenanceMerging,
                             createToolActivated: createToolActivated,
+                            viewAuthorityExtent: viewAuthorityExtent,
                             onBackgroundDataChange: HandleBackgroundDataChange,
                             onSearchDataChange: HandleMapSearchDataChange,
                             onMapChange: HandleMapChange,
@@ -3953,6 +3965,7 @@ function App() {
                             onLayerVisibilityChange: HandleLayerVisibilityChange,
                             onProvenanceMerging: HandleProvenanceMerging,
                             onCreateToolActivated: HandleCreateToolActivated,
+                            onViewAuthorityExtent: HandleViewAuthorityExtent,
                           }}
                         >
                           <InformationContext.Provider

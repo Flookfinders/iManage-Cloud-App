@@ -64,9 +64,10 @@
 //endregion Version 1.0.2.0
 //region Version 1.0.4.0
 //    057   11.02.25 Sean Flook       IMANN-1680 If we are displaying the Gazetteer page without a search string display iManage Cloud.
+//    058   12.02.25 Sean Flook       IMANN-1684 Changes required to set the map extent to the authorities extent when returning to the gazetteer page with no search results.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    058   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    059   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -781,13 +782,19 @@ function ADSAppBar(props) {
         propertyContext.resetPropertyErrors();
         propertyContext.onWizardDone(null, false, null, null);
 
-        mapContext.onSearchDataChange(
-          currentSearchStreets,
-          currentSearchLlpgStreets,
-          currentSearchProperties,
-          null,
-          null
-        );
+        if (searchContext.currentSearchData.searchString === blankGazetteerSearchString) {
+          mapContext.onSearchDataChange([], [], [], null, null);
+          mapContext.onBackgroundDataChange([], [], [], []);
+          mapContext.onViewAuthorityExtent(true);
+        } else {
+          mapContext.onSearchDataChange(
+            currentSearchStreets,
+            currentSearchLlpgStreets,
+            currentSearchProperties,
+            null,
+            null
+          );
+        }
         mapContext.onEditMapObject(null, null);
 
         informationContext.onClearInformation();
@@ -808,6 +815,7 @@ function ADSAppBar(props) {
       streetContext,
       userContext,
       hasASD,
+      searchContext.currentSearchData.searchString,
     ]
   );
 

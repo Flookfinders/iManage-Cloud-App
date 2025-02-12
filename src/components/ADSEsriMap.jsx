@@ -137,10 +137,11 @@
 //region Version 1.0.4.0
 //    116   04.02.25 Sean Flook       IMANN-1677 Save the correct object to historicRec when opening a historic property.
 //    117   11.02.25 Sean Flook       IMANN-1680 Added some error handling.
+//    118   12.02.25 Sean Flook       IMANN-1684 Changes required to set the map extent to the authorities extent when returning to the gazetteer page with no search results.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    118   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
-//    119   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    119   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
+//    120   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1222,6 +1223,7 @@ function ADSEsriMap(startExtent) {
           xmax: 674272.3753963439,
           ymax: 1078658.8546231566,
           spatialReference: { wkid: 27700 },
+          zoomLevel: 7,
         }
       : settingsContext.isWelsh
       ? {
@@ -1230,6 +1232,7 @@ function ADSEsriMap(startExtent) {
           xmax: 494798.23298279627,
           ymax: 413503.834485726,
           spatialReference: { wkid: 27700 },
+          zoomLevel: 9,
         }
       : {
           xmin: 29143.856669624627,
@@ -1237,6 +1240,7 @@ function ADSEsriMap(startExtent) {
           xmax: 787399.1772583753,
           ymax: 620648.1811384995,
           spatialReference: { wkid: 27700 },
+          zoomLevel: 7,
         }
   );
 
@@ -2983,6 +2987,7 @@ function ADSEsriMap(startExtent) {
           xmax: authorityRec.xmax,
           ymax: authorityRec.ymax,
           spatialReference: { wkid: 27700 },
+          zoomLevel: authorityRec.zoomLevel,
         };
       } else return defaultCountryExtent.current;
     } else return defaultCountryExtent.current;
@@ -9897,6 +9902,15 @@ function ADSEsriMap(startExtent) {
       }
     }
   }, [mapContext.selectingProperties, mapContext.currentBackgroundData.properties, mapContext.layerVisibility]);
+
+  useEffect(() => {
+    if (mapContext.viewAuthorityExtent && view) {
+      mapContext.onViewAuthorityExtent(false);
+
+      backgroundExtent.current = getAuthorityExtent();
+      view.extent = backgroundExtent.current;
+    }
+  }, [mapContext, view]);
 
   return (
     <Fragment>
