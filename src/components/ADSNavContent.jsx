@@ -46,9 +46,10 @@
 //region Version 1.0.4.0
 //    030   11.02.25 Sean Flook       IMANN-1680 Set the search string when clicking on the gazetteer button and we do not already have one.
 //    031   12.02.25 Sean Flook       IMANN-1684 Changes required to set the map extent to the authorities extent when returning to the gazetteer page with no search results.
+//    032   12.02.25 Sean Flook       IMANN-1684 Clear data as well.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    032   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    033   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -695,8 +696,12 @@ const ADSNavContent = (props) => {
       searchContext.currentSearchData.searchString === "!+reload+!"
     ) {
       searchContext.onSearchDataChange(blankGazetteerSearchString, []);
+      mapContext.onSearchDataChange([], [], [], null, null);
+      mapContext.onBackgroundDataChange([], [], [], []);
       mapContext.onViewAuthorityExtent(true);
     } else if (searchContext.currentSearchData.searchString === blankGazetteerSearchString) {
+      mapContext.onSearchDataChange([], [], [], null, null);
+      mapContext.onBackgroundDataChange([], [], [], []);
       mapContext.onViewAuthorityExtent(true);
     }
     history.push(GazetteerRoute);
