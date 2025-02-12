@@ -138,10 +138,11 @@
 //    116   04.02.25 Sean Flook       IMANN-1677 Save the correct object to historicRec when opening a historic property.
 //    117   11.02.25 Sean Flook       IMANN-1680 Added some error handling.
 //    118   12.02.25 Sean Flook       IMANN-1684 Changes required to set the map extent to the authorities extent when returning to the gazetteer page with no search results.
+//    119   12.02.25 Sean Flook       IMANN-1687 Increase the length of the doubleEventWait time.
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
-//    119   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
-//    120   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    120   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
+//    121   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1331,7 +1332,7 @@ function ADSEsriMap(startExtent) {
   const lastSelectedExtent = useRef(null);
   const lastSelectedProperty = useRef(null);
 
-  const doubleEventWait = 500;
+  const doubleEventWait = 1500;
 
   const zoomGraphicsLayer = useRef(
     new GraphicsLayer({
