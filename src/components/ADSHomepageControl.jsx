@@ -24,6 +24,7 @@
 //region Version 1.0.5.0
 //    010   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    011   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    012   19.02.25 Sean Flook       IMANN-1077 Added a Box around the grid.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -42,6 +43,8 @@ import ADSHomepagePieChartsControl from "./ADSHomepagePieChartsControl";
 import ADSHomepageLatestEditsControl from "./ADSHomepageLatestEditsControl";
 
 import { adsMidGreyA10 } from "../utils/ADSColours";
+import { Box } from "@mui/material";
+import { dataFormStyle } from "./../utils/ADSStyles";
 
 function ADSHomepageControl() {
   const userContext = useContext(UserContext);
@@ -93,21 +96,23 @@ function ADSHomepageControl() {
   }, [apiData, loaded, userContext]);
 
   return (
-    <Grid2
-      container
-      direction="column"
-      justify="center"
-      alignItems="center"
-      spacing={4}
-      sx={{ pt: "10px", backgroundColor: adsMidGreyA10 }}
-    >
-      <Grid2>
-        <ADSHomepagePieChartsControl data={apiData.pieCharts} />
+    <Box sx={dataFormStyle("ADSHomepageControl")}>
+      <Grid2
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        spacing={4}
+        sx={{ pt: "10px", backgroundColor: adsMidGreyA10 }}
+      >
+        <Grid2>
+          <ADSHomepagePieChartsControl data={apiData.pieCharts} />
+        </Grid2>
+        <Grid2 alignItems="bottom">
+          <ADSHomepageLatestEditsControl data={apiData.latestStreetAndPropertyEdits} />
+        </Grid2>
       </Grid2>
-      <Grid2 alignItems="bottom">
-        <ADSHomepageLatestEditsControl data={apiData.latestStreetAndPropertyEdits} />
-      </Grid2>
-    </Grid2>
+    </Box>
   );
 }
 

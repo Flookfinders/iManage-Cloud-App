@@ -9,49 +9,52 @@
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //region Version 1.0.0.0
-//    001            Sean Flook                 Initial Revision.
-//    002   05.04.23 Sean Flook         WI40669 Added wizardCrossRefFormStyle and removed the use of theme.
-//    003   06.10.23 Sean Flook                 Use colour variables.
-//    004   27.10.23 Sean Flook                 Updated dataFormStyle and removed redundant methods.
-//    005   03.11.23 Sean Flook       IMANN-175 Added SelectPropertiesIconStyle.
-//    006   10.11.23 Sean Flook       IMANN-175 Modified wizardFinaliseFormStyle to handle Move BLPU seed point.
-//    007   14.12.23 Sean Flook                 Added dashboardIconStyle.
-//    008   05.01.24 Sean Flook                 Changes to sort out warnings and use CSS shortcuts.
-//    009   10.01.24 Sean Flook                 Fix warnings.
-//    010   12.01.24 Sean Flook                 Added top border to toolbar style.
-//    011   25.01.24 Sean Flook                 Changes required after UX review.
-//    012   25.01.24 Sean Flook                 Further changes required after UX review.
-//    013   25.01.24 Joel Benford               Update RecordCountStyle
-//    014   02.02.24 Joel Benford               Update tabLabelStyle and gridRowStyle
-//    015   07.02.24 Joel Benford               Update RelatedLanguageChipStyle
-//    016   22.02.24 Joel Benford     IMANN-287 Correct hover blue
-//    017   23.02.24 Joel Benford     IMANN-287 Correct valid-row blue
-//    018   28.02.24 Joshua McCormick IMANN-280 Removed unnecessary height in toolbarStyle
-//    019   27.02.24 Sean Flook           MUL16 New styles used for parent child.
+//    001            Sean Flook                  Initial Revision.
+//    002   05.04.23 Sean Flook          WI40669 Added wizardCrossRefFormStyle and removed the use of theme.
+//    003   06.10.23 Sean Flook                  Use colour variables.
+//    004   27.10.23 Sean Flook                  Updated dataFormStyle and removed redundant methods.
+//    005   03.11.23 Sean Flook        IMANN-175 Added SelectPropertiesIconStyle.
+//    006   10.11.23 Sean Flook        IMANN-175 Modified wizardFinaliseFormStyle to handle Move BLPU seed point.
+//    007   14.12.23 Sean Flook                  Added dashboardIconStyle.
+//    008   05.01.24 Sean Flook                  Changes to sort out warnings and use CSS shortcuts.
+//    009   10.01.24 Sean Flook                  Fix warnings.
+//    010   12.01.24 Sean Flook                  Added top border to toolbar style.
+//    011   25.01.24 Sean Flook                  Changes required after UX review.
+//    012   25.01.24 Sean Flook                  Further changes required after UX review.
+//    013   25.01.24 Joel Benford                Update RecordCountStyle
+//    014   02.02.24 Joel Benford                Update tabLabelStyle and gridRowStyle
+//    015   07.02.24 Joel Benford                Update RelatedLanguageChipStyle
+//    016   22.02.24 Joel Benford      IMANN-287 Correct hover blue
+//    017   23.02.24 Joel Benford      IMANN-287 Correct valid-row blue
+//    018   28.02.24 Joshua McCormick  IMANN-280 Removed unnecessary height in toolbarStyle
+//    019   27.02.24 Sean Flook            MUL16 New styles used for parent child.
 //    020   07.03.24 Joshua McCormick  IMANN-280 Added tabContainerStyle to control tab container border and existing styling
-//    021   11.03.24 Sean Flook           GLB12 Adjusted heights to remove gaps and added appBarHeight constant.
+//    021   11.03.24 Sean Flook            GLB12 Adjusted heights to remove gaps and added appBarHeight constant.
 //    022   11.03.24 Joshua McCormick  IMANN-280 toolbarStyle height set to 40px for consistency between tabs
 //    023   12.03.24 Joshua McCormick  IMANN-280 toolbarStyle overflow hidden, created dataTabToolBar styling
-//    024   14.03.24 Sean Flook        ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
-//    025   15.03.24 Sean Flook            GLB6 Added relatedAvatarStyle and greyButtonStyle.
-//    026   15.03.24 Sean Flook            GLB8 Added tabIconStyle.
+//    024   14.03.24 Sean Flook         ESU19_GP Added getHighwayDedicationIconStyle and changed colour.
+//    025   15.03.24 Sean Flook             GLB6 Added relatedAvatarStyle and greyButtonStyle.
+//    026   15.03.24 Sean Flook             GLB8 Added tabIconStyle.
 //    027   15.03.24 Joshua McCormick  IMANN-280 dataTabToolBar Icon styling
-//    028   18.03.24 Sean Flook           GLB12 Tweaked searchDataFormStyle to remove overflow.
-//    029   22.03.24 Sean Flook           GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
-//    030   27.03.24 Sean Flook                 Added dialogTitleTextStyle.
-//    031   04.04.24 Sean Flook                 Added deleteDialogContentStyle.
-//    032   08.05.24 Sean Flook       IMANN-447 Fixed height in wizard.
-//    033   17.05.24 Sean Flook       IMANN-458 Modified GetTabIconStyle to include isActive.
+//    028   18.03.24 Sean Flook            GLB12 Tweaked searchDataFormStyle to remove overflow.
+//    029   22.03.24 Sean Flook            GLB12 Changed dataFormStyle to calculate the height for all the forms etc.
+//    030   27.03.24 Sean Flook                  Added dialogTitleTextStyle.
+//    031   04.04.24 Sean Flook                  Added deleteDialogContentStyle.
+//    032   08.05.24 Sean Flook        IMANN-447 Fixed height in wizard.
+//    033   17.05.24 Sean Flook        IMANN-458 Modified GetTabIconStyle to include isActive.
 //endregion Version 1.0.0.0
 //region Version 1.0.1.0
-//    034   31.10.24 Sean Flook      IMANN-1012 Changes required for plot to postal wizard.
+//    034   31.10.24 Sean Flook       IMANN-1012 Changes required for plot to postal wizard.
 //endregion Version 1.0.1.0
 //region Version 1.0.2.0
-//    035   12.11.24 Sean Flook                 Added FormDateInputNoMarginStyle.
-//    036   03.12.24 Sean Flook      IMANN-1056 Added plotToPostalGridHeight.
+//    035   12.11.24 Sean Flook                  Added FormDateInputNoMarginStyle.
+//    036   03.12.24 Sean Flook       IMANN-1056 Added plotToPostalGridHeight.
 //endregion Version 1.0.2.0
+//region Version 1.0.5.0
+//    037   19.02.25 Sean Flook       IMANN-1077 Added styling for the Homepage control.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header */
@@ -71,6 +74,7 @@ import {
   adsLightGreyC,
   adsLightGreyA50,
   adsMidGreyA,
+  adsMidGreyA10,
   adsDarkGrey,
   adsPaleBlueA,
   adsBlueA,
@@ -438,8 +442,12 @@ export const dataFormStyle = (dataForm) => {
       height = maxHeight - appBarHeight - dataFormToolbarHeight;
       break;
 
+    case "ADSHomepageControl":
+      height = maxHeight - appBarHeight;
+      break;
+
     case "ADSHomepageLatestEditsControl":
-      height = maxHeight - appBarHeight - doughnutHeight - dataFormToolbarHeight - toolbarHeight - 30;
+      height = maxHeight - appBarHeight - doughnutHeight - dataFormToolbarHeight - toolbarHeight * 2;
       break;
 
     case "PropertyTemplatesDataForm":
@@ -516,9 +524,18 @@ export const dataFormStyle = (dataForm) => {
         height: `${height}px`,
       };
 
+    case "ADSHomepageControl":
+      return {
+        overflowY: "auto",
+        width: "100%",
+        height: `${height}px`,
+        backgroundColor: adsMidGreyA10,
+        pl: "12px",
+      };
+
     case "ADSHomepageLatestEditsControl":
       return {
-        height: "42.6vh",
+        height: `${height}px`,
         mb: "26px",
         "& .idox-homepage-latest-edits-data-grid-header": { backgroundColor: adsLightGreyC, color: adsMidGreyA },
       };
