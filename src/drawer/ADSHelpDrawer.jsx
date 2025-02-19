@@ -25,6 +25,7 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.5.0
 //    012   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    013   19.02.25 Sean Flook       IMANN-1077 Sorted layout.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -201,6 +202,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
           direction="column"
           justifyContent="center"
           alignItems="flex-start"
+          rowSpacing={1}
           sx={{
             pl: "24px",
           }}
@@ -211,24 +213,14 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
             </Typography>
           </Grid2>
 
-          <Grid2
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            sx={{
-              pt: theme.spacing(1),
-            }}
-          >
-            <Grid2 size={1}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <HelpIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid2>
-            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Help Documentation
                 <br />
@@ -242,27 +234,16 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Browse our Help
                 </Link>
               </Typography>
-            </Grid2>
+            </Stack>
           </Grid2>
-
-          <Grid2
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            sx={{
-              pt: theme.spacing(1),
-            }}
-          >
-            <Grid2 size={1}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <ForumIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid2>
-            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Customer portal
                 <br />
@@ -276,26 +257,16 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Log a support call and search knowledge base.
                 </Link>
               </Typography>
-            </Grid2>
+            </Stack>
           </Grid2>
-          <Grid2
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            sx={{
-              pt: theme.spacing(1),
-            }}
-          >
-            <Grid2 size={1}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <SupportAgentIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid2>
-            <Grid2>
               <Typography align="left" variant="subtitle2" sx={drawerTextStyle}>
                 Contact support <br />
                 <Link
@@ -306,35 +277,21 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
                   Email the Service Desk
                 </Link>
               </Typography>
-            </Grid2>
+            </Stack>
           </Grid2>
-          <Grid2 sx={{ pt: "40px" }} size={12}>
+          <Grid2 sx={{ pt: "20px" }} size={12}>
             <Typography align="left" variant="subtitle1" sx={drawerSubTitleStyle}>
               General enquiries
             </Typography>
           </Grid2>
-          <Grid2
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            sx={{
-              pt: theme.spacing(1),
-            }}
-          >
-            <Grid2 size={1}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <EmailIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid2>
-            <Grid2
-              sx={{
-                display: "inline-flex",
-              }}
-            >
               <Link
                 align={"left"}
                 href="mailto:ads.solutions@idoxgroup.com?subject=Solutions enquiry raised from iManage Cloud Help"
@@ -342,22 +299,20 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 ads.solutions@idoxgroup.com
               </Link>
-            </Grid2>
+            </Stack>
           </Grid2>
-          <Grid2 container direction="row" justifyContent="flex-start" alignItems="center">
-            <Grid2 size={1}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <CallIcon
                 sx={{
                   color: adsMidGreyA,
                   display: "inline-flex",
                 }}
               />
-            </Grid2>
-            <Grid2>
               <Typography align={"left"} variant="body2" sx={drawerTextStyle}>
                 +44 (0) 3330 111 567
               </Typography>
-            </Grid2>
+            </Stack>
           </Grid2>
           <Grid2
             sx={{
@@ -384,85 +339,79 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               GU21 5SB
             </Typography>
           </Grid2>
-          <Grid2 sx={{ pt: "40px" }} size={12}>
+          <Grid2 sx={{ pt: "20px" }} size={12}>
             <Typography align="left" variant="subtitle1" sx={drawerSubTitleStyle}>
               Metadata information
             </Typography>
           </Grid2>
-          <Grid2 container direction="row" justifyContent="flex-start" alignItems="center">
-            <Grid2 size={12}>
-              <Typography
-                align={"left"}
-                variant="body2"
-                sx={{
-                  color: adsMidGreyA,
-                  fontSize: "16px",
-                  pt: theme.spacing(2),
-                }}
-              >
-                {`GUI version: ${guiVersion}`}
-              </Typography>
-            </Grid2>
-            <Grid2 size={12}>
-              <Typography
-                align={"left"}
-                variant="subtitle2"
-                sx={{
-                  color: adsMidGreyA,
-                  fontSize: "16px",
-                  pt: theme.spacing(0.5),
-                }}
-              >
-                API versions
-              </Typography>
-            </Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`iManage: ${apiVersion}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Core: ${coreVersion}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Lookups: ${lookupVersion}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Settings: ${settingsVersion}`)}</Grid2>
-            <Grid2 size={12}>
-              <Typography
-                align={"left"}
-                variant="subtitle2"
-                sx={{
-                  color: adsMidGreyA,
-                  fontSize: "16px",
-                  pt: theme.spacing(0.5),
-                }}
-              >
-                Database versions
-              </Typography>
-            </Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`iManage: ${iManageDbVersion}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`iExchange: ${iExchangeDbVersion}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`iValidate: ${iValidateDbVersion}`)}</Grid2>
-            <Grid2 size={12}>
-              <Typography
-                align={"left"}
-                variant="subtitle2"
-                sx={{
-                  color: adsMidGreyA,
-                  fontSize: "16px",
-                  pt: theme.spacing(0.5),
-                }}
-              >
-                Search index
-              </Typography>
-            </Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Db server: ${indexDBServer}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Db name: ${indexDBName}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Built on: ${indexBuiltOn}`)}</Grid2>
-            <Grid2 size={12}>{getMetadataInformation(`Elastic version: ${indexElasticVersion}`)}</Grid2>
-            <Grid2 size={1}>
+          <Grid2 size={12}>
+            <Typography
+              align={"left"}
+              variant="body2"
+              sx={{
+                color: adsMidGreyA,
+                fontSize: "16px",
+                pt: theme.spacing(2),
+              }}
+            >
+              {`GUI version: ${guiVersion}`}
+            </Typography>
+          </Grid2>
+          <Grid2 size={12}>
+            <Typography
+              align={"left"}
+              variant="subtitle2"
+              sx={{
+                color: adsMidGreyA,
+                fontSize: "16px",
+                pt: theme.spacing(0.5),
+              }}
+            >
+              API versions
+            </Typography>
+          </Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`iManage: ${apiVersion}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Core: ${coreVersion}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Lookups: ${lookupVersion}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Settings: ${settingsVersion}`)}</Grid2>
+          <Grid2 size={12}>
+            <Typography
+              align={"left"}
+              variant="subtitle2"
+              sx={{
+                color: adsMidGreyA,
+                fontSize: "16px",
+                pt: theme.spacing(0.5),
+              }}
+            >
+              Database versions
+            </Typography>
+          </Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`iManage: ${iManageDbVersion}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`iExchange: ${iExchangeDbVersion}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`iValidate: ${iValidateDbVersion}`)}</Grid2>
+          <Grid2 size={12}>
+            <Typography
+              align={"left"}
+              variant="subtitle2"
+              sx={{
+                color: adsMidGreyA,
+                fontSize: "16px",
+                pt: theme.spacing(0.5),
+              }}
+            >
+              Search index
+            </Typography>
+          </Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Db server: ${indexDBServer}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Db name: ${indexDBName}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Built on: ${indexBuiltOn}`)}</Grid2>
+          <Grid2 size={12}>{getMetadataInformation(`Elastic version: ${indexElasticVersion}`)}</Grid2>
+          <Grid2 sx={{ marginBottom: 2 }}>
+            <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"flex-start"}>
               <IconButton onClick={(event) => copyMetadataInfo(event)} size="small" sx={{ color: adsMidGreyA }}>
                 <CopyIcon sx={ActionIconStyle()} />
               </IconButton>
-            </Grid2>
-            <Grid2
-              sx={{
-                display: "inline-flex",
-              }}
-            >
               <Link
                 component="button"
                 align={"left"}
@@ -472,7 +421,7 @@ function ADSHelpDrawer({ open, handleDrawerClose }) {
               >
                 Copy metadata information
               </Link>
-            </Grid2>
+            </Stack>
           </Grid2>
         </Grid2>
       </Box>
