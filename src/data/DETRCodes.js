@@ -2699,7 +2699,7 @@ const DETRCodes = [
   },
   {
     id: 5330,
-    text: "LONDON BOROUGH OF GREENWICH",
+    text: "ROYAL BOROUGH OF GREENWICH",
     xmin: 530314.2678944876,
     ymin: 168054.09540470474,
     xmax: 554009.7466628861,
@@ -2780,7 +2780,7 @@ const DETRCodes = [
   },
   {
     id: 5600,
-    text: "LONDON BOROUGH OF KENSINGTON AND CHELSEA",
+    text: "ROYAL BOROUGH OF KENSINGTON AND CHELSEA",
     xmin: 520207.4737278535,
     ymin: 175523.8383567935,
     xmax: 532055.2131120528,
@@ -2789,7 +2789,7 @@ const DETRCodes = [
   },
   {
     id: 5630,
-    text: "LONDON BOROUGH OF KINGSTON UPON THAMES",
+    text: "ROYAL BOROUGH OF KINGSTON UPON THAMES",
     xmin: 508512.6084002253,
     ymin: 156954.41779776866,
     xmax: 532208.0871686237,
