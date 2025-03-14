@@ -81,6 +81,7 @@
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
 //    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    062   14.03.25 Sean Flook       IMANN-1696 Fixed error in hasLoginExpired
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -2815,7 +2816,7 @@ export const hasLoginExpired = (expiry) => {
   const expiryDate = new Date(expiry);
   const now = new Date();
 
-  return now.getTime > expiryDate.getTime();
+  return now.getTime() > expiryDate.getTime();
 };
 
 /**

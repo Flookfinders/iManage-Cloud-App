@@ -26,6 +26,7 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.5.0
 //    013   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    014   14.03.25 Sean Flook       IMANN-1696 Added ability to copy the errors to the clipboard.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -33,12 +34,17 @@
 
 import React, { useContext, useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
+
 import PropertyContext from "../context/propertyContext";
 import StreetContext from "../context/streetContext";
 import SandboxContext from "../context/sandboxContext";
 import LookupContext from "../context/lookupContext";
 import SettingsContext from "../context/settingsContext";
 import UserContext from "../context/userContext";
+
+import { GetNewStreetData } from "../utils/StreetUtils";
+import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
+import { copyTextToClipboard, FormatDateTime } from "./../utils/HelperUtils";
 import ObjectComparison, {
   StreetComparison,
   PropertyComparison,
@@ -61,15 +67,30 @@ import ObjectComparison, {
   classificationKeysToIgnore,
   organisationKeysToIgnore,
 } from "../utils/ObjectComparison";
-import { GetNewStreetData } from "../utils/StreetUtils";
-import { GetNewPropertyData, getBilingualSource } from "../utils/PropertyUtils";
-import { useEditConfirmation } from "../pages/EditConfirmationPage";
-import { Grid2, Typography, IconButton, Link, Snackbar, Alert, List, ListItem, ListItemText } from "@mui/material";
+
+import {
+  Grid2,
+  Typography,
+  IconButton,
+  Link,
+  Snackbar,
+  Alert,
+  List,
+  ListItem,
+  ListItemText,
+  Tooltip,
+  Stack,
+} from "@mui/material";
 import { Box } from "@mui/system";
+import { useEditConfirmation } from "../pages/EditConfirmationPage";
+
 import CloseIcon from "@mui/icons-material/Close";
+import { CopyIcon } from "./../utils/ADSIcons";
+
 import { adsRed, adsDarkGrey, adsLightGreyB, adsOffWhite, adsLightGreyA50 } from "../utils/ADSColours";
 import { ActionIconStyle, GetAlertStyle, GetAlertIcon, GetAlertSeverity } from "../utils/ADSStyles";
 import { useTheme } from "@mui/styles";
+import MessageDialog from "./../dialogs/MessageDialog";
 
 ADSErrorList.propTypes = {
   onClose: PropTypes.func.isRequired,
@@ -88,6 +109,7 @@ function ADSErrorList({ onClose }) {
   const confirmDialog = useEditConfirmation(false);
 
   const [validationErrorOpen, setValidationErrorOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
 
   const [hasASD, setHasASD] = useState(false);
 
@@ -107,6 +129,262 @@ function ADSErrorList({ onClose }) {
   const handleCloseClick = (event) => {
     event.stopPropagation();
     if (onClose) onClose();
+  };
+
+  /**
+   * Event to handle copying the errors to the clipboard.
+   *
+   * @param {object} event The event object
+   */
+  const handleCopyClick = (event) => {
+    event.stopPropagation();
+
+    let copyString = `Copy of Validation Issue(s) from ${FormatDateTime(new Date())}\n\n`;
+
+    if (streetContext.currentStreetHasErrors) {
+      const streetTitle = `Street: ${streetContext.currentStreet.usrn} - ${streetContext.currentStreet.descriptor}`;
+      copyString += `${streetTitle}\n`;
+      copyString += `${"=".repeat(streetTitle.length)}\n\n`;
+
+      if (streetContext.currentErrors.street.length > 0) {
+        copyString += "Street errors\n";
+        copyString += "-------------\n";
+        streetContext.currentErrors.street.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.descriptor.length > 0) {
+        copyString += "\nStreet Descriptor errors\n";
+        copyString += "------------------------\n";
+        streetContext.currentErrors.descriptor.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.esu.length > 0) {
+        copyString += "\nESU errors\n";
+        copyString += "----------\n";
+        streetContext.currentErrors.esu.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.highwayDedication.length > 0) {
+        copyString += "\nHighway Dedication errors\n";
+        copyString += "-------------------------\n";
+        streetContext.currentErrors.highwayDedication.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.oneWayExemption.length > 0) {
+        copyString += "\nOne Way Exemption errors\n";
+        copyString += "------------------------\n";
+        streetContext.currentErrors.oneWayExemption.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.successorCrossRef.length > 0) {
+        copyString += "\nSuccessor Cross Reference errors\n";
+        copyString += "--------------------------------\n";
+        streetContext.currentErrors.successorCrossRef.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.maintenanceResponsibility.length > 0) {
+        copyString += "\nMaintenance Responsibility errors\n";
+        copyString += "---------------------------------\n";
+        streetContext.currentErrors.maintenanceResponsibility.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.reinstatementCategory.length > 0) {
+        copyString += "\nReinstatement Category errors\n";
+        copyString += "-----------------------------\n";
+        streetContext.currentErrors.reinstatementCategory.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.osSpecialDesignation.length > 0) {
+        copyString += "\nSpecial Designation errors\n";
+        copyString += "--------------------------\n";
+        streetContext.currentErrors.osSpecialDesignation.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.interest.length > 0) {
+        copyString += "\nInterest errors\n";
+        copyString += "---------------\n";
+        streetContext.currentErrors.interest.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.construction.length > 0) {
+        copyString += "\nConstruction errors\n";
+        copyString += "-------------------\n";
+        streetContext.currentErrors.construction.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.specialDesignation.length > 0) {
+        copyString += "\nSpecial Designation errors\n";
+        copyString += "--------------------------\n";
+        streetContext.currentErrors.specialDesignation.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.heightWidthWeight.length > 0) {
+        copyString += "\nHeight, Width and Weight errors\n";
+        copyString += "-------------------------------\n";
+        streetContext.currentErrors.heightWidthWeight.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.publicRightOfWay.length > 0) {
+        copyString += "\nPublic Right of Way errors\n";
+        copyString += "--------------------------\n";
+        streetContext.currentErrors.publicRightOfWay.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (streetContext.currentErrors.note.length > 0) {
+        copyString += "\nStreet Note errors\n";
+        copyString += "------------------\n";
+        streetContext.currentErrors.note.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+    }
+
+    if (propertyContext.currentPropertyHasErrors) {
+      const propertyTitle = `Property: ${propertyContext.currentProperty.uprn} - ${propertyContext.currentProperty.address}`;
+      copyString += `${propertyTitle}\n`;
+      copyString += `${"=".repeat(propertyTitle.length)}\n\n`;
+
+      if (propertyContext.currentErrors.blpu.length > 0) {
+        copyString += "BLPU errors\n";
+        copyString += "-----------\n";
+        propertyContext.currentErrors.blpu.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.lpi.length > 0) {
+        copyString += "\nLPI errors\n";
+        copyString += "----------\n";
+        propertyContext.currentErrors.lpi.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.provenance.length > 0) {
+        copyString += "\nProvenance errors\n";
+        copyString += "-----------------\n";
+        propertyContext.currentErrors.provenance.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.crossRef.length > 0) {
+        copyString += "\nCross Reference errors\n";
+        copyString += "----------------------\n";
+        propertyContext.currentErrors.crossRef.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.successorCrossRef.length > 0) {
+        copyString += "\nSuccessor Cross Reference errors\n";
+        copyString += "--------------------------------\n";
+        propertyContext.currentErrors.successorCrossRef.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.organisation.length > 0) {
+        copyString += "\nOrganisation errors\n";
+        copyString += "-------------------\n";
+        propertyContext.currentErrors.organisation.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.classification.length > 0) {
+        copyString += "\nClassification errors\n";
+        copyString += "---------------------\n";
+        propertyContext.currentErrors.classification.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+
+      if (propertyContext.currentErrors.note.length > 0) {
+        copyString += "\nProperty Note errors\n";
+        copyString += "--------------------\n";
+        propertyContext.currentErrors.note.forEach((error) => {
+          error.errors.forEach((errorText) => {
+            copyString += `${error.field}: ${errorText.replace("¬", ",")}\n`;
+          });
+        });
+      }
+    }
+
+    copyTextToClipboard(copyString);
+    setMessageOpen(true);
   };
 
   /**
@@ -1537,6 +1815,15 @@ function ADSErrorList({ onClose }) {
     );
   };
 
+  /**
+   * Event to handle when the message dialog is closed.
+   *
+   * @param {String} action The action chosen from the message dialog.
+   */
+  const handleMessageDialogClose = (action) => {
+    setMessageOpen(false);
+  };
+
   useEffect(() => {
     setHasASD(userContext.currentUser && userContext.currentUser.hasASD);
   }, [userContext]);
@@ -1559,16 +1846,9 @@ function ADSErrorList({ onClose }) {
           borderRadius: "3px",
         }}
       >
-        <Grid2
-          container
-          direction="column"
-          justifyContent="space-around"
-          alignItems="baseline"
-          id="issue-list-grid"
-          sx={{ pt: "2px", pl: "12px", pr: "12px", pb: "24px" }}
-        >
-          <Grid2 container direction="row" justifyContent="space-between" alignItems="center">
-            <Grid2>
+        <Grid2 container direction="column" id="issue-list-grid" sx={{ pt: "2px", pl: "12px", pr: "12px", pb: "24px" }}>
+          <Grid2>
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
               <Typography
                 variant="subtitle1"
                 display="inline-flex"
@@ -1582,12 +1862,19 @@ function ADSErrorList({ onClose }) {
               >
                 Issue(s)
               </Typography>
-            </Grid2>
-            <Grid2>
-              <IconButton onClick={handleCloseClick} size="small">
-                <CloseIcon sx={ActionIconStyle()} />
-              </IconButton>
-            </Grid2>
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
+                <Tooltip title="Copy errors to clipboard" placement="top">
+                  <IconButton onClick={handleCopyClick} size="small">
+                    <CopyIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Close" placement="top">
+                  <IconButton onClick={handleCloseClick} size="small">
+                    <CloseIcon sx={ActionIconStyle()} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
           </Grid2>
           <Grid2>
             <List component="div" disablePadding>
@@ -1786,6 +2073,7 @@ function ADSErrorList({ onClose }) {
             {"Failed to validate the record."}
           </Alert>
         </Snackbar>
+        <MessageDialog isOpen={messageOpen} variant="copiedIssues" onClose={handleMessageDialogClose} />
       </div>
     </Fragment>
   );

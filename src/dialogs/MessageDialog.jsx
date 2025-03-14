@@ -3,7 +3,7 @@
 //
 //  Description: Dialog used to display messages
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -28,6 +28,9 @@
 //region Version 1.0.1.0
 //    014   30.10.24 Sean Flook      IMANN-1040 Added failLookupLoad.
 //endregion Version 1.0.1.0
+//region Version 1.0.5.0
+//    015   14.05.25 Sean Flook      IMANN-1696 Added copiedIssues.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -60,6 +63,7 @@ MessageDialog.propTypes = {
     "noUprnsRange",
     "cascadePAOChanges",
     "failLookupLoad",
+    "copiedIssues",
   ]).isRequired,
   onClose: PropTypes.func.isRequired,
 };
@@ -124,6 +128,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
       case "failLookupLoad":
         return "Startup error";
 
+      case "copiedIssues":
+        return "Copied Issue(s)";
+
       default:
         return `Unknown variant: ${variant}`;
     }
@@ -147,6 +154,7 @@ function MessageDialog({ isOpen, variant, onClose }) {
 
       case "cascadePAOChanges":
       case "failLookupLoad":
+      case "copiedIssues":
         return undefined;
 
       default:
@@ -238,6 +246,9 @@ function MessageDialog({ isOpen, variant, onClose }) {
             <Typography variant="body2">Please report this to Idox support.</Typography>
           </Stack>
         );
+
+      case "copiedIssues":
+        return <Typography variant="body2">All the issues have been copied to the clipboard.</Typography>;
 
       default:
         return null;
