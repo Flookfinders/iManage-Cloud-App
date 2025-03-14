@@ -3,7 +3,7 @@
 //
 //  Description: Notes data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -38,6 +38,9 @@
 //region Version 1.0.1.0
 //    024   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //endregion Version 1.0.1.0
+//region Version 1.0.5.0
+//    025   14.03.25 Sean Flook      IMANN-1106 Fix the label on the OK button.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -368,7 +371,7 @@ function NotesDataTab({ data, errors, loading, focusedField, onDelete, onHomeCli
           displayCharactersLeft
         />
         <ADSOkCancelControl
-          okLabel={data.pkId < 0 ? "Add" : "Ok"}
+          okLabel={"Ok"}
           okDisabled={data.pkId > 0 && !dataChanged}
           indented={false}
           onOkClicked={handleOkClicked}
