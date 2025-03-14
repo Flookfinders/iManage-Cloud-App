@@ -36,6 +36,7 @@
 //endregion Version 1.0.1.0
 //region Version 1.0.5.0
 //    021   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    022   14.03.25 Sean Flook       IMANN-1689 No need to get the GAE postcode ref.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -553,12 +554,6 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                     property.pkId
                   );
                 } else {
-                  const gaePostTownRef = postTown
-                    ? lookupContext.currentLookups.postTowns.find(
-                        (x) => x.linkedRef === postTown && x.language === "GAE"
-                      ).postTownRef
-                    : null;
-
                   updatedProperty = {
                     changeType: "U",
                     blpuStateDate: state ? currentDate : property.blpuStateDate,
@@ -606,7 +601,7 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                         changeType: "U",
                         endDate: variant === "historic" ? currentDate : lpi.endDate,
                         postcodeRef: postcode ? postcode : lpi.postcodeRef,
-                        postTownRef: postTown ? (lpi.language === "ENG" ? postTown : gaePostTownRef) : lpi.postTownRef,
+                        postTownRef: postTown ? postTown : lpi.postTownRef,
                         logicalStatus: newLogicalStatus,
                       };
                     }),
