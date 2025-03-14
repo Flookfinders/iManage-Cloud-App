@@ -3,23 +3,26 @@
 //
 //  Description: Edit Cross Reference Dialog
 //
-//  Copyright:    © 2023 - 2024 Idox Software Limited.
+//  Copyright:    © 2023 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //region Version 1.0.0.0
-//    001   04.04.23 Sean Flook         WI40669 Initial version.
-//    002   06.10.23 Sean Flook                 Use colour variables.
-//    003   05.01.24 Sean Flook                 Use CSS shortcuts.
-//    004   11.01.24 Sean Flook                 Fix warnings.
-//    005   16.01.24 Sean Flook                 Changes required to fix warnings.
-//    006   27.02.24 Sean Flook           MUL15 Fixed dialog title styling.
-//    007   27.03.24 Sean Flook                 Added ADSDialogTitle.
-//    008   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
+//    001   04.04.23 Sean Flook          WI40669 Initial version.
+//    002   06.10.23 Sean Flook                  Use colour variables.
+//    003   05.01.24 Sean Flook                  Use CSS shortcuts.
+//    004   11.01.24 Sean Flook                  Fix warnings.
+//    005   16.01.24 Sean Flook                  Changes required to fix warnings.
+//    006   27.02.24 Sean Flook            MUL15 Fixed dialog title styling.
+//    007   27.03.24 Sean Flook                  Added ADSDialogTitle.
+//    008   18.06.24 Joshua McCormick  IMANN-598 Cross ref max set to 20 if scottish, else default 50
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    009   14.03.25 Sean Flook       IMANN-1703 Sort the list of cross references.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -236,7 +239,14 @@ function EditCrossReferenceDialog({ isOpen, isNew, data, onDone, onClose }) {
           isRequired
           useRounded
           isCrossRef
-          lookupData={lookupContext.currentLookups.appCrossRefs.filter((x) => x.enabled && x.xrefSourceRef !== "BILG")}
+          lookupData={lookupContext.currentLookups.appCrossRefs
+            .filter((x) => x.enabled && x.xrefSourceRef !== "BILG")
+            .sort(function (a, b) {
+              return a.xrefDescription.localeCompare(b.xrefDescription, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="pkId"
           lookupLabel="xrefDescription"
           lookupColour={adsDarkPink}

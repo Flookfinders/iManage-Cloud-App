@@ -550,6 +550,12 @@ function MultiEditRemoveCrossReferenceDialog({ propertyUprns, isOpen, onClose })
 
       const filteredData = lookupContext.currentLookups.appCrossRefs
         .filter((x) => x.enabled)
+        .sort(function (a, b) {
+          return a.xrefDescription.localeCompare(b.xrefDescription, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        })
         .map((a) => a["xrefDescription"]);
       if (filteredData.length !== options.length) setOptions(filteredData);
     } else {

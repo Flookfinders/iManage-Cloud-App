@@ -29,6 +29,7 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.5.0
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    017   14.03.25 Sean Flook       IMANN-1703 Sort the list of cross references.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -618,7 +619,14 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                   isCrossRef
                   isRequired
                   disabled={updating}
-                  lookupData={lookupContext.currentLookups.appCrossRefs.filter((x) => x.enabled)}
+                  lookupData={lookupContext.currentLookups.appCrossRefs
+                    .filter((x) => x.enabled)
+                    .sort(function (a, b) {
+                      return a.xrefDescription.localeCompare(b.xrefDescription, undefined, {
+                        numeric: true,
+                        sensitivity: "base",
+                      });
+                    })}
                   lookupId="pkId"
                   lookupLabel="xrefDescription"
                   lookupColour={adsDarkPink}

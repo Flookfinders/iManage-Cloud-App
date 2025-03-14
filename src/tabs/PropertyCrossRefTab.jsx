@@ -3,36 +3,39 @@
 //
 //  Description: Property Details Tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
 //  Modification History:
 //
-//  Version Date     Modifier            Issue# Description
+//  Version Date     Modifier             Issue# Description
 //region Version 1.0.0.0
-//    001   20.07.21 Sean Flook         WI39??? Initial Revision.
-//    002   22.03.23 Sean Flook         WI40596 Only allow editing if BLPU logical status is not historic or rejected.
-//    003   28.03.23 Sean Flook         WI40596 Removed above change.
-//    004   06.04.23 Sean Flook         WI40228 Prevent bilingual cross references from being edited.
-//    005   06.10.23 Sean Flook                 Use colour variables.
-//    006   27.10.23 Sean Flook                 Use new dataFormStyle.
-//    007   24.11.23 Sean Flook                 Moved Box and Stack to @mui/system.
-//    008   05.01.24 Sean Flook                 Changes to sort out warnings.
-//    009   11.01.24 Sean Flook                 Fix warnings.
-//    010   07.03.24 Sean Flook       IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
-//    011   11.03.24 Sean Flook           GLB12 Adjusted height to remove gap.
-//    012   13.03.24 Joshua McCormick IMANN-280 Added dataTabToolBar for inner toolbar styling
-//    013   18.03.24 Sean Flook           GLB12 Adjusted height to remove overflow.
-//    014   18.03.24 Sean Flook      STRFRM4_OS Set the nullString parameter for the key.
-//    015   22.03.24 Sean Flook           GLB12 Changed to use dataFormStyle so height can be correctly set.
-//    016   09.04.24 Joshua McCormick IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
-//    017   29.04.24 Joshua McCormick IMANN-386 Toolbar changes no title no wrapping with width restrictions
-//    018   04.06.24 Joel Benford     IMANN-505 Fix enabling OK button
-//    019   18.06.24 Joshua McCormick IMANN-598 Cross ref max set to 20 if scottish, else default 50
-//    020   20.06.24 Sean Flook       IMANN-636 Use the new user rights.
-//    021   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
+//    001   20.07.21 Sean Flook          WI39??? Initial Revision.
+//    002   22.03.23 Sean Flook          WI40596 Only allow editing if BLPU logical status is not historic or rejected.
+//    003   28.03.23 Sean Flook          WI40596 Removed above change.
+//    004   06.04.23 Sean Flook          WI40228 Prevent bilingual cross references from being edited.
+//    005   06.10.23 Sean Flook                  Use colour variables.
+//    006   27.10.23 Sean Flook                  Use new dataFormStyle.
+//    007   24.11.23 Sean Flook                  Moved Box and Stack to @mui/system.
+//    008   05.01.24 Sean Flook                  Changes to sort out warnings.
+//    009   11.01.24 Sean Flook                  Fix warnings.
+//    010   07.03.24 Sean Flook        IMANN-348 Changes required to ensure the OK button is correctly enabled and removed redundant code.
+//    011   11.03.24 Sean Flook            GLB12 Adjusted height to remove gap.
+//    012   13.03.24 Joshua McCormick  IMANN-280 Added dataTabToolBar for inner toolbar styling
+//    013   18.03.24 Sean Flook            GLB12 Adjusted height to remove overflow.
+//    014   18.03.24 Sean Flook       STRFRM4_OS Set the nullString parameter for the key.
+//    015   22.03.24 Sean Flook            GLB12 Changed to use dataFormStyle so height can be correctly set.
+//    016   09.04.24 Joshua McCormick  IMANN-277 Added displayCharactersLeft for inputs that it should be shown for
+//    017   29.04.24 Joshua McCormick  IMANN-386 Toolbar changes no title no wrapping with width restrictions
+//    018   04.06.24 Joel Benford      IMANN-505 Fix enabling OK button
+//    019   18.06.24 Joshua McCormick  IMANN-598 Cross ref max set to 20 if scottish, else default 50
+//    020   20.06.24 Sean Flook        IMANN-636 Use the new user rights.
+//    021   26.07.24 Sean Flook        IMANN-856 Correctly handle deleting newly added record.
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    022   14.03.25 Sean Flook       IMANN-1703 Sort the list of cross references.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header */
@@ -377,7 +380,14 @@ function PropertyCrossRefTab({ data, errors, loading, focusedField, onHomeClick,
           loading={loading}
           useRounded
           isCrossRef
-          lookupData={lookupContext.currentLookups.appCrossRefs.filter((x) => x.enabled)}
+          lookupData={lookupContext.currentLookups.appCrossRefs
+            .filter((x) => x.enabled)
+            .sort(function (a, b) {
+              return a.xrefDescription.localeCompare(b.xrefDescription, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
+            })}
           lookupId="pkId"
           lookupLabel="xrefDescription"
           lookupColour={adsDarkPink}
