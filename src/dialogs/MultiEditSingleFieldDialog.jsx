@@ -35,6 +35,7 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.5.0
 //    022   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    023   14.03.25 Sean Flook       IMANN-1067 Do not try and save the properties if the user has not selected something.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -586,202 +587,210 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
 
           switch (variant) {
             case "classification":
-              updatedProperty = {
-                changeType: "U",
-                blpuStateDate: property.blpuStateDate,
-                rpc: property.rpc,
-                startDate: property.startDate,
-                endDate: property.endDate,
-                parentUprn: property.parentUprn,
-                neverExport: property.neverExport,
-                siteSurvey: property.siteSurvey,
-                uprn: property.uprn,
-                logicalStatus: property.logicalStatus,
-                blpuState: property.blpuState,
-                blpuClass: classification,
-                localCustodianCode: property.localCustodianCode,
-                organisation: property.organisation,
-                xcoordinate: property.xcoordinate,
-                ycoordinate: property.ycoordinate,
-                wardCode: property.wardCode,
-                parishCode: property.parishCode,
-                pkId: property.pkId,
-                blpuAppCrossRefs: property.blpuAppCrossRefs,
-                blpuProvenances: property.blpuProvenances,
-                blpuNotes: updatedNotes,
-                lpis: property.lpis,
-              };
+              if (!!classification) {
+                updatedProperty = {
+                  changeType: "U",
+                  blpuStateDate: property.blpuStateDate,
+                  rpc: property.rpc,
+                  startDate: property.startDate,
+                  endDate: property.endDate,
+                  parentUprn: property.parentUprn,
+                  neverExport: property.neverExport,
+                  siteSurvey: property.siteSurvey,
+                  uprn: property.uprn,
+                  logicalStatus: property.logicalStatus,
+                  blpuState: property.blpuState,
+                  blpuClass: classification,
+                  localCustodianCode: property.localCustodianCode,
+                  organisation: property.organisation,
+                  xcoordinate: property.xcoordinate,
+                  ycoordinate: property.ycoordinate,
+                  wardCode: property.wardCode,
+                  parishCode: property.parishCode,
+                  pkId: property.pkId,
+                  blpuAppCrossRefs: property.blpuAppCrossRefs,
+                  blpuProvenances: property.blpuProvenances,
+                  blpuNotes: updatedNotes,
+                  lpis: property.lpis,
+                };
+              }
               break;
 
             case "rpc":
-              if (settingsContext.isScottish)
-                updatedProperty = {
-                  blpuStateDate: property.blpuStateDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  endDate: property.endDate,
-                  startDate: property.startDate,
-                  blpuState: property.blpuState,
-                  custodianCode: property.custodianCode,
-                  level: property.level,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  pkId: property.pkId,
-                  changeType: "U",
-                  rpc: rpc,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  classifications: property.classifications,
-                  organisations: property.organisations,
-                  successorCrossRefs: property.successorCrossRefs,
-                  lpis: property.lpis,
-                };
-              else
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis,
-                };
+              if (!!rpc) {
+                if (settingsContext.isScottish)
+                  updatedProperty = {
+                    blpuStateDate: property.blpuStateDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    endDate: property.endDate,
+                    startDate: property.startDate,
+                    blpuState: property.blpuState,
+                    custodianCode: property.custodianCode,
+                    level: property.level,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    pkId: property.pkId,
+                    changeType: "U",
+                    rpc: rpc,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    classifications: property.classifications,
+                    organisations: property.organisations,
+                    successorCrossRefs: property.successorCrossRefs,
+                    lpis: property.lpis,
+                  };
+                else
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: property.blpuStateDate,
+                    rpc: rpc,
+                    startDate: property.startDate,
+                    endDate: property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    blpuState: property.blpuState,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis,
+                  };
+              }
               break;
 
             case "state":
-              if (settingsContext.isScottish)
-                updatedProperty = {
-                  blpuStateDate: stateDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  endDate: property.endDate,
-                  startDate: property.startDate,
-                  blpuState: state,
-                  custodianCode: property.custodianCode,
-                  level: property.level,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  pkId: property.pkId,
-                  changeType: "U",
-                  rpc: property.rpc,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  classifications: property.classifications,
-                  organisations: property.organisations,
-                  successorCrossRefs: property.successorCrossRefs,
-                  lpis: property.lpis,
-                };
-              else
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: stateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  blpuState: state,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis,
-                };
+              if (!!state) {
+                if (settingsContext.isScottish)
+                  updatedProperty = {
+                    blpuStateDate: stateDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    endDate: property.endDate,
+                    startDate: property.startDate,
+                    blpuState: state,
+                    custodianCode: property.custodianCode,
+                    level: property.level,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    pkId: property.pkId,
+                    changeType: "U",
+                    rpc: property.rpc,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    classifications: property.classifications,
+                    organisations: property.organisations,
+                    successorCrossRefs: property.successorCrossRefs,
+                    lpis: property.lpis,
+                  };
+                else
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: stateDate,
+                    rpc: property.rpc,
+                    startDate: property.startDate,
+                    endDate: property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    blpuState: state,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis,
+                  };
+              }
               break;
 
             case "level":
-              if (settingsContext.isScottish)
-                updatedProperty = {
-                  blpuStateDate: property.blpuStateDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  endDate: property.endDate,
-                  startDate: property.startDate,
-                  blpuState: property.blpuState,
-                  custodianCode: property.custodianCode,
-                  level: level,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  pkId: property.pkId,
-                  changeType: "U",
-                  rpc: property.rpc,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  classifications: property.classifications,
-                  organisations: property.organisations,
-                  successorCrossRefs: property.successorCrossRefs,
-                  lpis: property.lpis,
-                };
-              else
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis.map((lpi) => {
-                    return {
-                      ...lpi,
-                      changeType: "U",
-                      level: level,
-                    };
-                  }),
-                };
+              if (!!level) {
+                if (settingsContext.isScottish)
+                  updatedProperty = {
+                    blpuStateDate: property.blpuStateDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    endDate: property.endDate,
+                    startDate: property.startDate,
+                    blpuState: property.blpuState,
+                    custodianCode: property.custodianCode,
+                    level: level,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    pkId: property.pkId,
+                    changeType: "U",
+                    rpc: property.rpc,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    classifications: property.classifications,
+                    organisations: property.organisations,
+                    successorCrossRefs: property.successorCrossRefs,
+                    lpis: property.lpis,
+                  };
+                else
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: property.blpuStateDate,
+                    rpc: property.rpc,
+                    startDate: property.startDate,
+                    endDate: property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    blpuState: property.blpuState,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis.map((lpi) => {
+                      return {
+                        ...lpi,
+                        changeType: "U",
+                        level: level,
+                      };
+                    }),
+                  };
+              }
               break;
 
             case "excludeFromExport":
@@ -895,58 +904,60 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
               break;
 
             case "note":
-              if (settingsContext.isScottish)
-                updatedProperty = {
-                  blpuStateDate: property.blpuStateDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  endDate: property.endDate,
-                  startDate: property.startDate,
-                  blpuState: property.blpuState,
-                  custodianCode: property.custodianCode,
-                  level: property.level,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  pkId: property.pkId,
-                  changeType: "U",
-                  rpc: property.rpc,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  classifications: property.classifications,
-                  organisations: property.organisations,
-                  successorCrossRefs: property.successorCrossRefs,
-                  lpis: property.lpis,
-                };
-              else
-                updatedProperty = {
-                  changeType: "U",
-                  blpuStateDate: property.blpuStateDate,
-                  rpc: property.rpc,
-                  startDate: property.startDate,
-                  endDate: property.endDate,
-                  parentUprn: property.parentUprn,
-                  neverExport: property.neverExport,
-                  siteSurvey: property.siteSurvey,
-                  uprn: property.uprn,
-                  logicalStatus: property.logicalStatus,
-                  blpuState: property.blpuState,
-                  blpuClass: property.blpuClass,
-                  localCustodianCode: property.localCustodianCode,
-                  organisation: property.organisation,
-                  xcoordinate: property.xcoordinate,
-                  ycoordinate: property.ycoordinate,
-                  wardCode: property.wardCode,
-                  parishCode: property.parishCode,
-                  pkId: property.pkId,
-                  blpuAppCrossRefs: property.blpuAppCrossRefs,
-                  blpuProvenances: property.blpuProvenances,
-                  blpuNotes: updatedNotes,
-                  lpis: property.lpis,
-                };
+              if (!!updatedNotes && updatedNotes.length > 0 && updatedNotes.length !== property.blpuNotes.length) {
+                if (settingsContext.isScottish)
+                  updatedProperty = {
+                    blpuStateDate: property.blpuStateDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    endDate: property.endDate,
+                    startDate: property.startDate,
+                    blpuState: property.blpuState,
+                    custodianCode: property.custodianCode,
+                    level: property.level,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    pkId: property.pkId,
+                    changeType: "U",
+                    rpc: property.rpc,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    classifications: property.classifications,
+                    organisations: property.organisations,
+                    successorCrossRefs: property.successorCrossRefs,
+                    lpis: property.lpis,
+                  };
+                else
+                  updatedProperty = {
+                    changeType: "U",
+                    blpuStateDate: property.blpuStateDate,
+                    rpc: property.rpc,
+                    startDate: property.startDate,
+                    endDate: property.endDate,
+                    parentUprn: property.parentUprn,
+                    neverExport: property.neverExport,
+                    siteSurvey: property.siteSurvey,
+                    uprn: property.uprn,
+                    logicalStatus: property.logicalStatus,
+                    blpuState: property.blpuState,
+                    blpuClass: property.blpuClass,
+                    localCustodianCode: property.localCustodianCode,
+                    organisation: property.organisation,
+                    xcoordinate: property.xcoordinate,
+                    ycoordinate: property.ycoordinate,
+                    wardCode: property.wardCode,
+                    parishCode: property.parishCode,
+                    pkId: property.pkId,
+                    blpuAppCrossRefs: property.blpuAppCrossRefs,
+                    blpuProvenances: property.blpuProvenances,
+                    blpuNotes: updatedNotes,
+                    lpis: property.lpis,
+                  };
+              }
               break;
 
             default:
@@ -962,11 +973,13 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
                   setRangeProcessedCount(updatedCount.current + failedCount.current);
                 } else {
                   failedCount.current++;
+                  setRangeProcessedCount(updatedCount.current + failedCount.current);
                 }
               }
             );
           } else {
             failedCount.current++;
+            setRangeProcessedCount(updatedCount.current + failedCount.current);
           }
         }
       }
