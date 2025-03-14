@@ -3,7 +3,7 @@
 //
 //  Description: ESU list tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -36,6 +36,9 @@
 //    023   14.05.24 Joshua McCormick IMANN-364 noWrap & padding to prevent toolbar content overlapping
 //    024   08.07.24 Sean Flook       IMANN-728 Only show the Add or Assign ESU button if the user has the rights.
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    025   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -164,7 +167,7 @@ function EsuListTab({
     } else {
       const newChecked = data.map((x) => x.esuId);
       setChecked(newChecked);
-      setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+      if (userCanEdit) setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
       mapContext.onHighlightListItem("esu", newChecked);
     }
     setAllChecked(!allChecked);
@@ -191,7 +194,7 @@ function EsuListTab({
     setAllChecked(newChecked.length === data.length);
 
     if (newChecked.length > 0) {
-      setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+      if (userCanEdit) setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
       mapContext.onHighlightListItem("esu", newChecked);
     } else {
       setSelectionAnchorEl(null);
@@ -394,7 +397,7 @@ function EsuListTab({
       setAllChecked(data && newChecked.length === data.length);
 
       if (newChecked.length > 0) {
-        setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+        if (userCanEdit) setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
         mapContext.onHighlightListItem("esu", newChecked);
       } else {
         setSelectionAnchorEl(null);
@@ -402,7 +405,7 @@ function EsuListTab({
       }
       streetContext.onEsuSelected(null);
     }
-  }, [streetContext.selectedMapEsuId, checked, data, mapContext, streetContext]);
+  }, [streetContext.selectedMapEsuId, checked, data, mapContext, streetContext, userCanEdit]);
 
   useEffect(() => {
     if (mapContext.currentDivideEsu) {

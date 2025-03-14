@@ -143,6 +143,7 @@
 //region Version 1.0.5.0
 //    120   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
 //    121   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    122   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -6818,7 +6819,11 @@ function ADSEsriMap(startExtent) {
 
                     const newSelected = [...new Set(newGraphics.map((x) => x.attributes.TOID))];
                     setSelectedExtents(newSelected);
-                    if (newSelected.length > 0) {
+                    if (
+                      newSelected.length > 0 &&
+                      userContext.currentUser &&
+                      userContext.current.currentUser.editProperty
+                    ) {
                       setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
                       setDisplayExtentMergeTool(true);
                     } else {
@@ -6909,7 +6914,11 @@ function ADSEsriMap(startExtent) {
 
                           const newSelected = [...new Set(graphics.map((x) => x.attributes.TOID))];
                           setSelectedExtents(newSelected);
-                          if (newSelected.length > 0) {
+                          if (
+                            newSelected.length > 0 &&
+                            userContext.currentUser &&
+                            userContext.current.currentUser.editProperty
+                          ) {
                             setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
                             setDisplayExtentMergeTool(true);
                           } else {
@@ -6954,7 +6963,8 @@ function ADSEsriMap(startExtent) {
               selectedEsus.current = newList;
 
               if (newList.length > 0) {
-                setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                  setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                 mapContext.onHighlightListItem("esu", newList);
               } else {
                 setSelectionAnchorEl(null);
@@ -7005,7 +7015,8 @@ function ADSEsriMap(startExtent) {
                 selectedEsus.current = newList;
 
                 if (newList.length > 0) {
-                  setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                  if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                    setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                   mapContext.onHighlightListItem("esu", newList);
                 } else {
                   setSelectionAnchorEl(null);
@@ -7037,7 +7048,8 @@ function ADSEsriMap(startExtent) {
                 selectedEsus.current = newList;
 
                 if (newList.length > 0) {
-                  setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
+                  if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                    setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                   mapContext.onHighlightListItem("esu", newList);
                 } else {
                   setSelectionAnchorEl(null);
@@ -7381,7 +7393,8 @@ function ADSEsriMap(startExtent) {
               selectedProperties.current = newSelectedProperties;
 
               if (newSelectedProperties.length > 0) {
-                setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
+                if (userContext.currentUser && userContext.current.currentUser.editProperty)
+                  setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
                 mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
               } else {
                 setSelectionAnchorEl(null);

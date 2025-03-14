@@ -82,6 +82,7 @@
 //region Version 1.0.5.0
 //    061   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    062   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    063   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1516,15 +1517,16 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
 
   useEffect(() => {
     if (checked && checked.length > 0) {
-      setSelectionAnchorEl(
-        document.getElementById(`${variant === "list" ? "ads-search-data-list" : "ads-search-data-grid"}`)
-      );
+      if (userCanEditStreet || userCanEditProperty)
+        setSelectionAnchorEl(
+          document.getElementById(`${variant === "list" ? "ads-search-data-list" : "ads-search-data-grid"}`)
+        );
       const propertyChecked = checked.filter((x) => x.indexOf("L") === 4);
       setPropertyCount(propertyChecked.length);
       const streetChecked = checked.filter((x) => x.indexOf("L") === -1);
       setStreetCount(streetChecked.length);
     } else setSelectionAnchorEl(null);
-  }, [checked, variant]);
+  }, [checked, variant, userCanEditStreet, userCanEditProperty]);
 
   useEffect(() => {
     setUserCanEditStreet(userContext.currentUser && userContext.currentUser.editStreet);

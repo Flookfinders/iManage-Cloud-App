@@ -71,6 +71,7 @@
 //endregion Version 1.0.3.0
 //region Version 1.0.5.0
 //    053   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    054   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -297,7 +298,7 @@ function RelatedPropertyTab({
       setPropertyChecked(tempArray);
       setAllChecked(data.properties.length === tempArray.length);
       setPartialChecked(tempArray.length > 0 && data.properties.length > tempArray.length);
-      setSelectionAnchorEl(tempArray.length > 0 ? document.getElementById("ads-related-toolbar") : null);
+      setSelectionAnchorEl(tempArray.length > 0 && userCanEdit ? document.getElementById("ads-related-toolbar") : null);
     }
     checkedAddress.current = address;
   };
@@ -321,7 +322,7 @@ function RelatedPropertyTab({
       if (onChecked) onChecked(newChecked);
       else {
         setPropertyChecked(newChecked);
-        setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
+        if (userCanEdit) setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
         setAllChecked(true);
         setPartialChecked(false);
       }
@@ -356,7 +357,7 @@ function RelatedPropertyTab({
       setPropertyChecked(newChecked);
       setAllChecked(true);
       setPartialChecked(false);
-      setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
+      if (userCanEdit) setSelectionAnchorEl(document.getElementById("ads-related-toolbar"));
     }
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
@@ -377,7 +378,9 @@ function RelatedPropertyTab({
       setPropertyChecked(newChecked);
       setAllChecked(data.properties.length === newChecked.length);
       setPartialChecked(newChecked.length > 0 && data.properties.length > newChecked.length);
-      setSelectionAnchorEl(newChecked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
+      setSelectionAnchorEl(
+        newChecked.length > 0 && userCanEdit ? document.getElementById("ads-related-toolbar") : null
+      );
     }
     setAnchorSelectEl(null);
     mapContext.onHighlightStreetProperty(null, propertyHighlighted);
@@ -963,8 +966,8 @@ function RelatedPropertyTab({
       setPartialChecked(checked.length > 0 && data.properties.length > checked.length);
       initialPropertyFocused.current = false;
     }
-    setSelectionAnchorEl(checked.length > 0 ? document.getElementById("ads-related-toolbar") : null);
-  }, [checked, data]);
+    setSelectionAnchorEl(checked.length > 0 && userCanEdit ? document.getElementById("ads-related-toolbar") : null);
+  }, [checked, data, userCanEdit]);
 
   useEffect(() => {
     if (streetContext.currentStreet.openRelated) {

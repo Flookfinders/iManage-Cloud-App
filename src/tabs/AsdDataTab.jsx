@@ -3,7 +3,7 @@
 //
 //  Description: ASD Data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -38,6 +38,9 @@
 //    025   18.07.24 Sean Flook       IMANN-772 Corrected field name.
 //    026   26.07.24 Sean Flook       IMANN-856 Correctly handle deleting newly added record.
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    027   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -283,7 +286,7 @@ function AsdDataTab({
 
     setChecked(newChecked);
 
-    if (newChecked.length > 0) {
+    if (newChecked.length > 0 && userCanEdit) {
       setSelectionAnchorEl(document.getElementById("ads-asd-data-grid"));
     } else {
       setSelectionAnchorEl(null);

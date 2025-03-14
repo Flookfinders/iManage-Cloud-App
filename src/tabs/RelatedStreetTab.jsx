@@ -56,6 +56,7 @@
 //endregion Version 1.0.1.0
 //region Version 1.0.5.0
 //    041   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    042   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -267,7 +268,7 @@ function RelatedStreetTab({
 
     checkedAddress.current = address;
 
-    if (tempArray.length > 0) setSelectionAnchorEl(document.getElementById("street-related-tree"));
+    if (tempArray.length > 0 && userCanEdit) setSelectionAnchorEl(document.getElementById("street-related-tree"));
     else setSelectionAnchorEl(null);
   };
 
