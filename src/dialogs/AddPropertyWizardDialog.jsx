@@ -51,6 +51,7 @@
 //endregion Version 1.0.4.0
 //region Version 1.0.5.0
 //    036   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    037   14.03.25 Sean Flook       IMANN-1137 Ensure the BLPU state date is set when the BLPU state is 0.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1551,7 +1552,8 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
                       logicalStatus: selectedTemplate.current.blpuLogicalStatus,
                       rpc: selectedTemplate.current.rpc,
                       state: selectedTemplate.current.state,
-                      stateDate: selectedTemplate.current.state ? new Date() : null,
+                      stateDate:
+                        selectedTemplate.current.state || selectedTemplate.current.state === 0 ? new Date() : null,
                       level: selectedTemplate.current.blpuLevel ? selectedTemplate.current.blpuLevel : 0,
                       excludeFromExport: selectedTemplate.current.excludeFromExport,
                       siteVisit: selectedTemplate.current.siteVisit,

@@ -60,6 +60,7 @@
 //region Version 1.0.5.0
 //    042   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    043   14.03.25 Sean Flook       IMANN-1703 Sort the list of cross references.
+//    044   14.03.25 Sean Flook       IMANN-1137 Ensure the BLPU state date is set when the BLPU state is 0.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -682,7 +683,7 @@ function EditTemplateDialog({ variant, isOpen, data, onDone, onClose }) {
   const handleBlpuStateChangeEvent = (newValue) => {
     setBlpuState(newValue);
     if (variant === "blpuWizard" || variant === "plotBlpuWizard") {
-      if (newValue && !blpuStateDate) setBlpuStateDate(new Date());
+      if ((newValue || newValue === 0) && !blpuStateDate) setBlpuStateDate(new Date());
       updateErrors("state");
       setBlpuStateError(null);
     }
