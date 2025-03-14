@@ -3,7 +3,7 @@
 //
 //  Description: OneScotland special designation data tab
 //
-//  Copyright:    © 2021 - 2024 Idox Software Limited.
+//  Copyright:    © 2021 - 2025 Idox Software Limited.
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -40,6 +40,9 @@
 //    027   19.08.24 Sean Flook       IMANN-874 Added additional case.
 //    028   20.08.24 Sean Flook       IMANN-941 Corrected field name used for focused field.
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    029   14.03.25 Sean Flook      IMANN-1046 Make the description required for new records.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -658,7 +661,7 @@ function OSSpecialDesignationDataTab({ data, errors, loading, focusedField, onHo
         <ADSTextControl
           label="Description"
           isEditable={userCanEdit}
-          isRequired={isAfter1stApril2015(startDate)}
+          isRequired={data.pkId < 0 || isAfter1stApril2015(startDate)}
           isFocused={focusedField ? focusedField === "Description" : false}
           loading={loading}
           value={description}
