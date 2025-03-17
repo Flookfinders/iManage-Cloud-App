@@ -66,6 +66,7 @@
 //endregion Version 1.0.2.0
 //region Version 1.0.5.0
 //    049   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    050   17.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -980,16 +981,22 @@ function StreetDataTab({
                   <Typography variant="inherit">Add language version</Typography>
                 </MenuItem>
               )}
-            {userContext.currentUser && userContext.currentUser.editProperty && ![3, 4].includes(streetType) && (
-              <MenuItem dense onClick={handleAddProperty} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Add property</Typography>
-              </MenuItem>
-            )}
-            {userContext.currentUser && userContext.currentUser.editProperty && ![3, 4].includes(streetType) && (
-              <MenuItem dense divider onClick={handleAddRange} sx={menuItemStyle(true)}>
-                <Typography variant="inherit">Add properties</Typography>
-              </MenuItem>
-            )}
+            {userContext.currentUser &&
+              userContext.currentUser.editProperty &&
+              ![3, 4].includes(streetType) &&
+              !endDate && (
+                <MenuItem dense onClick={handleAddProperty} sx={menuItemStyle(true)}>
+                  <Typography variant="inherit">Add property</Typography>
+                </MenuItem>
+              )}
+            {userContext.currentUser &&
+              userContext.currentUser.editProperty &&
+              ![3, 4].includes(streetType) &&
+              !endDate && (
+                <MenuItem dense divider onClick={handleAddRange} sx={menuItemStyle(true)}>
+                  <Typography variant="inherit">Add properties</Typography>
+                </MenuItem>
+              )}
             <MenuItem dense onClick={handleOpenInStreetview} sx={menuItemStyle(false)}>
               <Typography variant="inherit">Open in Street View</Typography>
             </MenuItem>

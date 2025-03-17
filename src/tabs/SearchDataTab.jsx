@@ -83,6 +83,7 @@
 //    061   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    062   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    063   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
+//    064   17.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1914,7 +1915,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               onClose={handleStreetActionsMenuClose}
                               sx={menuStyle}
                             >
-                              {userCanEditProperty && (
+                              {userCanEditProperty && rec.blpu_state !== 4 && (
                                 <MenuItem
                                   dense
                                   disabled={![11, 12, 19].includes(rec.logical_status)}
@@ -1924,7 +1925,7 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                                   <Typography variant="inherit">Add property</Typography>
                                 </MenuItem>
                               )}
-                              {userCanEditProperty && (
+                              {userCanEditProperty && rec.blpu_state !== 4 && (
                                 <MenuItem
                                   dense
                                   divider
