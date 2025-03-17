@@ -38,6 +38,7 @@
 //    021   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    022   14.03.25 Sean Flook       IMANN-1689 No need to get the GAE postcode ref.
 //    023   14.03.25 Sean Flook        IMANN-955 Do not count failures twice.
+//    024   17.03.25 Sean Flook        IMANN-977 Update postallyAddressable and officialAddress for Scottish properties.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -604,6 +605,8 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                         postcodeRef: postcode ? postcode : lpi.postcodeRef,
                         postTownRef: postTown ? postTown : lpi.postTownRef,
                         logicalStatus: newLogicalStatus,
+                        postallyAddressable: postalAddress ? postalAddress : lpi.postalAddress,
+                        officialFlag: officialFlag ? officialFlag : lpi.officialFlag,
                       };
                     }),
                   };
