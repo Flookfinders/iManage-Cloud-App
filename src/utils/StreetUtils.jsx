@@ -97,6 +97,7 @@
 //endregion Version 1.0.2.0
 //region Version 1.0.5.0
 //    080   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    081   17.03.25 Sean Flook       IMANN-1682 When adding a new street ensure all languages are added to the street descriptor lookups.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -3149,12 +3150,6 @@ export async function SaveStreet(
               sort_code: 0,
             };
 
-            savedDescriptorLookups.push({
-              usrn: descriptor.usrn,
-              language: descriptor.language,
-              address: streetAddress,
-            });
-
             if (searchContext.currentSearchData.results && searchContext.currentSearchData.results.length > 0) {
               const i = searchContext.currentSearchData.results.findIndex(
                 (x) => x.id === `${descriptor.usrn}_${descriptor.language}`
@@ -3172,6 +3167,12 @@ export async function SaveStreet(
                 searchContext.onSearchDataChange(searchContext.currentSearchData.searchString, newSearchData);
             }
           }
+
+          savedDescriptorLookups.push({
+            usrn: descriptor.usrn,
+            language: descriptor.language,
+            address: streetAddress,
+          });
         }
 
         let updatedDescriptorLookups = [];
