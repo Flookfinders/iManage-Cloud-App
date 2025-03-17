@@ -36,6 +36,7 @@
 //region Version 1.0.5.0
 //    022   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    023   14.03.25 Sean Flook       IMANN-1067 Do not try and save the properties if the user has not selected something.
+//    024   14.03.25 Sean Flook        IMANN-955 Do not count failures twice.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1137,9 +1138,6 @@ function MultiEditSingleFieldDialog({ variant, propertyUprns, isOpen, onClose })
           if (Array.isArray(updateErrors.current)) setFinaliseErrors(updateErrors.current);
           else setFinaliseErrors([updateErrors.current]);
         }
-
-        failedCount.current++;
-        setRangeProcessedCount(updatedCount.current + failedCount.current);
       }
     }
   }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors]);

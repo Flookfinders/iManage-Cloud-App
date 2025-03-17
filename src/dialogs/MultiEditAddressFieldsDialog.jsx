@@ -33,6 +33,7 @@
 //endregion Version 1.0.1.0
 //region Version 1.0.5.0
 //    018   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    019   14.03.25 Sean Flook        IMANN-955 Do not count failures twice.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -452,11 +453,13 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
                   setRangeProcessedCount(updatedCount.current + failedCount.current);
                 } else {
                   failedCount.current++;
+                  setRangeProcessedCount(updatedCount.current + failedCount.current);
                 }
               }
             );
           } else {
             failedCount.current++;
+            setRangeProcessedCount(updatedCount.current + failedCount.current);
           }
         }
       }
@@ -673,9 +676,6 @@ function MultiEditAddressFieldsDialog({ propertyUprns, isOpen, onClose }) {
           if (Array.isArray(updateErrors.current)) setFinaliseErrors(updateErrors.current);
           else setFinaliseErrors([updateErrors.current]);
         }
-
-        failedCount.current++;
-        setRangeProcessedCount(updatedCount.current + failedCount.current);
       }
     }
   }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors]);

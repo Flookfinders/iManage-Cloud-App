@@ -37,6 +37,7 @@
 //region Version 1.0.5.0
 //    021   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    022   14.03.25 Sean Flook       IMANN-1689 No need to get the GAE postcode ref.
+//    023   14.03.25 Sean Flook        IMANN-955 Do not count failures twice.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -676,11 +677,13 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
                       setRangeProcessedCount(updatedCount.current + failedCount.current);
                     } else {
                       failedCount.current++;
+                      setRangeProcessedCount(updatedCount.current + failedCount.current);
                     }
                   }
                 );
               } else {
                 failedCount.current++;
+                setRangeProcessedCount(updatedCount.current + failedCount.current);
               }
             }
           }
@@ -914,9 +917,6 @@ function MultiEditLogicalStatusDialog({ variant, propertyUprns, isOpen, onClose 
           if (Array.isArray(updateErrors.current)) setFinaliseErrors(updateErrors.current);
           else setFinaliseErrors([updateErrors.current]);
         }
-
-        failedCount.current++;
-        setRangeProcessedCount(updatedCount.current + failedCount.current);
       }
     }
   }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors]);

@@ -30,6 +30,7 @@
 //region Version 1.0.5.0
 //    016   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    017   14.03.25 Sean Flook       IMANN-1703 Sort the list of cross references.
+//    018   14.03.25 Sean Flook        IMANN-955 Do not count failures twice.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -446,11 +447,13 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
                     savedProperty.current.push(result);
                     setRangeProcessedCount(updatedCount.current + failedCount.current);
                   } else {
+                    setRangeProcessedCount(updatedCount.current + failedCount.current);
                     failedCount.current++;
                   }
                 }
               );
             } else {
+              setRangeProcessedCount(updatedCount.current + failedCount.current);
               failedCount.current++;
             }
           }
@@ -579,9 +582,6 @@ function MultiEditAddCrossReferenceDialog({ propertyUprns, isOpen, onClose }) {
           if (Array.isArray(updateErrors.current)) setFinaliseErrors(updateErrors.current);
           else setFinaliseErrors([updateErrors.current]);
         }
-
-        failedCount.current++;
-        setRangeProcessedCount(updatedCount.current + failedCount.current);
       }
     }
   }, [propertyContext.currentErrors, propertyContext.currentPropertyHasErrors]);
