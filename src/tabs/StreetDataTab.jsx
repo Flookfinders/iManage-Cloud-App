@@ -67,6 +67,7 @@
 //region Version 1.0.5.0
 //    049   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
 //    050   17.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
+//    051   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -973,7 +974,8 @@ function StreetDataTab({
           >
             {process.env.NODE_ENV === "development" &&
               ((data && data.streetDescriptors && data.streetDescriptors.length === 0) ||
-                ((settingsContext.isWelsh || settingsContext.isScottish) &&
+                (((settingsContext.isWelsh && settingsContext.metadataLanguages.street === "BIL") ||
+                  (settingsContext.isScottish && settingsContext.metadataLanguages.street === "GAE")) &&
                   data &&
                   data.streetDescriptors &&
                   data.streetDescriptors.length === 1)) && (

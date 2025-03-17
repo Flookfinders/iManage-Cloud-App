@@ -105,6 +105,7 @@
 //region Version 1.0.5.0
 //    077   22.01.25 Sean Flook       IMANN-1077 Updated the version.
 //    078   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    079   17.03.25 Sean Flook       IMANN-1711 Added metadataLanguages to the settings context.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -321,6 +322,7 @@ function App() {
   });
 
   const [mapLayers, setMapLayers] = useState(null);
+  const [metadataLanguages, setMetadataLanguages] = useState({ street: "ENG", asd: "ENG", property: "ENG" });
 
   const [street, setStreet] = useState({
     usrn: 0,
@@ -1472,6 +1474,21 @@ function App() {
   function HandleMapLayersChange(data) {
     setMapLayers(data);
     sessionStorage.setItem("mapLayers", JSON.stringify(data));
+  }
+
+  /**
+   * Event to handle when the metadata language changes.
+   *
+   * @param {string} streetLanguage The language for the street.
+   * @param {string} asdLanguage The language for the ASD.
+   * @param {string} propertyLanguage The language for the property.
+   */
+  function HandleMetadataLanguagesChanged(streetLanguage, asdLanguage, propertyLanguage) {
+    setMetadataLanguages({
+      street: streetLanguage,
+      asd: asdLanguage,
+      property: propertyLanguage,
+    });
   }
 
   /**
@@ -3825,11 +3842,13 @@ function App() {
                       propertyTemplates: propertyTemplates,
                       streetTemplate: streetTemplate,
                       mapLayers: mapLayers,
+                      metadataLanguages: metadataLanguages,
                       onNodeChange: HandleNodeChange,
                       onAuthorityDetailsChange: HandleAuthorityDetailsChange,
                       onPropertyTemplatesChange: HandlePropertyTemplatesChange,
                       onStreetTemplateChange: HandleStreetTemplateChange,
                       onMapLayersChange: HandleMapLayersChange,
+                      onMetadataLanguagesChanged: HandleMetadataLanguagesChanged,
                       onReload: HandleSettingsReload,
                     }}
                   >

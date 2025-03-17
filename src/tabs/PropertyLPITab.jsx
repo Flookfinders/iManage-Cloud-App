@@ -54,6 +54,9 @@
 //region Version 1.0.1.0
 //    040   24.10.24 Sean Flook      IMANN-1033 Only sort and filter lookups when required.
 //endregion Version 1.0.1.0
+//region Version 1.0.5.0
+//    041   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header */
@@ -1133,6 +1136,7 @@ function PropertyLPITab({ data, errors, loading, focusedField, onSetCopyOpen, on
           value={language}
           helperText="The language in use for the descriptive identifier."
           errorText={languageError}
+          metadataLanguage={settingsContext.metadataLanguages.property}
         />
         <ADSSelectControl
           label="LPI logical status"

@@ -32,6 +32,7 @@
 //region Version 1.0.5.0
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
+//    018   17.03.25 Sean Flook       IMANN-1711 Get the metadata languages and set the metadataLanguages object in settings context.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -65,6 +66,9 @@ import {
   GetPropertyTemplatesUrl,
   GetStreetTemplateUrl,
   GetMapLayersUrl,
+  GetLSGMetadataUrl,
+  GetASDMetadataUrl,
+  GetLLPGMetadataUrl,
 } from "../configuration/ADSConfig";
 
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -97,6 +101,9 @@ const HomePage = () => {
   const [propertyTemplates, setPropertyTemplates] = useState();
   const [streetTemplate, setStreetTemplate] = useState();
   const [mapLayers, setMapLayers] = useState();
+  const [streetMetadata, setStreetMetadata] = useState();
+  const [asdMetadata, setAsdMetadata] = useState();
+  const [propertyMetadata, setPropertyMetadata] = useState();
 
   const loadedLookups = useRef([]);
   const validationMessagesLoaded = useRef(false);
@@ -120,6 +127,9 @@ const HomePage = () => {
   const propertyTemplatesLoaded = useRef(false);
   const streetTemplateLoaded = useRef(false);
   const mapLayersLoaded = useRef(false);
+  const streetMetadataLoaded = useRef(false);
+  const asdMetadataLoaded = useRef(false);
+  const propertyMetadataLoaded = useRef(false);
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
@@ -236,6 +246,21 @@ const HomePage = () => {
         case "mapLayers":
           setMapLayers(result);
           mapLayersLoaded.current = true;
+          break;
+
+        case "streetMetadata":
+          setStreetMetadata(result);
+          streetMetadataLoaded.current = true;
+          break;
+
+        case "asdMetadata":
+          setAsdMetadata(result);
+          asdMetadataLoaded.current = true;
+          break;
+
+        case "propertyMetadata":
+          setPropertyMetadata(result);
+          propertyMetadataLoaded.current = true;
           break;
 
         default:
@@ -522,6 +547,24 @@ const HomePage = () => {
           noRecords: [],
           id: "mapLayers",
         },
+        {
+          url: GetLSGMetadataUrl("GET", userContext.currentUser),
+          data: streetMetadata,
+          noRecords: {},
+          id: "streetMetadata",
+        },
+        {
+          url: GetASDMetadataUrl("GET", userContext.currentUser),
+          data: asdMetadata,
+          noRecords: {},
+          id: "asdMetadata",
+        },
+        {
+          url: GetLLPGMetadataUrl("GET", userContext.currentUser),
+          data: propertyMetadata,
+          noRecords: {},
+          id: "propertyMetadata",
+        },
       ];
 
       Lookups.forEach(async (lookup) => {
@@ -605,6 +648,14 @@ const HomePage = () => {
           settingsContext.onMapLayersChange(mapLayers);
         }
 
+        if (streetMetadataLoaded.current && asdMetadataLoaded.current && propertyMetadataLoaded.current) {
+          settingsContext.onMetadataLanguagesChanged(
+            streetMetadata ? streetMetadata.language : "ENG",
+            asdMetadata ? asdMetadata.language : "ENG",
+            propertyMetadata ? propertyMetadata.language : "ENG"
+          );
+        }
+
         setIsLoaded(true);
       }
     }
@@ -635,6 +686,9 @@ const HomePage = () => {
     propertyTemplates,
     streetTemplate,
     mapLayers,
+    streetMetadata,
+    asdMetadata,
+    propertyMetadata,
     lookupsContext,
     settingsContext,
     userContext,

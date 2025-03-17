@@ -72,6 +72,7 @@
 //endregion Version 1.0.1.0
 //region Version 1.0.5.0
 //    056   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    057   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1218,7 +1219,7 @@ function PropertyDetailsTab({
                 <Typography variant="inherit">Add new English LPI</Typography>
               </MenuItem>
             )}
-            {userCanEdit && settingsContext.isScottish && (
+            {userCanEdit && settingsContext.isScottish && settingsContext.metadataLanguages.property === "GAE" && (
               <MenuItem dense onClick={handleAddGaeLpi} sx={menuItemStyle(false)}>
                 <Typography variant="inherit">Add new Gaelic LPI</Typography>
               </MenuItem>

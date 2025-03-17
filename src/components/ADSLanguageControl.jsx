@@ -19,6 +19,7 @@
 //endregion Version 1.0.0.0
 //region Version 1.0.5.0
 //    006   27.01.25 Sean Flook       IMANN-1077 Upgraded MUI to v6.
+//    007   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -45,13 +46,14 @@ ADSLanguageControl.propTypes = {
   helperText: PropTypes.string,
   value: PropTypes.string,
   errorText: PropTypes.array,
+  metadataLanguage: PropTypes.string.isRequired,
 };
 
 ADSLanguageControl.defaultProps = {
   loading: false,
 };
 
-function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
+function ADSLanguageControl({ label, loading, helperText, value, errorText, metadataLanguage }) {
   const settingsContext = useContext(SettingsContext);
 
   const [displayError, setDisplayError] = useState("");
@@ -128,7 +130,7 @@ function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
                 >
                   ENG
                 </Button>
-                {settingsContext.isScottish && (
+                {settingsContext.isScottish && metadataLanguage === "GAE" && (
                   <Button
                     id="gae-button"
                     variant="outlined"
@@ -138,7 +140,7 @@ function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
                     GAE
                   </Button>
                 )}
-                {settingsContext.isWelsh && (
+                {settingsContext.isWelsh && metadataLanguage === "BIL" && (
                   <Button
                     id="cym-button"
                     variant="outlined"
@@ -160,7 +162,7 @@ function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
               >
                 ENG
               </Button>
-              {settingsContext.isScottish && (
+              {settingsContext.isScottish && metadataLanguage === "GAE" && (
                 <Button
                   id="gae-button"
                   variant="outlined"
@@ -170,7 +172,7 @@ function ADSLanguageControl({ label, loading, helperText, value, errorText }) {
                   GAE
                 </Button>
               )}
-              {settingsContext.isWelsh && (
+              {settingsContext.isWelsh && metadataLanguage === "BIL" && (
                 <Button
                   id="cym-button"
                   variant="outlined"

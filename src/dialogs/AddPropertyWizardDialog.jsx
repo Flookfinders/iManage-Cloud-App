@@ -52,6 +52,7 @@
 //region Version 1.0.5.0
 //    036   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    037   14.03.25 Sean Flook       IMANN-1137 Ensure the BLPU state date is set when the BLPU state is 0.
+//    038   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -407,7 +408,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               dualLanguageLink: settingsContext.isWelsh ? dualLanguageLink : 0,
             });
 
-          if (settingsContext.isWelsh) {
+          if (settingsContext.isWelsh && settingsContext.metadataLanguages.property === "BIL") {
             const cymPostTownRecord = lookupContext.currentLookups.postTowns.find(
               (x) => x.linkedRef === address.addressDetails.postTownRef
             );
@@ -459,7 +460,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
               });
           }
 
-          if (settingsContext.isScottish && createAltLang) {
+          if (settingsContext.isScottish && settingsContext.metadataLanguages.property === "GAE" && createAltLang) {
             const gaePostTownRecord = lookupContext.currentLookups.postTowns.find(
               (x) => x.postTownRef === address.addressDetails.postTownRef
             );
@@ -1038,7 +1039,7 @@ function AddPropertyWizardDialog({ variant, parent, isOpen, onDone, onClose }) {
 
               setAltLangSingleAddressData(altLangData);
             }
-          } else if (settingsContext.isWelsh) {
+          } else if (settingsContext.isWelsh && settingsContext.metadataLanguages.property === "BIL") {
             const cymParentLpi = returnValue.lpis
               .sort((a, b) => a.logicalStatus - b.logicalStatus)
               .filter((x) => x.language === "CYM");

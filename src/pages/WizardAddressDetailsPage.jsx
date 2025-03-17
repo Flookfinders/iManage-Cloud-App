@@ -21,6 +21,9 @@
 //    008   11.06.24 Joshua McCormick IMANN-451 fixed saving states changing lang, cleanup.
 //    009   14.06.24 Sean Flook       IMANN-451 Various changes required in order for Scottish authorities to be able to choose to create Gaelic records or not.
 //endregion Version 1.0.0.0
+//region Version 1.0.5.0
+//    010   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header */
@@ -1249,13 +1252,15 @@ function WizardAddressDetailsPage({
       <Stack direction="column" spacing={2} sx={{ mt: theme.spacing(1), width: "100%" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography sx={{ fontSize: 24, pl: theme.spacing(0) }}>Address details</Typography>
-          {settingsContext.isScottish && (
-            <FormControlLabel
-              control={<Checkbox checked={createGaelicRecords} onChange={handleCreateGaelicRecordsChangeEvent} />}
-              label={`Create Gaelic record${isRange ? "s" : ""}`}
-              labelPlacement="start"
-            />
-          )}
+          {settingsContext.isScottish &&
+            settingsContext.metadataLanguages.propert ===
+              "GAE"(
+                <FormControlLabel
+                  control={<Checkbox checked={createGaelicRecords} onChange={handleCreateGaelicRecordsChangeEvent} />}
+                  label={`Create Gaelic record${isRange ? "s" : ""}`}
+                  labelPlacement="start"
+                />
+              )}
         </Stack>
         <AppBar
           position="static"
@@ -1266,7 +1271,8 @@ function WizardAddressDetailsPage({
             boxShadow: "none",
           }}
         >
-          {((settingsContext.isScottish && createGaelicRecords) || settingsContext.isWelsh) && (
+          {((settingsContext.isScottish && createGaelicRecords) ||
+            (settingsContext.isWelsh && settingsContext.metadataLanguages.property === "BIL")) && (
             <Tabs
               value={value}
               onChange={handleTabChange}
@@ -1295,7 +1301,8 @@ function WizardAddressDetailsPage({
             </Tabs>
           )}
         </AppBar>
-        {((settingsContext.isScottish && createGaelicRecords) || settingsContext.isWelsh) && (
+        {((settingsContext.isScottish && createGaelicRecords) ||
+          (settingsContext.isWelsh && settingsContext.metadataLanguages.property === "BIL")) && (
           <>
             <TabPanel value={value} index={0}>
               {getAddressDetailsForm()}
@@ -1305,7 +1312,9 @@ function WizardAddressDetailsPage({
             </TabPanel>
           </>
         )}
-        {(!settingsContext.isScottish || !createGaelicRecords) && !settingsContext.isWelsh && getAddressDetailsForm()}
+        {(!settingsContext.isScottish || !createGaelicRecords) &&
+          (!settingsContext.isWelsh || settingsContext.metadataLanguages.property === "ENG") &&
+          getAddressDetailsForm()}
       </Stack>
     </Box>
   );

@@ -38,6 +38,9 @@
 //    023   10.10.24 Sean Flook      IMANN-1018 Allow LLPG editors to edit streets.
 //    024   12.11.24 Sean Flook      IMANN-1018 Only filter and sort lookups when required.
 //endregion Version 1.0.1.0
+//region Version 1.0.5.0
+//    025   17.03.25 Sean Flook       IMANN-1711 Only allow alternative languages if the metadata languages allow them.
+//endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -509,6 +512,7 @@ function StreetDescriptorDataTab({ data, errors, loading, focusedField, onHomeCl
           value={language}
           errorText={languageError}
           helperText="The language in use for the descriptive identifier."
+          metadataLanguage={settingsContext.metadataLanguages.street}
         />
         <ADSTextControl
           id="street_descriptor"
