@@ -144,6 +144,7 @@
 //    120   27.01.25 Sean Flook       IMANN-1077 Added some error handling.
 //    121   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    122   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
+//    123   17.03.25 Sean Flook       IMANN-1691 Include the USRN in the parent property details when creating a child/children.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -2899,6 +2900,10 @@ function ADSEsriMap(startExtent) {
       if (userContext.current.currentUser.editProperty) {
         GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
           if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+            const engLpiData = parentProperties.parent.lpis
+              .filter((x) => x.language === "ENG")
+              .sort((a, b) => a.logicalStatus - b.logicalStatus);
+
             displayingWizard.current = true;
             const rec = {
               address: recordAttributes.current.Address,
@@ -2906,6 +2911,7 @@ function ADSEsriMap(startExtent) {
               northing: Number(recordAttributes.current.Northing),
               postcode: recordAttributes.current.Postcode,
               uprn: Number(recordAttributes.current.UPRN),
+              usrn: engLpiData ? engLpiData[0].usrn : 0,
             };
             propertyContext.resetPropertyErrors();
             propertyContext.onWizardDone(null, false, null, null);
@@ -2937,6 +2943,10 @@ function ADSEsriMap(startExtent) {
       if (userContext.current.currentUser.editProperty) {
         GetParentHierarchy(Number(recordAttributes.current.UPRN), userContext.current).then((parentProperties) => {
           if (!parentProperties || parentProperties.parent.currentParentChildLevel < 4) {
+            const engLpiData = parentProperties.parent.lpis
+              .filter((x) => x.language === "ENG")
+              .sort((a, b) => a.logicalStatus - b.logicalStatus);
+
             displayingWizard.current = true;
             const rec = {
               address: recordAttributes.current.Address,
@@ -2944,6 +2954,7 @@ function ADSEsriMap(startExtent) {
               northing: Number(recordAttributes.current.Northing),
               postcode: recordAttributes.current.Postcode,
               uprn: Number(recordAttributes.current.UPRN),
+              usrn: engLpiData ? engLpiData[0].usrn : 0,
             };
             propertyContext.resetPropertyErrors();
             propertyContext.onWizardDone(null, false, null, null);
