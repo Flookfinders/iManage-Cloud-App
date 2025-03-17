@@ -145,6 +145,7 @@
 //    121   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    122   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //    123   17.03.25 Sean Flook       IMANN-1691 Include the USRN in the parent property details when creating a child/children.
+//    124   17.03.25 Sean Flook       IMANN-1710 Only zoom to the full extent if we are not editing an object.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -6395,11 +6396,7 @@ function ADSEsriMap(startExtent) {
 
     streetLayer.when(
       function () {
-        if (
-          !mapContext.currentLayers.zoomStreet &&
-          !mapContext.currentLayers.zoomProperty &&
-          (!editingObject.current || editingObject.current.objectType !== 13)
-        ) {
+        if (!mapContext.currentLayers.zoomStreet && !mapContext.currentLayers.zoomProperty && !editingObject.current) {
           if (propertyLayer.fullExtent) {
             backgroundExtent.current = {
               xmin:
@@ -6832,7 +6829,7 @@ function ADSEsriMap(startExtent) {
                     setSelectedExtents(newSelected);
                     if (
                       newSelected.length > 0 &&
-                      userContext.currentUser &&
+                      userContext.current.currentUser &&
                       userContext.current.currentUser.editProperty
                     ) {
                       setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
@@ -6927,7 +6924,7 @@ function ADSEsriMap(startExtent) {
                           setSelectedExtents(newSelected);
                           if (
                             newSelected.length > 0 &&
-                            userContext.currentUser &&
+                            userContext.current.currentUser &&
                             userContext.current.currentUser.editProperty
                           ) {
                             setSelectionAnchorEl(document.getElementById("ads-provenance-data-tab"));
@@ -6974,7 +6971,7 @@ function ADSEsriMap(startExtent) {
               selectedEsus.current = newList;
 
               if (newList.length > 0) {
-                if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                if (userContext.current.currentUser && userContext.current.currentUser.editStreet)
                   setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                 mapContext.onHighlightListItem("esu", newList);
               } else {
@@ -7026,7 +7023,7 @@ function ADSEsriMap(startExtent) {
                 selectedEsus.current = newList;
 
                 if (newList.length > 0) {
-                  if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                  if (userContext.current.currentUser && userContext.current.currentUser.editStreet)
                     setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                   mapContext.onHighlightListItem("esu", newList);
                 } else {
@@ -7059,7 +7056,7 @@ function ADSEsriMap(startExtent) {
                 selectedEsus.current = newList;
 
                 if (newList.length > 0) {
-                  if (userContext.currentUser && userContext.current.currentUser.editStreet)
+                  if (userContext.current.currentUser && userContext.current.currentUser.editStreet)
                     setSelectionAnchorEl(document.getElementById("ads-esu-data-grid"));
                   mapContext.onHighlightListItem("esu", newList);
                 } else {
@@ -7404,8 +7401,9 @@ function ADSEsriMap(startExtent) {
               selectedProperties.current = newSelectedProperties;
 
               if (newSelectedProperties.length > 0) {
-                if (userContext.currentUser && userContext.current.currentUser.editProperty)
+                if (userContext.current.currentUser && userContext.current.currentUser.editProperty) {
                   setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
+                }
                 mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
               } else {
                 setSelectionAnchorEl(null);
