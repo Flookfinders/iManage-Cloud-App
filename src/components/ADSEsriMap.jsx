@@ -147,6 +147,7 @@
 //    123   17.03.25 Sean Flook       IMANN-1691 Include the USRN in the parent property details when creating a child/children.
 //    124   17.03.25 Sean Flook       IMANN-1710 Only zoom to the full extent if we are not editing an object.
 //    125   18.03.25 Sean Flook       IMANN-1695 Changes to how selecting properties are handled to make things more robust.
+//    126   18.03.25 Sean Flook       IMANN-1695 Ensure the list of selected UPRNs are numbers.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -7092,9 +7093,10 @@ function ADSEsriMap(startExtent) {
             opts = { include: selectPropertyLayer };
             view.hitTest(event, opts).then(function (response) {
               if (response.results.length && response.results[0].graphic.attributes.UPRN) {
-                const currentIndex = selectedProperties.current.indexOf(response.results[0].graphic.attributes.UPRN);
+                const clickedUprn = Number(response.results[0].graphic.attributes.UPRN);
+                const currentIndex = selectedProperties.current.indexOf(clickedUprn);
                 const newSelectedProperties = [...selectedProperties.current];
-                if (currentIndex === -1) newSelectedProperties.push(response.results[0].graphic.attributes.UPRN);
+                if (currentIndex === -1) newSelectedProperties.push(clickedUprn);
                 else newSelectedProperties.splice(currentIndex, 1);
                 selectedProperties.current = newSelectedProperties;
 
