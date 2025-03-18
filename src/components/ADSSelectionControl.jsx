@@ -63,6 +63,9 @@
 //region Version 1.0.4.0
 //    044   11.02.25 Sean Flook       IMANN-1686 Correctly get the map search data when removing from list.
 //endregion Version 1.0.4.0
+//region Version 1.0.4.0
+//    045   18.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
+//endregion Version 1.0.4.0
 //
 //--------------------------------------------------------------------------------------------------
 //endregion header
@@ -1700,7 +1703,7 @@ function ADSSelectionControl({
                     onClose={handleStreetActionsMenuClose}
                     sx={menuStyle}
                   >
-                    {userCanEditProperty && (
+                    {userCanEditProperty && !currentStreet.endDate && (
                       <MenuItem
                         dense
                         disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
@@ -1710,7 +1713,7 @@ function ADSSelectionControl({
                         <Typography variant="inherit">Add property</Typography>
                       </MenuItem>
                     )}
-                    {userCanEditProperty && (
+                    {userCanEditProperty && !currentStreet.endDate && (
                       <MenuItem
                         dense
                         divider
