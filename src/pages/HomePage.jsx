@@ -34,6 +34,7 @@
 //    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
 //    018   17.03.25 Sean Flook       IMANN-1711 Get the metadata languages and set the metadataLanguages object in settings context.
 //    019   18.03.25 Sean Flook       IMANN-1711 Ensure the startup error dialog can be seen.
+//    020   18.03.25 Sean Flook       IMANN-1711 Changed so that the metadata is correctly loaded according to the authority.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -373,6 +374,50 @@ const HomePage = () => {
     };
 
     /**
+     * Method to load the metadata information.
+     */
+    const LoadMetadata = async () => {
+      const authority = Number(authorityDetails.dataProviderCode);
+      const isScottish = authority >= 9000 && authority <= 9999 && authority !== 9904;
+      const Lookups = isScottish
+        ? [
+            {
+              url: GetLLPGMetadataUrl("GET", userContext.currentUser),
+              data: propertyMetadata,
+              noRecords: {},
+              id: "propertyMetadata",
+            },
+          ]
+        : [
+            {
+              url: GetLSGMetadataUrl("GET", userContext.currentUser),
+              data: streetMetadata,
+              noRecords: {},
+              id: "streetMetadata",
+            },
+            {
+              url: GetASDMetadataUrl("GET", userContext.currentUser),
+              data: asdMetadata,
+              noRecords: {},
+              id: "asdMetadata",
+            },
+            {
+              url: GetLLPGMetadataUrl("GET", userContext.currentUser),
+              data: propertyMetadata,
+              noRecords: {},
+              id: "propertyMetadata",
+            },
+          ];
+
+      Lookups.forEach(async (lookup) => {
+        if (!isCancelled && !loadedLookups.current.includes(lookup.id)) {
+          loadedLookups.current = loadedLookups.current.concat([lookup.id]);
+          await fetchData(lookup, userContext);
+        }
+      });
+    };
+
+    /**
      * Method to load the lookups
      */
     const LoadLookups = async () => {
@@ -548,24 +593,6 @@ const HomePage = () => {
           noRecords: [],
           id: "mapLayers",
         },
-        {
-          url: GetLSGMetadataUrl("GET", userContext.currentUser),
-          data: streetMetadata,
-          noRecords: {},
-          id: "streetMetadata",
-        },
-        {
-          url: GetASDMetadataUrl("GET", userContext.currentUser),
-          data: asdMetadata,
-          noRecords: {},
-          id: "asdMetadata",
-        },
-        {
-          url: GetLLPGMetadataUrl("GET", userContext.currentUser),
-          data: propertyMetadata,
-          noRecords: {},
-          id: "propertyMetadata",
-        },
       ];
 
       Lookups.forEach(async (lookup) => {
@@ -580,7 +607,10 @@ const HomePage = () => {
       LoadLookups();
 
       // We can only load the ward and parish lookups once we have the authority code
-      if (authorityDetailsLoaded.current) LoadWardParishLookups();
+      if (authorityDetailsLoaded.current) {
+        LoadMetadata();
+        LoadWardParishLookups();
+      }
     } else if (!isLoaded && !userContext.currentUser) {
       userContext.onExpired();
     }
