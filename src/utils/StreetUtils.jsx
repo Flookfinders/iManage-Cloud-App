@@ -98,6 +98,7 @@
 //region Version 1.0.5.0
 //    080   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    081   17.03.25 Sean Flook       IMANN-1682 When adding a new street ensure all languages are added to the street descriptor lookups.
+//    082   18.03.25 Sean Flook        IMANN-977 Always set the error when creating/updating a street.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -3363,7 +3364,11 @@ export async function SaveStreet(
                 [
                   {
                     field: "USRN",
-                    errors: [`[ERROR] ${res}. Please report this error to support.`],
+                    errors: [
+                      `[${res.status} ERROR] Unknown error ${
+                        streetContext.currentStreet.newStreet ? "creating" : "updating"
+                      } street. Please report this error to support.`,
+                    ],
                   },
                 ],
                 [],

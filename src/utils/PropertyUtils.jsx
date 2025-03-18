@@ -71,6 +71,7 @@
 //endregion Version 1.0.2.0
 //region Version 1.0.5.0
 //    054   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
+//    055   18.03.25 Sean Flook        IMANN-977 Always set the error when creating/updating a property.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -2041,6 +2042,26 @@ export async function SaveProperty(
             } else {
               if (userContext.currentUser.showMessages)
                 console.error(`[${res.status} ERROR] ${newProperty ? "Creating" : "Updating"} property (other)`, res);
+              propertyContext.onPropertyErrors(
+                [
+                  {
+                    field: "UPRN",
+                    errors: [
+                      `[${res.status} ERROR] Unknown error ${
+                        newProperty ? "creating" : "updating"
+                      } property, please report to support.`,
+                    ],
+                  },
+                ],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                currentProperty.pkId
+              );
             }
             break;
         }
