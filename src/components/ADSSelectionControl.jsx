@@ -65,6 +65,7 @@
 //endregion Version 1.0.4.0
 //region Version 1.0.4.0
 //    045   18.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
+//    046   18.03.25 Sean Flook        IMANN-885 Cannot rely on the search results, so use isStreetClosed to determine if the street is closed or not.
 //endregion Version 1.0.4.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -101,7 +102,7 @@ import MoveBLPUDialog from "../dialogs/MoveBLPUDialog";
 import MultiEditPlotToPostalWizardDialog from "../dialogs/MultiEditPlotToPostalWizardDialog";
 
 import { copyTextToClipboard, GetWktCoordinates, openInStreetView } from "../utils/HelperUtils";
-import { GetStreetMapData, getStreetSearchData } from "../utils/StreetUtils";
+import { GetStreetMapData, getStreetSearchData, IsStreetClosed } from "../utils/StreetUtils";
 import {
   GetParentHierarchy,
   GetPropertyMapData,
@@ -1703,27 +1704,29 @@ function ADSSelectionControl({
                     onClose={handleStreetActionsMenuClose}
                     sx={menuStyle}
                   >
-                    {userCanEditProperty && !currentStreet.endDate && (
-                      <MenuItem
-                        dense
-                        disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
-                        onClick={HandleAddProperty}
-                        sx={menuItemStyle(false)}
-                      >
-                        <Typography variant="inherit">Add property</Typography>
-                      </MenuItem>
-                    )}
-                    {userCanEditProperty && !currentStreet.endDate && (
-                      <MenuItem
-                        dense
-                        divider
-                        disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
-                        onClick={HandleAddRange}
-                        sx={menuItemStyle(true)}
-                      >
-                        <Typography variant="inherit">Add properties</Typography>
-                      </MenuItem>
-                    )}
+                    {userCanEditProperty &&
+                      !IsStreetClosed(currentStreet.usrn, userContext, settingsContext.isScottish) && (
+                        <MenuItem
+                          dense
+                          disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
+                          onClick={HandleAddProperty}
+                          sx={menuItemStyle(false)}
+                        >
+                          <Typography variant="inherit">Add property</Typography>
+                        </MenuItem>
+                      )}
+                    {userCanEditProperty &&
+                      !IsStreetClosed(currentStreet.usrn, userContext, settingsContext.isScottish) && (
+                        <MenuItem
+                          dense
+                          divider
+                          disabled={currentStreet && ![11, 12, 19].includes(currentStreet.logical_status)}
+                          onClick={HandleAddRange}
+                          sx={menuItemStyle(true)}
+                        >
+                          <Typography variant="inherit">Add properties</Typography>
+                        </MenuItem>
+                      )}
                     <MenuItem dense onClick={(event) => itemCopy(event, currentUsrn, "USRN")} sx={menuItemStyle(false)}>
                       <Typography variant="inherit">Copy USRN</Typography>
                     </MenuItem>

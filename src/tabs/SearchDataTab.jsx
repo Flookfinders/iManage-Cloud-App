@@ -84,6 +84,7 @@
 //    062   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    063   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //    064   17.03.25 Sean Flook        IMANN-885 If street closed do not allow properties to be created on it.
+//    065   18.03.25 Sean Flook        IMANN-885 Cannot rely on the search results, so use isStreetClosed to determine if the street is closed or not.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -137,7 +138,13 @@ import {
   openInStreetView,
   doOpenRecord,
 } from "../utils/HelperUtils";
-import { GetStreetMapData, StreetDelete, DisplayStreetInStreetView, getStreetSearchData } from "../utils/StreetUtils";
+import {
+  GetStreetMapData,
+  StreetDelete,
+  DisplayStreetInStreetView,
+  getStreetSearchData,
+  IsStreetClosed,
+} from "../utils/StreetUtils";
 import {
   addressToTitleCase,
   GetPropertyMapData,
@@ -1915,27 +1922,29 @@ function SearchDataTab({ data, variant, checked, onToggleItem, onSetCopyOpen, on
                               onClose={handleStreetActionsMenuClose}
                               sx={menuStyle}
                             >
-                              {userCanEditProperty && rec.blpu_state !== 4 && (
-                                <MenuItem
-                                  dense
-                                  disabled={![11, 12, 19].includes(rec.logical_status)}
-                                  onClick={(event) => HandleAddProperty(event, rec)}
-                                  sx={menuItemStyle(false)}
-                                >
-                                  <Typography variant="inherit">Add property</Typography>
-                                </MenuItem>
-                              )}
-                              {userCanEditProperty && rec.blpu_state !== 4 && (
-                                <MenuItem
-                                  dense
-                                  divider
-                                  disabled={![11, 12, 19].includes(rec.logical_status)}
-                                  onClick={(event) => HandleAddRange(event, rec)}
-                                  sx={menuItemStyle(true)}
-                                >
-                                  <Typography variant="inherit">Add properties</Typography>
-                                </MenuItem>
-                              )}
+                              {userCanEditProperty &&
+                                !IsStreetClosed(rec.usrn, userContext, settingsContext.isScottish) && (
+                                  <MenuItem
+                                    dense
+                                    disabled={![11, 12, 19].includes(rec.logical_status)}
+                                    onClick={(event) => HandleAddProperty(event, rec)}
+                                    sx={menuItemStyle(false)}
+                                  >
+                                    <Typography variant="inherit">Add property</Typography>
+                                  </MenuItem>
+                                )}
+                              {userCanEditProperty &&
+                                !IsStreetClosed(rec.usrn, userContext, settingsContext.isScottish) && (
+                                  <MenuItem
+                                    dense
+                                    divider
+                                    disabled={![11, 12, 19].includes(rec.logical_status)}
+                                    onClick={(event) => HandleAddRange(event, rec)}
+                                    sx={menuItemStyle(true)}
+                                  >
+                                    <Typography variant="inherit">Add properties</Typography>
+                                  </MenuItem>
+                                )}
                               <MenuItem
                                 dense
                                 onClick={(event) => handleStreetViewClick(event, rec)}
