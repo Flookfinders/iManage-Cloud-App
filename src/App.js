@@ -106,6 +106,7 @@
 //    077   22.01.25 Sean Flook       IMANN-1077 Updated the version.
 //    078   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    079   17.03.25 Sean Flook       IMANN-1711 Added metadataLanguages to the settings context.
+//    080   18.03.25 Sean Flook       IMANN-1695 Set the point capture mode when selecting properties from the map.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -3562,6 +3563,7 @@ function App() {
    */
   function HandleSelectPropertiesChange(selecting) {
     setSelectingProperties(selecting);
+    HandlePointCapture(selecting ? "selectProperties" : null);
   }
 
   /**

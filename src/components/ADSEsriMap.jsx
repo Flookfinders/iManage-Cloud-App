@@ -146,6 +146,7 @@
 //    122   14.03.25 Sean Flook        IMANN-963 Prevent the selection control from displaying if the user cannot edit the data.
 //    123   17.03.25 Sean Flook       IMANN-1691 Include the USRN in the parent property details when creating a child/children.
 //    124   17.03.25 Sean Flook       IMANN-1710 Only zoom to the full extent if we are not editing an object.
+//    125   18.03.25 Sean Flook       IMANN-1695 Changes to how selecting properties are handled to make things more robust.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -3549,11 +3550,15 @@ function ADSEsriMap(startExtent) {
     if (backgroundStreetData && backgroundStreetData.current && backgroundStreetData.current.length > 0) {
       mapRef.current.add(backgroundStreetLayer);
 
-      if (mapContext.layerVisibility) backgroundStreetLayer.visible = mapContext.layerVisibility.backgroundStreets;
+      if (mapContext.layerVisibility) {
+        backgroundStreetLayer.visible = mapContext.layerVisibility.backgroundStreets;
+      } else {
+        mapContext.onLayerVisibilityChange("backgroundStreets", true);
+      }
     }
 
     backgroundStreetLayer.watch("visible", (visible) => {
-      mapContext.onLayerVisibilityChange("backgroundStreets", visible);
+      if (!selectingProperties.current) mapContext.onLayerVisibilityChange("backgroundStreets", visible);
       if (visible) {
         fadeVisibilityOn(backgroundStreetLayer);
       }
@@ -3703,11 +3708,15 @@ function ADSEsriMap(startExtent) {
     if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0) {
       mapRef.current.add(unassignedEsusLayer);
 
-      if (mapContext.layerVisibility) unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+      if (mapContext.layerVisibility) {
+        unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+      } else {
+        mapContext.onLayerVisibilityChange("unassignedEsus", true);
+      }
     }
 
     unassignedEsusLayer.watch("visible", (visible) => {
-      mapContext.onLayerVisibilityChange("unassignedEsus", visible);
+      if (!selectingProperties.current) mapContext.onLayerVisibilityChange("unassignedEsus", visible);
       if (visible) {
         fadeVisibilityOn(unassignedEsusLayer);
       }
@@ -3857,11 +3866,15 @@ function ADSEsriMap(startExtent) {
     if (unassignedEsusData && unassignedEsusData.current && unassignedEsusData.current.length > 0) {
       mapRef.current.add(unassignedEsusLayer);
 
-      if (mapContext.layerVisibility) unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+      if (mapContext.layerVisibility) {
+        unassignedEsusLayer.visible = mapContext.layerVisibility.unassignedEsus;
+      } else {
+        mapContext.onLayerVisibilityChange("unassignedEsus", true);
+      }
     }
 
     unassignedEsusLayer.watch("visible", (visible) => {
-      mapContext.onLayerVisibilityChange("unassignedEsus", visible);
+      if (!selectingProperties.current) mapContext.onLayerVisibilityChange("unassignedEsus", visible);
       if (visible) {
         fadeVisibilityOn(unassignedEsusLayer);
       }
@@ -4153,7 +4166,7 @@ function ADSEsriMap(startExtent) {
       ],
       outFields: ["*"],
       objectIdField: "ObjectID",
-      listMode: "hide",
+      listMode: process.env.NODE_ENV === "development" ? "show" : "hide",
       visible: selectingProperties.current,
       popupEnabled: false,
       renderer: backgroundPropertyRenderer,
@@ -4168,7 +4181,11 @@ function ADSEsriMap(startExtent) {
     if (backgroundPropertyData && backgroundPropertyData.current && backgroundPropertyData.current.length > 0) {
       mapRef.current.add(backgroundPropertyLayer);
 
-      if (mapContext.layerVisibility) backgroundPropertyLayer.visible = mapContext.layerVisibility.backgroundProperties;
+      if (mapContext.layerVisibility) {
+        backgroundPropertyLayer.visible = mapContext.layerVisibility.backgroundProperties;
+      } else {
+        mapContext.onLayerVisibilityChange("backgroundProperties", true);
+      }
     }
 
     if (
@@ -4179,7 +4196,7 @@ function ADSEsriMap(startExtent) {
       mapRef.current.add(selectPropertyLayer);
 
     backgroundPropertyLayer.watch("visible", (visible) => {
-      mapContext.onLayerVisibilityChange("backgroundProperties", visible);
+      if (!selectingProperties.current) mapContext.onLayerVisibilityChange("backgroundProperties", visible);
       if (visible) {
         fadeVisibilityOn(backgroundPropertyLayer);
       }
@@ -4303,12 +4320,15 @@ function ADSEsriMap(startExtent) {
     if (backgroundProvenanceData && backgroundProvenanceData.current && backgroundProvenanceData.current.length > 0) {
       mapRef.current.add(backgroundProvenancesLayer);
 
-      if (mapContext.layerVisibility)
+      if (mapContext.layerVisibility) {
         backgroundProvenancesLayer.visible = mapContext.layerVisibility.backgroundProvenances;
+      } else {
+        mapContext.onLayerVisibilityChange("backgroundProvenances", true);
+      }
     }
 
     backgroundProvenancesLayer.watch("visible", (visible) => {
-      mapContext.onLayerVisibilityChange("backgroundProvenances", visible);
+      if (!selectingProperties.current) mapContext.onLayerVisibilityChange("backgroundProvenances", visible);
       if (visible) {
         fadeVisibilityOn(backgroundProvenancesLayer);
       }
@@ -7066,6 +7086,34 @@ function ADSEsriMap(startExtent) {
               }
             });
           }
+        } else if (currentPointCaptureModeRef.current === "selectProperties") {
+          const selectPropertyLayer = mapRef.current && mapRef.current.findLayerById(selectPropertyLayerName);
+          if (selectPropertyLayer) {
+            opts = { include: selectPropertyLayer };
+            view.hitTest(event, opts).then(function (response) {
+              if (response.results.length && response.results[0].graphic.attributes.UPRN) {
+                const currentIndex = selectedProperties.current.indexOf(response.results[0].graphic.attributes.UPRN);
+                const newSelectedProperties = [...selectedProperties.current];
+                if (currentIndex === -1) newSelectedProperties.push(response.results[0].graphic.attributes.UPRN);
+                else newSelectedProperties.splice(currentIndex, 1);
+                selectedProperties.current = newSelectedProperties;
+
+                if (newSelectedProperties.length > 0) {
+                  if (
+                    !selectionOpen &&
+                    userContext.current.currentUser &&
+                    userContext.current.currentUser.editProperty
+                  ) {
+                    setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
+                  }
+                  mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
+                } else {
+                  setSelectionAnchorEl(null);
+                  mapContext.onHighlightClear();
+                }
+              }
+            });
+          }
         }
       }
     });
@@ -7353,7 +7401,7 @@ function ADSEsriMap(startExtent) {
 
         default:
           if (userContext.current.currentUser.showMessages)
-            console.error("[ERROR] Trying to create a new " + event.graphic.geometry.type);
+            console.error("[ERROR] Trying to create a new " + event.graphic?.geometry?.type);
           break;
       }
     });
@@ -7401,7 +7449,7 @@ function ADSEsriMap(startExtent) {
               selectedProperties.current = newSelectedProperties;
 
               if (newSelectedProperties.length > 0) {
-                if (userContext.current.currentUser && userContext.current.currentUser.editProperty) {
+                if (!selectionOpen && userContext.current.currentUser && userContext.current.currentUser.editProperty) {
                   setSelectionAnchorEl(document.getElementById("ads-search-data-list"));
                 }
                 mapContext.onHighlightListItem("selectProperties", newSelectedProperties);
@@ -7410,6 +7458,8 @@ function ADSEsriMap(startExtent) {
                 mapContext.onHighlightClear();
               }
             }
+
+            sketchRef.current._activateCreateTool(undefined);
           } else {
             // get the graphic as it is being updated
             const graphic = event.graphics[0];
@@ -8169,6 +8219,7 @@ function ADSEsriMap(startExtent) {
     loading,
     streetContext.currentStreet,
     streetContext,
+    selectionOpen,
     fadeVisibilityOn,
   ]);
 
@@ -9649,6 +9700,8 @@ function ADSEsriMap(startExtent) {
       if (asd63Layer) asd63Layer.popupEnabled = false;
       if (asd64Layer) asd64Layer.popupEnabled = false;
       if (asd66Layer) asd66Layer.popupEnabled = false;
+    } else if (mapContext.currentPointCaptureMode === "selectProperties") {
+      currentPointCaptureModeRef.current = mapContext.currentPointCaptureMode;
     } else {
       coordinateConversionRef.current.mode = "live";
       currentPointCaptureModeRef.current = null;
@@ -9861,7 +9914,9 @@ function ADSEsriMap(startExtent) {
           if (streetLayer) streetLayer.opacity = 0.5;
           if (llpgStreetLayer) llpgStreetLayer.visible = false;
           if (backgroundProvenanceLayerRef.current) backgroundProvenanceLayerRef.current.visible = false;
-          if (backgroundPropertyLayerRef.current) backgroundPropertyLayerRef.current.visible = false;
+          if (backgroundPropertyLayerRef.current) {
+            backgroundPropertyLayerRef.current.visible = false;
+          }
           if (propertyLayer) propertyLayer.visible = false;
           if (selectPropertyLayer) selectPropertyLayer.visible = true;
 
@@ -9922,6 +9977,9 @@ function ADSEsriMap(startExtent) {
           undoRedoMenu: true,
         };
         sketchRef.current.visible = false;
+
+        editGraphicsLayer.current.graphics.removeAll();
+        editGraphicsLayer.current.listMode = "hide";
       }
     }
   }, [mapContext.selectingProperties, mapContext.currentBackgroundData.properties, mapContext.layerVisibility]);
