@@ -33,6 +33,7 @@
 //    016   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    017   30.01.25 Sean Flook       IMANN-1673 Added some error handling.
 //    018   17.03.25 Sean Flook       IMANN-1711 Get the metadata languages and set the metadataLanguages object in settings context.
+//    019   18.03.25 Sean Flook       IMANN-1711 Ensure the startup error dialog can be seen.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -656,7 +657,7 @@ const HomePage = () => {
           );
         }
 
-        setIsLoaded(true);
+        setIsLoaded(!openMessageDialog);
       }
     }
 
@@ -665,6 +666,7 @@ const HomePage = () => {
     };
   }, [
     isLoaded,
+    openMessageDialog,
     lookupValidationMessages,
     lookupLocalities,
     lookupTowns,
