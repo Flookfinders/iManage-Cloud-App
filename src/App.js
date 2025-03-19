@@ -107,6 +107,7 @@
 //    078   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    079   17.03.25 Sean Flook       IMANN-1711 Added metadataLanguages to the settings context.
 //    080   18.03.25 Sean Flook       IMANN-1695 Set the point capture mode when selecting properties from the map.
+//    081   19.03.25 Sean Flook       IMANN-1695 Tidied up code in HandleAuthorityDetailsChange.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -1416,22 +1417,26 @@ function App() {
   function HandleAuthorityDetailsChange(details, reloading = false) {
     setAuthorityDetails(details);
 
+    const formatAuthority = (authority) => {
+      return StringToTitleCase(authority)
+        .replace(" Of ", " of ")
+        .replace(" And ", " and ")
+        .replace(" The ", " the ")
+        .replace(" With ", " with ");
+    };
+
     if (details) {
       const authority = Number(details.dataProviderCode);
       setAuthorityCode(authority);
       const authorityRecord = DETRCodes.find((x) => x.id === authority);
-      if (authorityRecord)
-        setAuthorityName(StringToTitleCase(authorityRecord.text).replace("Of", "of").replace("And", "and"));
+      if (authorityRecord) setAuthorityName(formatAuthority(authorityRecord.text));
       else setAuthorityName("");
       setIsScottish(authority >= 9000 && authority <= 9999 && authority !== 9904);
       setIsWelsh(authority >= 6000 && authority <= 6999);
       if (details.tabText) {
         if (details.tabText !== document.title) document.title = details.tabText;
       } else {
-        if (authorityRecord)
-          document.title = `iManage Cloud (${StringToTitleCase(authorityRecord.text)
-            .replace("Of", "of")
-            .replace("And", "and")})`;
+        if (authorityRecord) document.title = `iManage Cloud (${formatAuthority(authorityRecord.text)})`;
         else document.title = "iManage Cloud";
       }
     } else {

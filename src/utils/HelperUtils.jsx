@@ -82,6 +82,7 @@
 //region Version 1.0.5.0
 //    061   30.01.25 Sean Flook       IMANN-1673 Changes required for new user settings API.
 //    062   14.03.25 Sean Flook       IMANN-1696 Fixed error in hasLoginExpired
+//    063   19.03.25 Sean Flook       IMANN-1696 Tidied up code in lookupToTitleCase.
 //endregion Version 1.0.5.0
 //
 //--------------------------------------------------------------------------------------------------
@@ -689,12 +690,19 @@ export function StringToTitleCase(str) {
  */
 export function lookupToTitleCase(option, doNotSetTitleCase) {
   if (doNotSetTitleCase || !option || option.length === 0) return option ? option : "";
-  else if (option.includes(",") && !option.includes(", "))
-    return option
-      .replace(",", ", ")
-      .replace(/\w\S*/g, function (txt) {
+  else {
+    let result = option;
+
+    if (option.includes(",") && !option.includes(", "))
+      result = option.replace(",", ", ").replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-      })
+      });
+    else
+      result = option.replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+      });
+
+    return result
       .replace("Nlpg", "NLPG")
       .replace("Bs7666", "BS7666")
       .replace("Crm", "CRM")
@@ -707,23 +715,7 @@ export function lookupToTitleCase(option, doNotSetTitleCase) {
       .replaceAll(" The ", " the ")
       .replaceAll(" Of ", " of ")
       .replaceAll(" To ", " to ");
-  else
-    return option
-      .replace(/\w\S*/g, function (txt) {
-        return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-      })
-      .replace("Nlpg", "NLPG")
-      .replace("Bs7666", "BS7666")
-      .replace("Crm", "CRM")
-      .replace("Sn And N", "SN and N")
-      .replace("Lpi", "LPI")
-      .replace("Symphony Snn", "Symphony SNN")
-      .replace("Symphony Iexchange", "Symphony iExchange")
-      .replace("Lo_asd", "LO_ASD")
-      .replaceAll(" And ", " and ")
-      .replaceAll(" The ", " the ")
-      .replaceAll(" Of ", " of ")
-      .replaceAll(" To ", " to ");
+  }
 }
 
 /**
