@@ -1675,7 +1675,7 @@ const DETRCodes = [
   },
   {
     id: 2635,
-    text: "BOROUGH OF KINGS LYN AND WEST NORFOLK",
+    text: "BOROUGH OF KING'S LYN AND WEST NORFOLK",
     xmin: 526006.3902358998,
     ymin: 281063.62277272,
     xmax: 620788.3053094937,
@@ -1905,6 +1905,7 @@ const DETRCodes = [
     ymin: 300483.45703038416,
     xmax: 462600.25554075814,
     ymax: 369047.4714021694,
+    zoomLevel: 12,
   },
   {
     id: 3415,
@@ -1913,6 +1914,7 @@ const DETRCodes = [
     ymin: 293699.6707700767,
     xmax: 439057.6508289294,
     ymax: 327981.67795596924,
+    zoomLevel: 12,
   },
   {
     id: 3420,
@@ -2717,7 +2719,7 @@ const DETRCodes = [
   },
   {
     id: 5390,
-    text: "LONDON BOROUGH OF HAMMERSMITH AND FULHAM",
+    text: "LONDON BOROUGH OF HAMMERSMITH & FULHAM",
     xmin: 518428.30999614834,
     ymin: 174823.5497222083,
     xmax: 530276.0493803476,
