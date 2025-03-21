@@ -1,13 +1,8 @@
 const PostallyAddressable = [
   {
-    id: "A",
-    gpText: "Assumed post town and postcode",
-    osText: undefined,
-  },
-  {
-    id: "L",
-    gpText: "Large user postcode",
-    osText: "Large user postcode",
+    id: "Y",
+    gpText: "Yes",
+    osText: "Yes",
   },
   {
     id: "N",
@@ -20,9 +15,14 @@ const PostallyAddressable = [
     osText: undefined,
   },
   {
-    id: "Y",
-    gpText: "Yes",
-    osText: "Yes",
+    id: "A",
+    gpText: "Assumed post town and postcode",
+    osText: undefined,
+  },
+  {
+    id: "L",
+    gpText: "Large user postcode",
+    osText: "Large user postcode",
   },
 ];
 
